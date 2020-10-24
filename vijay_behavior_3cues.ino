@@ -128,7 +128,7 @@ boolean ITIflag;                 // are you currently in ITI? This needs to be t
 //boolean CSminusflag;             // is current trial a CS- trial?
 boolean framestate;              // state of frame input
 boolean frameon;                 // did frame input turn on?
-
+boolean licktubesactive;        // are the lick tubes counting licks in or not?
 
 const int numCS = 3;             // Number of different CSs
 unsigned long numtrials[numCS];
@@ -207,7 +207,7 @@ float temp;                      // temporary float variable for temporary opera
 float temp1;                     // temporary float variable for temporary operations
 unsigned long tempu;
 
-int lickctduringcue[3];            // number of licks on lick tubes 1, 2 and 3 during the cue-reward delay. If this is >= golickreq for the appropriate golicktube, animals get rewarded after the corresponding cue
+int lickctforreq[3];            // number of licks on lick tubes 1, 2 and 3 during the cue-reward delay. If this is >= golickreq for the appropriate golicktube, animals get rewarded after the corresponding cue
 
 int CSct;                        // number of cues delivered
 int rewardct;                   // number of rewards given in lick dependent trials
@@ -501,14 +501,15 @@ void setup() {
   cueOff     = nextcue + CSdur[cueList[0]];           // get timestamp of first cue cessation
   ITIflag = true;
   solenoidOff = 0;
+  licktubesactive = true;
 
   CSct = 0;                            // Number of CSs is initialized to 0
   rewardct = 0;                        // Number of initial rewards is initialized to 0
   numbgdsolenoid = 0;                       // Number of background solenoids initialized to 0
   sessionendtime = 0;
-  lickctduringcue[0] = 0;                 // Number of licks1 during cue for first trial is initialized to 0
-  lickctduringcue[1] = 0;                 // Number of licks2 during cue for first trial is initialized to 0
-  lickctduringcue[2] = 0;                 // Number of licks3 during cue for first trial is initialized to 0
+  lickctforreq[0] = 0;                 // Number of licks1 during cue for first trial is initialized to 0
+  lickctforreq[1] = 0;                 // Number of licks2 during cue for first trial is initialized to 0
+  lickctforreq[2] = 0;                 // Number of licks3 during cue for first trial is initialized to 0
 
   // UNCOMMENT THESE LINES FOR TRIGGERING IMAGE COLLECTION AT BEGINNING
   digitalWrite(ttloutpin, HIGH);
@@ -658,7 +659,7 @@ void loop() {
       else {
         temp = 0;
       }
-      if (CSopentime[2 * cueList[CSct] + numfxdsolenoids] > 0 && u < CSprob[2 * cueList[CSct] + numfxdsolenoids] && lickctduringcue[golicktube[cueList[CSct]]] >= temp) {
+      if (CSopentime[2 * cueList[CSct] + numfxdsolenoids] > 0 && u < CSprob[2 * cueList[CSct] + numfxdsolenoids] && lickctforreq[golicktube[cueList[CSct]]] >= temp) {
         digitalWrite(CSsolenoid[2 * cueList[CSct] + numfxdsolenoids], HIGH);      // turn on solenoid
         Serial.print(0);                       //   this indicates that the solenoid was actually given
         Serial.print('\n');
@@ -809,9 +810,9 @@ void loop() {
         }
 
         CSct++;                            // count total number of CSs
-        lickctduringcue[0] = 0;                 // reset lick1 count to zero at end of trial
-        lickctduringcue[1] = 0;                 // reset lick2 count to zero at end of trial
-        lickctduringcue[2] = 0;                 // reset lick3 count to zero at end of trial
+        lickctforreq[0] = 0;                 // reset lick1 count to zero at end of trial
+        lickctforreq[1] = 0;                 // reset lick2 count to zero at end of trial
+        lickctforreq[2] = 0;                 // reset lick3 count to zero at end of trial
 
         u = random(0, 10000);
         temp = (float)u / 10000;
@@ -922,10 +923,11 @@ void loop() {
   }
 
   else if (experimentmode == 3) {
-
+    
+    licking();
     frametimestamp();                    // store timestamps of frames
 
-    if (rewardct >= totalnumrewards && sessionendtime == 0) {
+    if (rewardct[0] >= totalnumrewards && sessionendtime == 0) {
       sessionendtime = ts + 5000;
     }
     if ((ts >= sessionendtime && sessionendtime != 0) || reading == 49) {
@@ -934,7 +936,6 @@ void loop() {
 
     if (ts >= nextreqlick && nextreqlick != 0) {          // start to record licking
 
-      licking();
 
       u = random(0, 100);
       for (int i = 0; i < numlicktube; i++) {
@@ -1145,7 +1146,7 @@ void loop() {
       Serial.print(" ");
       Serial.print(0);
       Serial.print('\n');
-      lickctduringcue[0]++;
+      lickctforreq[0]++;
     }
 
     if (lickwithdrawn) {                     // if lick withdrawn
@@ -1169,7 +1170,7 @@ void loop() {
       Serial.print(" ");
       Serial.print(0);
       Serial.print('\n');
-      lickctduringcue[1]++;
+      lickctforreq[1]++;
     }
 
     if (lickwithdrawn) {                     // if lick withdrawn
@@ -1193,7 +1194,7 @@ void loop() {
       Serial.print(" ");
       Serial.print(0);
       Serial.print('\n');
-      lickctduringcue[2]++;
+      lickctforreq[2]++;
     }
 
     if (lickwithdrawn) {                     // if lick withdrawn
@@ -1246,9 +1247,9 @@ void loop() {
     nextfxdsolenoid = ts + CS_t_fxd[2 * cueList[CSct]];    // next fixed solenoid comes at a fixed delay following cue onset
     numfxdsolenoids = 0;                                   // Zero fixed solenoids given till now
     cueOff  = ts + CSdur[cueList[CSct]];                   // set timestamp of cue cessation
-    lickctduringcue[0] = 0;                 // reset lick1 count to zero at cue onset
-    lickctduringcue[1] = 0;                 // reset lick2 count to zero at cue onset
-    lickctduringcue[2] = 0;                 // reset lick3 count to zero at cue onset
+    lickctforreq[0] = 0;                 // reset lick1 count to zero at cue onset
+    lickctforreq[1] = 0;                 // reset lick2 count to zero at cue onset
+    lickctforreq[2] = 0;                 // reset lick3 count to zero at cue onset
 
   }
 
