@@ -182,7 +182,7 @@ unsigned long vacuumopentime = 200; // Duration to keep vacuum on
 
 
 int totalnumtrials = 0;
-unsigned long totalnumrewards[numlicktube];
+unsigned long rewardct[numlicktube];                   // number of rewards given in lick dependent trials
 
 unsigned long nextcue;           // timestamp of next trial
 unsigned long nextbgdsolenoid;   // timestamp of next background solenoid onset
@@ -206,12 +206,10 @@ unsigned long sessionendtime;    // the time at which session ends. Set to 5s af
 float temp;                      // temporary float variable for temporary operations
 float temp1;                     // temporary float variable for temporary operations
 unsigned long tempu;
-unsigned long tempu1;
 
 int lickctforreq[3];            // number of licks on lick tubes 1, 2 and 3 during the cue-reward delay. If this is >= golickreq for the appropriate golicktube, animals get rewarded after the corresponding cue
 
 int CSct;                        // number of cues delivered
-unsigned long rewardct[numlicktube];                   // number of rewards given in lick dependent trials
 int numbgdsolenoid;              // number of background solenoids delivered
 int numfxdsolenoids;             // number of fixed solenoids delivered per cue till now. Useful since same cue can have two delayed solenoids
 
@@ -248,10 +246,6 @@ void setup() {
 
   for (int temp = 0; temp < numCS; temp++) {
     totalnumtrials += numtrials[temp];
-  }
-
-  for (int temp = 0; temp < numlicktube; temp++) {
-    totalnumrewards[temp] += minrewards[temp];
   }
 
   reading = 0;
@@ -495,14 +489,15 @@ void setup() {
   else if (trialbytrialbgdsolenoidflag == 1) {
     nextbgdsolenoid = 0 - T_bgdvec[0] * temp;
   }
-  if (nextbgdsolenoid > (nextcue - mindelaybgdtocue)) {
+  if (nextbgdsolenoid > (nextcue - mindelaybgdtocue) && experimentmode != 1) {
     nextbgdsolenoid = 0;
   }
 
   cueOff     = nextcue + CSdur[cueList[0]];           // get timestamp of first cue cessation
   ITIflag = true;
   solenoidOff = 0;
-
+  licktubesactive = true;
+  
   CSct = 0;                            // Number of CSs is initialized to 0
   rewardct[0] = 0;                        // Number of initial rewards for lick tube 1 is initialized to 0
   rewardct[1] = 0;                        // Number of initial rewards for lick tube 2 is initialized to 0
@@ -632,7 +627,6 @@ void loop() {
     }
   }
 }
-
 
 
 // Accept parameters from MATLAB
