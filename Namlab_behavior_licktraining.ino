@@ -585,7 +585,7 @@ void loop() {
   u = random(0, 100);
   if (lickopentime[temp] >= 0 && u < lickprob[temp] && !licktubesactive) {          // set lick solenoid high
     digitalWrite(licksolenoid[temp], HIGH);
-    Serial.print(1);                                // indicates the reward is given
+    Serial.print(0);                                // indicates the reward is given
     Serial.print('\n');
     solenoidOff = ts + lickopentime[temp];                          // set solenoid off time
     nextvacuum = ts + lickopentime[temp] + delaytolick[temp];       // vacuum onset
