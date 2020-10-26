@@ -182,7 +182,7 @@ unsigned long vacuumopentime = 200; // Duration to keep vacuum on
 
 
 int totalnumtrials = 0;
-unsigned long totalnumrewards[numlicktube];
+unsigned long rewardct[numlicktube];                   // number of rewards given for each lick tube in lick dependent experiment
 
 unsigned long nextcue;           // timestamp of next trial
 unsigned long nextbgdsolenoid;   // timestamp of next background solenoid onset
@@ -206,12 +206,10 @@ unsigned long sessionendtime;    // the time at which session ends. Set to 5s af
 float temp;                      // temporary float variable for temporary operations
 float temp1;                     // temporary float variable for temporary operations
 unsigned long tempu;
-unsigned long tempu1;
 
 int lickctforreq[3];            // number of licks on lick tubes 1, 2 and 3 during the cue-reward delay. If this is >= golickreq for the appropriate golicktube, animals get rewarded after the corresponding cue
 
 int CSct;                        // number of cues delivered
-unsigned long rewardct[numlicktube];                   // number of rewards given in lick dependent trials
 int numbgdsolenoid;              // number of background solenoids delivered
 int numfxdsolenoids;             // number of fixed solenoids delivered per cue till now. Useful since same cue can have two delayed solenoids
 
@@ -248,10 +246,6 @@ void setup() {
 
   for (int temp = 0; temp < numCS; temp++) {
     totalnumtrials += numtrials[temp];
-  }
-
-  for (int temp = 0; temp < numlicktube; temp++) {
-    totalnumrewards[temp] += minrewards[temp];
   }
 
   reading = 0;
@@ -502,6 +496,7 @@ void setup() {
   cueOff     = nextcue + CSdur[cueList[0]];           // get timestamp of first cue cessation
   ITIflag = true;
   solenoidOff = 0;
+  licktubesactive = true;
 
   CSct = 0;                            // Number of CSs is initialized to 0
   rewardct[0] = 0;                        // Number of initial rewards for lick tube 1 is initialized to 0
@@ -553,7 +548,7 @@ void loop() {
   licking();                           // record licking
   frametimestamp();                    // store timestamps of frames
 
-  if (rewardct[0] >= totalnumrewards[0] && rewardct[1] >= totalnumrewards[1] && sessionendtime == 0) {
+  if (rewardct[0] >= minrewards[0] && rewardct[1] >= minrewards[1] && sessionendtime == 0) {
     sessionendtime = ts + 5000;
   }
   if ((ts >= sessionendtime && sessionendtime != 0) || reading == 49) {
@@ -561,49 +556,50 @@ void loop() {
   }
   if (lickctforreq[0] >= reqlicknum[0] && licktubesactive) {
     nextfxdsolenoid = ts + delaytoreward[0];
-    tempu = 0;
+    int temp = 0;
     licktubesactive = false;
   }
   if (lickctforreq[1] >= reqlicknum[1] && licktubesactive) {
     nextfxdsolenoid = ts + delaytoreward[1];
-    tempu = 1;
+    int temp = 1;
     licktubesactive = false;
   }
   if (ts > nextfxdsolenoid) {
-    if (licksolenoid[tempu] == solenoid1) {
-      Serial.print(8); // code data as lick solenoid onset
+    if (licksolenoid[temp] == solenoid1) {            // setup which solenoid to give for lick onset
+      Serial.print(8);                                // code data
     }
-    else if (licksolenoid[tempu] == solenoid2) {
+    else if (licksolenoid[temp] == solenoid2) {
       Serial.print(9);
     }
-    else if (licksolenoid[tempu] == solenoid3) {
+    else if (licksolenoid[temp] == solenoid3) {
       Serial.print(10);
     }
-    else if (licksolenoid[tempu] == solenoid4) {
+    else if (licksolenoid[temp] == solenoid4) {
       Serial.print(11);
     }
     Serial.print(" ");
     Serial.print(ts);
     Serial.print(" ");
   }
-  u = random(0, 10000);
-  if (lickopentime[tempu] >= 0 && u < lickprob[tempu] && !licktubesactive) {
-    digitalWrite(licksolenoid[tempu], HIGH);
+
+  u = random(0, 100);
+  if (lickopentime[temp] >= 0 && u < lickprob[temp] && !licktubesactive) {          // set lick solenoid high
+    digitalWrite(licksolenoid[temp], HIGH);
     Serial.print(1);                                // indicates the reward is given
     Serial.print('\n');
+    solenoidOff = ts + lickopentime[temp];                          // set solenoid off time
+    nextvacuum = ts + lickopentime[temp] + delaytolick[temp];       // vacuum onset
   }
   else {
     Serial.print(1);                                // indicates no reward given
     Serial.print('\n');
   }
 
-  solenoidOff = ts + lickopentime[tempu];
-  nextvacuum = ts + lickopentime[tempu] + delaytolick[tempu];       // solenoid off
   if (ts >= solenoidOff && solenoidOff != 0) {
-    digitalWrite(licksolenoid[tempu], LOW);
+    digitalWrite(licksolenoid[temp], LOW);
     solenoidOff = 0;
   }
-  if (ts >= nextvacuum && nextvacuum != 0) {             // vacuum onset
+  if (ts >= nextvacuum && nextvacuum != 0) {             // set vacuum high
     digitalWrite(vacuum, HIGH);
     Serial.print(14);
     Serial.print(" ");
@@ -611,20 +607,18 @@ void loop() {
     Serial.print(" ");
     Serial.print(0);
     Serial.print('\n');
-    nextvacuumOff = ts + vacuumopentime;
+    nextvacuumOff = ts + vacuumopentime;                 // vacuum offset
     nextvacuum = 0;
   }
-  if (ts >= nextvacuumOff && nextvacuumOff != 0) {       // vacuum offset
+  if (ts >= nextvacuumOff && nextvacuumOff != 0) {       // set vacuum low
     digitalWrite(vacuum, LOW);
     nextvacuumOff = 0;
-    licktubesactive = true;
     lickctforreq[0] = 0;
     lickctforreq[1] = 0;
-    rewardct[tempu]++;
-    nextfxdsolenoid = 0;
+    rewardct[temp]++;    
+    licktubesactive = true;
   }
 }
-
 
 
 // Accept parameters from MATLAB
@@ -724,10 +718,10 @@ void getParams() {
       CSsolenoid[p] = solenoid2;
     }
     else if (CSsolenoid[p] == 3) {
-    CSsolenoid[p] = solenoid3;
+      CSsolenoid[p] = solenoid3;
     }
     else if (CSsolenoid[p] == 4) {
-    CSsolenoid[p] = solenoid4;
+      CSsolenoid[p] = solenoid4;
     }
   }
 
