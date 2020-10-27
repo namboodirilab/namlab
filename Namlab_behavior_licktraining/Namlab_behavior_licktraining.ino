@@ -379,7 +379,6 @@ void setup() {
     }
 
   }
-    }
   
 
   solenoidOff = 0;
