@@ -22,7 +22,7 @@ function varargout = headfix_GUI(varargin)
 
 % Edit the above text to modify the response to help headfix_GUI
 
-% Last Modified by GUIDE v2.5 21-Oct-2020 19:57:59
+% Last Modified by GUIDE v2.5 27-Oct-2020 20:21:20
 
 % cd 'F:\acads\Stuber lab\headfix'; %Change to directory
 
@@ -161,6 +161,7 @@ else
         'none found, please check connection and refresh')      % if none, indicate so
 end
 
+
 % --- Executes on button press in openButton.
 function openButton_Callback(hObject, eventdata, handles)
 % opens serial port (identified by user) for communication with arduino
@@ -184,6 +185,52 @@ set(handles.startButton,'Enable','off')             % disable 'send' button
 set(handles.closeButton,'Enable','on')              % enable 'unlink' button
 set(handles.openButton,'Enable','off')              % disable 'link' button
 set(handles.refreshButton,'Enable','off')           % disable 'refresh' button
+set(handles.experimentmode,'Enable','on')           % enable 'experimentmode' selection
+
+
+% --- Executes on selection change in experimentmode.
+function experimentmode_Callback(hObject, eventdata, handles)
+% hObject    handle to experimentmode (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns experimentmode contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from experimentmode
+contents = cellstr(get(hObjects,'String'));
+selection = contents{get(hObjects,'Value')};
+
+if strcmp(selection, '1: Cues with or without lick req')
+    set(hObjects, 'Value') = 1;
+elseif strcmp(selection, '2: Random rewards (lick training)')
+    set(hObjects, 'Value') = 2;
+elseif strcmp(selection, '3: Lick for rewards')
+    set(hObjects, 'Value') = 3;
+end
+
+set(handles.uploadButton, 'Enable', 'on');
+
+
+% --- Executes on button press in uploadButton.
+function uploadButton_Callback(hObject, eventdata, handles)
+% hObject    handle to uploadButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+if get(handles.experimentmode, 'Value') == 1
+    [status,cmdout] = dos(' paste file 1 path here ');
+elseif get(handles.experimentmode, 'Value') == 2
+    [status,cmdout] = dos(' paste file 2 path here ');
+elseif get(handles.experimentmode, 'Value') == 3
+    [status,cmdout] = dos(' paste file 3 path here ');
+end
+
+
+if strcmp(str([status,cmdout]), 'avrdude done.  Thank you.')
+    set(handles.uploadButton, 'String', 'Successfully uploaded');
+    set(handles.uploadButton, 'Enable','off');
+else
+    set(handles.uploadButton, 'String', 'Unable to upload');
+end
 
 
 % --- Executes on button press in closeButton.
@@ -378,7 +425,7 @@ temp = {'Number of licks required',  1, 1;
         'Delay to solenoid (ms)',    0, 0;
         'Delay to next lick (ms)',6000, 6000;
         'Min number of rewards',    20, 20;
-        'Lick requried met signal',  0, 0};
+        'Light1(1), light2(2) or no(0)',  0, 0};
 set(hObject, 'Data', temp);
 
 
@@ -392,8 +439,7 @@ global s;
 % Retrieve inputs
 
 % Experiment mode 
-experimentmode = get(handles.experimentmode,'String');
-experimentmode = str2double(experimentmode);
+experimentmode = get(handles.experimentmode,'Value');
 
 % Cues
 csproperties = get(handles.csproperties, 'Data');
@@ -490,6 +536,7 @@ set(handles.startButton,'Enable','on')
 set(handles.sendButton,'Enable','off')
 set(handles.csproperties,'Enable','off')
 set(handles.lickproperties,'Enable','off')
+set(handles.experimentmode,'Enable','off')
 
 set(handles.minITI,'Enable','off')
 set(handles.maxITI,'Enable','off')
@@ -500,7 +547,6 @@ set(handles.T_bgd,'Enable','off')
 set(handles.r_bgd,'Enable','off')
 set(handles.mindelaybgdtocue,'Enable','off')
 set(handles.mindelayfxdtobgd,'Enable','off')
-set(handles.experimentmode,'Enable','off')
 set(handles.checkboxtrialbytrial,'Enable','off')
 set(handles.checkboxexpiti,'Enable','off')
 set(handles.totPoisssolenoid,'Enable','off')
@@ -548,8 +594,7 @@ global s running actvAx saveDir
 % Retrieve inputs
 
 % Experiment mode 
-experimentmode = get(handles.experimentmode,'String');
-experimentmode = str2double(experimentmode);
+experimentmode = get(handles.experimentmode,'Value');
 
 % Cues
 csproperties = get(handles.csproperties, 'Data');
@@ -667,6 +712,8 @@ set(handles.testcs2,'Enable','off')
 set(handles.testcs3,'Enable','off')
 set(handles.testlaser,'Enable','off')
 set(handles.closeButton,'Enable','off')
+set(handles.experimentmode,'Enable','off')
+set(handles.uploadButton,'Enable','off')
 
 if experimentmode==2
     set(handles.vacuumButton,'Enable', 'off')
@@ -707,7 +754,6 @@ set(handles.T_bgd,'Enable','on')
 set(handles.r_bgd,'Enable','on')
 set(handles.mindelaybgdtocue,'Enable','on')
 set(handles.mindelayfxdtobgd,'Enable','on')
-set(handles.experimentmode,'Enable','on')
 set(handles.checkboxtrialbytrial,'Enable','on')
 set(handles.checkboxexpiti,'Enable','on')
 set(handles.totPoisssolenoid,'Enable','on')
