@@ -60,40 +60,45 @@
 //42) appropriate licktube or solenoid for golickreq of CS1
 //43) appropriate licktube or solenoid for golickreq of CS2
 //44) appropriate licktube or solenoid for golickreq of CS3
-//45) mean intertrial interval (ITI) in ms from fixed solenoid to next tone based on exponential distirbution, min ITI for uniform distribution
-//46) max ITI, truncation for exponential distribution is set at minimum of maximum ITI or 3*meanITI
-//47) flag to set ITI distribution. If==1, draw from exponential, if==0 draw from uniform
-//48) which solenoid set to be the background solenoid
-//49) background solenoid period, 1/lambda, in ms
-//50) background solenoid openning time, in ms
-//51) minimum delay between a background solenoid and the next cue, in ms
-//52) minimum delay between fixed solenoid to the next background solenoid
-//53) signal which experiment mode to run: if==1, run with cues; if==2, give only background poisson solenoids, if==3, give lick dependent rewards
-//54) flag to run experiment with background solenoid rates changing on a trial-by-trial basis if==1
-//55) total number of background solenoids to stop the session if experimentmode==2, only Poisson session
-//56) required number of licks on lick tube 1 to get reward
-//57) required number of licks on lick tube 2 to get reward
-//58) predicted fixed solenoid for reward after licking lick tube 1
-//59) predicted fixed solenoid for reward after licking lick tube 2
-//60) probability of fixed solenoid for reward after licking lick tube 1
-//61) probability of fixed solenoid for reward after licking lick tube 2
-//62) opening time of fixed solenoid for reward after licking lick tube 1
-//63) opening time of fixed solenoid for reward after licking lick tube 2
-//64) delay time (ms) to fixed solenoid
-//65) delay time (ms) to fixed solenoid
-//66) delay time (ms) to activate lick tube 1
-//67) delay time (ms) to activate lick tube 2
-//68) minimum number of rewards delivered to lick tube 1
-//69) minimum number of rewards delivered to lick tube 2
-//70）signal to meet number of lick requirements of tube 1
-//71) signal to meet number of lick requirements of tube 2
-//72) value of the latency wrt the cue at which the laser turns on (0 for cue start; t_fxd for solenoid start)
-//73) value of the duration for which the laser remains on. It can pulse within this duration
-//74) flag to run sessions with laser turning on randomly if==1
-//75) period for which laser is on in a cycle (ms)
-//76) period for which laser is off in a cycle (ms); If equal to laserpulseperiod, duty cycle is 50%
-//77) flag to turn laser on a trial-by-trial basis
-//78) maximum delay to vacuum after cue turns on. Change this if different cues have different delays to reward
+//45) signal for golickreq met of CS1
+//46) signal for golickreq met of CS2
+//47) signal for golickreq met of CS3
+//48) mean intertrial interval (ITI) in ms from fixed solenoid to next tone based on exponential distirbution, min ITI for uniform distribution
+//49) max ITI, truncation for exponential distribution is set at minimum of maximum ITI or 3*meanITI
+//50) flag to set ITI distribution. If==1, draw from exponential, if==0 draw from uniform
+//51) which solenoid set to be the background solenoid
+//52) background solenoid period, 1/lambda, in ms
+//53) background solenoid openning time, in ms
+//54) minimum delay between a background solenoid and the next cue, in ms
+//55) minimum delay between fixed solenoid to the next background solenoid
+//56) signal which experiment mode to run: if==1, run with cues; if==2, give only background poisson solenoids, if==3, give lick dependent rewards
+//57) flag to run experiment with background solenoid rates changing on a trial-by-trial basis if==1
+//58) total number of background solenoids to stop the session if experimentmode==2, only Poisson session
+//59) required number of licks on lick tube 1 to get reward
+//60) required number of licks on lick tube 2 to get reward
+//61) predicted fixed solenoid for reward after licking lick tube 1
+//62) predicted fixed solenoid for reward after licking lick tube 2
+//63) probability of fixed solenoid for reward after licking lick tube 1
+//64) probability of fixed solenoid for reward after licking lick tube 2
+//65) opening time of fixed solenoid for reward after licking lick tube 1
+//66) opening time of fixed solenoid for reward after licking lick tube 2
+//67) delay time (ms) to fixed solenoid
+//68) delay time (ms) to fixed solenoid
+//69) delay time (ms) to activate lick tube 1
+//70) delay time (ms) to activate lick tube 2
+//71) minimum number of rewards delivered to lick tube 1
+//72) minimum number of rewards delivered to lick tube 2
+//73）signal to meet number of lick requirements of tube 1
+//74) signal to meet number of lick requirements of tube 2
+//75) sound signal of 70) to pulse or not
+//76) sound signal of 71) to pulse or not
+//77) value of the latency wrt the cue at which the laser turns on (0 for cue start; t_fxd for solenoid start)
+//78) value of the duration for which the laser remains on. It can pulse within this duration
+//79) flag to run sessions with laser turning on randomly if==1
+//80) period for which laser is on in a cycle (ms)
+//81) period for which laser is off in a cycle (ms); If equal to laserpulseperiod, duty cycle is 50%
+//82) flag to turn laser on a trial-by-trial basis
+//83) maximum delay to vacuum after cue turns on. Change this if different cues have different delays to reward
 // to be such that it is longer than the longest delay to reward. Basically, this quantity measures duration of trial.
 
 #include <math.h>
@@ -631,7 +636,7 @@ void loop() {
 
 // Accept parameters from MATLAB
 void getParams() {
-  int pn = 79;                              // number of parameter inputs
+  int pn = 84;                              // number of parameter inputs
   unsigned long param[pn];                  // parameters
 
   for (int p = 0; p < pn; p++) {
@@ -673,40 +678,46 @@ void getParams() {
   golicktube[0]          = param[42];
   golicktube[1]          = param[43];
   golicktube[2]          = param[44];
-  meanITI                = param[45];                   // get meanITI, in ms
-  maxITI                 = param[46];                   // get maxITI, in ms
-  expitiflag             = (boolean)param[47];
-  backgroundsolenoid     = (int)param[48];
-  T_bgd                  = param[49];                   // get T=1/lambda, in ms
-  r_bgd                  = param[50];                   // get r_bgd, ms open time for the solenoid
-  mindelaybgdtocue       = param[51];                   // get minimum delay between a background solenoid and the next cue, in ms
-  mindelayfxdtobgd       = param[52];                   // get minimum delay between a fixed solenoid and the next background solenoid, in ms
-  experimentmode         = param[53];
-  trialbytrialbgdsolenoidflag = (boolean)param[54];
-  totbgdsolenoid         = param[55];                   // total number of background solenoids to stop the session if the session just has Poisson solenoids, i.e. experimentmode==1
-  reqlicknum[0]          = param[56];
-  reqlicknum[1]          = param[57];
-  licksolenoid[0]        = param[58];
-  licksolenoid[1]        = param[59];
-  lickprob[0]            = param[60];
-  lickprob[1]            = param[61];
-  lickopentime[0]        = param[62];
-  lickopentime[1]        = param[63];
-  delaytoreward[0]       = param[64];
-  delaytoreward[1]       = param[65];
-  delaytolick[0]         = param[66];
-  delaytolick[1]         = param[67];
-  minrewards[0]          = param[68];
-  minrewards[1]          = param[69];
-  signaltolickreq[0]     = param[70];
-  signaltolickreq[1]     = param[71];
-  laserlatency           = param[72];
-  laserduration          = param[73];
-  randlaserflag          = (boolean)param[74];          // Random laser flag
-  laserpulseperiod       = param[75];
-  laserpulseoffperiod    = param[76];
-  lasertrialbytrialflag  = (boolean)param[77];          // laser on a trial-by-trial basis?
-  maxdelaytovacuumfromcueonset = param[78];
+  golickreqmetsignal[0]  = param[45];
+  golickreqmetsignal[1]  = param[46];
+  golickreqmetsignal[2]  = param[47];
+  meanITI                = param[48];                   // get meanITI, in ms
+  maxITI                 = param[49];                   // get maxITI, in ms
+  expitiflag             = (boolean)param[50];
+  backgroundsolenoid     = (int)param[51];
+  T_bgd                  = param[52];                   // get T=1/lambda, in ms
+  r_bgd                  = param[53];                   // get r_bgd, ms open time for the solenoid
+  mindelaybgdtocue       = param[54];                   // get minimum delay between a background solenoid and the next cue, in ms
+  mindelayfxdtobgd       = param[55];                   // get minimum delay between a fixed solenoid and the next background solenoid, in ms
+  experimentmode         = param[56];
+  trialbytrialbgdsolenoidflag = (boolean)param[57];
+  totbgdsolenoid         = param[58];                   // total number of background solenoids to stop the session if the session just has Poisson solenoids, i.e. experimentmode==1
+  reqlicknum[0]          = param[59]
+                           reqlicknum[1]          = param[60];
+  licksolenoid[0]        = param[61];
+  licksolenoid[1]        = param[62];
+  lickprob[0]            = param[63];
+  lickprob[1]            = param[64];
+  lickopentime[0]        = param[65];
+  lickopentime[1]        = param[66];
+  delaytoreward[0]       = param[67];
+  delaytoreward[1]       = param[68];
+  delaytolick[0]         = param[69];
+  delaytolick[1]         = param[70];
+  minrewards[0]          = param[71];
+  minrewards[1]          = param[72];
+  signaltolickreq[0]     = param[73];
+  signaltolickreq[1]     = param[74];
+  soundsignalpulse[0]    = param[75];
+  soundsignalpulse[1]    = param[76];
+  laserlatency           = param[77];
+  laserduration          = param[78];
+  randlaserflag          = (boolean)param[79];          // Random laser flag
+  laserpulseperiod       = param[80];
+  laserpulseoffperiod    = param[81];
+  lasertrialbytrialflag  = (boolean)param[82];          // laser on a trial-by-trial basis?
+  maxdelaytovacuumfromcueonset = param[83];
+  
 
   for (int p = 0; p < numCS; p++) {
     CSfreq[p] = CSfreq[p] * 1000;         // convert frequency from kHz to Hz
