@@ -110,8 +110,8 @@ int lick2     = 24;   // lick2 sensor
 int lick3     = 26;   // lick3 sensor
 int speaker1  = 32;   // pin for speaker 1
 int speaker2  = 34;   // pin for speaker 2
-int light1    = 36;   // pin for light 1, light 1 is used to indicate that animal has met golickreq if golickreqmetsignal == 2 or 3;
-int light2    = 38;   // pin for light 2, light 2 is used to indicate that animal has met golickreq if golickrementsignal == 2 or 3;
+int light1    = 36;   // pin for light 1, light 1 is used to indicate that animal has met golickreq if CSsignal == 2 or 3;
+int light2    = 38;   // pin for light 2, light 2 is used to indicate that animal has met golickreq if CSsignal == 2 or 3;
 int solenoid1 = 35;  // pin for solenoid1
 int solenoid2 = 37;  // pin for solenoid2
 int solenoid3 = 39;   // pin for solenoid3
@@ -149,7 +149,7 @@ unsigned long CSpulse[numCS];
 unsigned long CSspeaker[numCS];
 unsigned long golickreq[numCS];
 unsigned long golicktube[numCS];
-unsigned long golickreqmetsignal[numCS];
+unsigned long CSsignal[numCS];
 unsigned long meanITI;           // mean duration of ITI for the exponential distribution OR minimum ITI for uniform distribution
 unsigned long maxITI;            // maximum duration of ITI
 boolean expitiflag;              // if ==1, itis are drawn from an exponential distribution
@@ -570,10 +570,24 @@ void loop() {
 
   licking();                           // determine if lick occured or was withdrawn
   frametimestamp();                    // store timestamps of frames
+
   if (ts >= nextcue && ITIflag) {
-    cues();                            // deliver cue
-    deliverlasertocues();              // check whether to and deliver laser if needed
-    ITIflag = false;
+    if (CSsignal[cueList[CSct]] == 1) {           // Check which CS signal to give (sound/light/both)
+      cues();                            // deliver sound cue
+      deliverlasertocues();              // check whether to and deliver laser if needed
+      ITIflag = false;
+    }
+    else if (CSsignal[cueList[CSct]] == 2) {
+      lights();                          // deliver light
+      deliverlasertocues();
+      ITIflag = false;
+    }
+    else if (CSsignal[cueList[CSct]]) == 3) {     // deliver both
+      cues();
+      lights();
+      deliverlasertocues();
+      ITIflag = false;
+    }
   }
 
   // UNCOMMENT THESE LINES FOR TRIGGERING COLLECTION TRIAL-BY-TRIAL
@@ -636,11 +650,19 @@ void loop() {
     noTone(speaker1);                   // turn off cue
     noTone(speaker2);
     cueOff = 0;
+    cuePulseOff = 0;
+    cuePulseOn = 0;
   }
   // Turn off laser
   if (ts >= laserOff && laserOff != 0) {   // LASER CESSATION
     digitalWrite(laser, LOW);              // turn off laser
     laserOff = 0;
+  }
+  // Turn off light
+  if (ts >= lightOff && lightOff != 0) {    // LIGHT CESSATION
+    digitalWrite(light1, LOW);              // turn off light
+    digitalWrite(light2, LOW);
+    lightOff = 0;
   }
 
   if (!ITIflag && ts >= nextfxdsolenoid && nextfxdsolenoid != 0) { // give fixed solenoid
@@ -670,64 +692,6 @@ void loop() {
       temp = 0;
     }
     if (CSopentime[2 * cueList[CSct] + numfxdsolenoids] > 0 && u < CSprob[2 * cueList[CSct] + numfxdsolenoids] && lickctforreq[golicktube[cueList[CSct]]] >= temp) {
-      if (golickreqmetsignal == 1) {
-        cues();
-        if (ts >= cuePulseOff && cuePulseOff != 0) {
-          noTone(speaker1);                   // turn off tone
-          noTone(speaker2);
-          cuePulseOn = ts + 200;
-          cuePulseOff = 0;
-        }
-        if (ts >= cuePulseOn && cuePulseOn != 0) {
-          tone(CSspeaker[cueList[CSct]], CSfreq[cueList[CSct]]);               // turn on tone
-          cuePulseOff = ts + 200;                  // Cue pulsing
-          cuePulseOn = 0;                          // No cue pulsing
-        }
-        if (ts >= cueOff && cueOff != 0) {        // CUE CESSATION
-          noTone(speaker1);                       // turn off cue
-          noTone(speaker2);
-          cueOff = 0;
-          cuePulseOff = 0;
-          cuePulseOn = 0;
-        }
-      }
-      if (golickreqmetsignal == 2) {
-        lights();
-        if (ts >= lightOff && lightOff != 0) {                    // Turn off light
-          digitalWrite(light1, LOW);
-          digitalWrite(light2, LOW);
-          lightOff = 0;
-        }
-      }
-      if (golickreqmetsignal == 3) {
-
-        cues();
-        lights();
-
-        if (ts >= cuePulseOff && cuePulseOff != 0) {              // turn off tone
-          noTone(speaker1);
-          noTone(speaker2);
-          cuePulseOn = ts + 200;
-          cuePulseOff = 0;
-        }
-        if (ts >= cuePulseOn && cuePulseOn != 0) {
-          tone(CSspeaker[cueList[CSct]], CSfreq[cueList[CSct]]);               // turn on tone
-          cuePulseOff = ts + 200;                  // Cue pulsing
-          cuePulseOn = 0;                          // No cue pulsing
-        }
-        if (ts >= cueOff && cueOff != 0) {        // CUE CESSATION
-          noTone(speaker1);                       // turn off cue
-          noTone(speaker2);
-          cueOff = 0;
-          cuePulseOff = 0;
-          cuePulseOn = 0;
-        }
-        if (ts >= lightOff && lightOff != 0) {                    // Turn off light
-          digitalWrite(light1, LOW);
-          digitalWrite(light2, LOW);
-          lightOff = 0;
-        }
-      }
       digitalWrite(CSsolenoid[2 * cueList[CSct] + numfxdsolenoids], HIGH);      // turn on solenoid
       Serial.print(0);                       //   this indicates that the solenoid was actually given
       Serial.print('\n');
@@ -949,9 +913,9 @@ void getParams() {
   golicktube[0]          = param[42];
   golicktube[1]          = param[43];
   golicktube[2]          = param[44];
-  golickreqmetsignal[0]  = param[45];
-  golickreqmetsignal[1]  = param[46];
-  golickreqmetsignal[2]  = param[47];
+  CSsignal[0]            = param[45];
+  CSsignal[1]            = param[46];
+  CSsignal[2]            = param[47];
   meanITI                = param[48];                   // get meanITI, in ms
   maxITI                 = param[49];                   // get maxITI, in ms
   expitiflag             = (boolean)param[50];
@@ -1191,7 +1155,12 @@ void lights() {
   Serial.print(" ");
   Serial.print(0);
 
+  nextfxdsolenoid = ts + CS_t_fxd[2 * cueList[CSct]];
+  numfxdsolenoids = 0;
   lightOff = ts + lightdur;
+  lickctforreq[0] = 0;
+  lickctforreq[1] = 0;
+  lickctforreq[2] = 0;
 }
 
 void software_Reboot()
