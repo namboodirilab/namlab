@@ -96,13 +96,15 @@
 //78) sound signal frequency (kHz) of lick tube 2
 //79) sound signal duration (ms) of lick tube 1
 //80) sound signal duration (ms) of lick tube 2
-//81) value of the latency wrt the cue at which the laser turns on (0 for cue start; t_fxd for solenoid start)
-//82) value of the duration for which the laser remains on. It can pulse within this duration
-//83) flag to run sessions with laser turning on randomly if==1
-//84) period for which laser is on in a cycle (ms)
-//85) period for which laser is off in a cycle (ms); If equal to laserpulseperiod, duty cycle is 50%
-//86) flag to turn laser on a trial-by-trial basis
-//87) maximum delay to vacuum after cue turns on. Change this if different cues have different delays to reward
+//81) sound signal speaker of lick tube 1
+//82) sound signal speaker of lick tube 2
+//83) value of the latency wrt the cue at which the laser turns on (0 for cue start; t_fxd for solenoid start)
+//84) value of the duration for which the laser remains on. It can pulse within this duration
+//85) flag to run sessions with laser turning on randomly if==1
+//86) period for which laser is on in a cycle (ms)
+//87) period for which laser is off in a cycle (ms); If equal to laserpulseperiod, duty cycle is 50%
+//88) flag to turn laser on a trial-by-trial basis
+//89) maximum delay to vacuum after cue turns on. Change this if different cues have different delays to reward
 // to be such that it is longer than the longest delay to reward. Basically, this quantity measures duration of trial.
 
 #include <math.h>
@@ -178,6 +180,7 @@ unsigned long signaltolickreq[numlicktube];
 unsigned long soundsignalpulse[numlicktube];
 unsigned long soundfreq[numlicktube];
 unsigned long sounddur[numlicktube];
+unsigned long soundspeaker[numlicktube];
 
 unsigned long laserlatency;      // Laser latency wrt cue (ms)
 unsigned long laserduration;     // Laser duration (ms)
@@ -199,7 +202,6 @@ unsigned long lightdur       = 500;  // Duration to keep light (signal for lick 
 int totalnumtrials = 0;
 unsigned long rewardct[numlicktube];                   // number of rewards given for each lick tube in lick dependent experiment
 int licktubethatmetlickreq;      // Lick tube that met the lick requirement
-unsigned long soundspeaker;      // sound speaker to give after lick requirement met on either lick tube
 
 unsigned long nextcue;           // timestamp of next trial
 unsigned long nextbgdsolenoid;   // timestamp of next background solenoid onset
@@ -461,21 +463,19 @@ void loop() {
   if (lickctforreq[0] >= reqlicknum[0] && licktubesactive) {
     nextfxdsolenoid = ts + delaytoreward[0];
     licktubethatmetlickreq = 0;
-    soundspeaker = speaker1;
     licktubesactive = false;
-
 
     if (signaltolickreq[licktubethatmetlickreq] == 1) {    // Turn on sound cue 1, same frequency and duration as CS1
 
       cues();
 
       if (ts >= cuePulseOff && cuePulseOff != 0) {     // turn off tone
-        noTone(soundspeaker);
+        noTone(soundspeaker[licktubethatmetlickreq]);
         cuePulseOn = ts + 200;
         cuePulseOff = 0;
       }
       if (ts >= cuePulseOn && cuePulseOn != 0) {       // turn on tone
-        tone(soundspeaker, soundfreq[licktubethatmetlickreq]);
+        tone(soundspeaker[licktubethatmetlickreq], soundfreq[licktubethatmetlickreq]);
         cuePulseOff = ts + 200;
         cuePulseOn = 0;
       }
@@ -494,7 +494,6 @@ void loop() {
         digitalWrite(light2, LOW);
         lightOff = 0;
       }
-
     }
     else if (signaltolickreq[licktubethatmetlickreq] == 3) {     // Turn on both sound cue and light signal
 
@@ -502,12 +501,12 @@ void loop() {
       lights();
 
       if (ts >= cuePulseOff && cuePulseOff != 0) {     // turn off tone
-        noTone(soundspeaker);
+        noTone(soundspeaker[licktubethatmetlickreq]);
         cuePulseOn = ts + 200;
         cuePulseOff = 0;
       }
       if (ts >= cuePulseOn && cuePulseOn != 0) {       // turn on tone
-        tone(soundspeaker, soundfreq[licktubethatmetlickreq]);
+        tone(soundspeaker[licktubethatmetlickreq], soundfreq[licktubethatmetlickreq]);
         cuePulseOff = ts + 200;
         cuePulseOn = 0;
       }
@@ -527,7 +526,6 @@ void loop() {
   if (lickctforreq[1] >= reqlicknum[1] && licktubesactive) {
     nextfxdsolenoid = ts + delaytoreward[1];
     licktubethatmetlickreq = 1;
-    soundspeaker = speaker2;
     licktubesactive = false;
 
     if (signaltolickreq[licktubethatmetlickreq] == 1) {    // Turn on sound cue
@@ -535,12 +533,12 @@ void loop() {
       cues();
 
       if (ts >= cuePulseOff && cuePulseOff != 0) {     // turn off tone
-        noTone(soundspeaker);
+        noTone(soundspeaker[licktubethatmetlickreq]);
         cuePulseOn = ts + 200;
         cuePulseOff = 0;
       }
       if (ts >= cuePulseOn && cuePulseOn != 0) {       // turn on tone
-        tone(soundspeaker, soundfreq[licktubethatmetlickreq]);
+        tone(soundspeaker[licktubethatmetlickreq], soundfreq[licktubethatmetlickreq]);
         cuePulseOff = ts + 200;
         cuePulseOn = 0;
       }
@@ -559,7 +557,6 @@ void loop() {
         digitalWrite(light2, LOW);
         lightOff = 0;
       }
-
     }
     else if (signaltolickreq[licktubethatmetlickreq] == 3) {     // Turn on both sound cue and light signal
 
@@ -567,12 +564,12 @@ void loop() {
       lights();
 
       if (ts >= cuePulseOff && cuePulseOff != 0) {     // turn off tone
-        noTone(soundspeaker);
+        noTone(soundspeaker[licktubethatmetlickreq]);
         cuePulseOn = ts + 200;
         cuePulseOff = 0;
       }
       if (ts >= cuePulseOn && cuePulseOn != 0) {       // turn on tone
-        tone(soundspeaker, soundfreq[licktubethatmetlickreq]);
+        tone(soundspeaker[licktubethatmetlickreq], soundfreq[licktubethatmetlickreq]);
         cuePulseOff = ts + 200;
         cuePulseOn = 0;
       }
@@ -581,7 +578,6 @@ void loop() {
         cuePulseOn = 0;
         cuePulseOff = 0;
       }
-
       if (ts >= lightOff && lightOff != 0) {     // Turn off light
         digitalWrite(light1, LOW);
         digitalWrite(light2, LOW);
@@ -652,7 +648,7 @@ void loop() {
 
 // Accept parameters from MATLAB
 void getParams() {
-  int pn = 88;                              // number of parameter inputs
+  int pn = 90;                              // number of parameter inputs
   unsigned long param[pn];                  // parameters
 
   for (int p = 0; p < pn; p++) {
@@ -730,13 +726,15 @@ void getParams() {
   soundfreq[1]           = param[78];
   sounddur[0]            = param[79];
   sounddur[1]            = param[80];
-  laserlatency           = param[81];
-  laserduration          = param[82];
-  randlaserflag          = (boolean)param[83];          // Random laser flag
-  laserpulseperiod       = param[84];
-  laserpulseoffperiod    = param[85];
-  lasertrialbytrialflag  = (boolean)param[86];          // laser on a trial-by-trial basis?
-  maxdelaytovacuumfromcueonset = param[87];
+  soundspeaker[0]        = param[81];
+  soundspeaker[1]        = param[82];
+  laserlatency           = param[83];
+  laserduration          = param[84];
+  randlaserflag          = (boolean)param[85];          // Random laser flag
+  laserpulseperiod       = param[86];
+  laserpulseoffperiod    = param[87];
+  lasertrialbytrialflag  = (boolean)param[88];          // laser on a trial-by-trial basis?
+  maxdelaytovacuumfromcueonset = param[89];
 
 
   for (int p = 0; p < numCS; p++) {
@@ -791,8 +789,14 @@ void getParams() {
       licksolenoid[p] = solenoid4;
     }
   }
-    for (int p = 0; p < numlicktube; p++) {
+  for (int p = 0; p < numlicktube; p++) {
     soundfreq[p] = soundfreq[p] * 1000;         // convert frequency from kHz to Hz
+    if (soundspeaker[p] == 1) {
+      soundspeaker[p] = speaker1;
+    }
+    else if (soundspeaker[p] == 2) {
+      soundspeaker[p] = speaker2;
+    }
   }
 }
 
@@ -896,7 +900,7 @@ void cues() {
   Serial.print(" ");
   Serial.print(0);
   Serial.print('\n');
-  tone(soundspeaker, soundfreq[licktubethatmetlickreq]);               // turn on tone
+  tone(soundspeaker[licktubethatmetlickreq], soundfreq[licktubethatmetlickreq]);               // turn on tone
 
   if (soundsignalpulse[licktubethatmetlickreq] == 1) {
     cuePulseOff = ts + 200;                  // Cue pulsing
