@@ -574,20 +574,17 @@ void loop() {
   if (ts >= nextcue && ITIflag) {
     if (CSsignal[cueList[CSct]] == 1) {           // Check which CS signal to give (sound/light/both)
       cues();                            // deliver sound cue
-      deliverlasertocues();              // check whether to and deliver laser if needed
-      ITIflag = false;
     }
     else if (CSsignal[cueList[CSct]] == 2) {
       lights();                          // deliver light
-      deliverlasertocues();
-      ITIflag = false;
     }
     else if (CSsignal[cueList[CSct]]) == 3) {     // deliver both
       cues();
       lights();
       deliverlasertocues();
-      ITIflag = false;
     }
+    deliverlasertocues();              // check whether to and deliver laser if needed
+    ITIflag = false;
   }
 
   // UNCOMMENT THESE LINES FOR TRIGGERING COLLECTION TRIAL-BY-TRIAL
