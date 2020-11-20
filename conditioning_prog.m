@@ -455,13 +455,13 @@ try
             end
         elseif code == 21                            % Plot light 1
             light1 = light1 + 1;
-            set(handles.light1Edit,'String',num2str(light1)
+            set(handles.light1Edit,'String',num2str(light1))
             trial = floor(time/durationtrialpartitionnocues);
             temptrialdur = trial*durationtrialpartitionnocues;            
             plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0 0.45 0.74],'LineWidth',2);hold on
         elseif code == 22                            % Plot light 2
             light2 = light2 + 1;
-            set(handles.light2Edit,'String',num2str(light2)
+            set(handles.light2Edit,'String',num2str(light2))
             trial = floor(time/durationtrialpartitionnocues);
             temptrialdur = trial*durationtrialpartitionnocues;            
             plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0.93 0.69 0.13],'LineWidth',2);hold on            

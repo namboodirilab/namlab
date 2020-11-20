@@ -22,7 +22,7 @@ function varargout = headfix_GUI(varargin)
 
 % Edit the above text to modify the response to help headfix_GUI
 
-% Last Modified by GUIDE v2.5 27-Oct-2020 20:21:20
+% Last Modified by GUIDE v2.5 16-Nov-2020 16:12:08
 
 % cd 'F:\acads\Stuber lab\headfix'; %Change to directory
 
@@ -67,7 +67,7 @@ guidata(hObject, handles);
 
 global actvAx saveDir
 
-mainPath = 'C:\Users\stuberadmin\Dropbox (Stuber Lab)\Vijay\Behavioral acquisition and analysis';
+mainPath = 'C:\Users\mzhou9\Desktop\Behavioral_acquisition_and_analysis';
 addpath(mainPath)
 saveDir = [mainPath '\data\'];          % where to save data
 
@@ -82,6 +82,45 @@ end
 
 % Change window title
 set(gcf,'name','Head-fixed behavior')
+
+set(handles.csproperties, 'Enable', 'off');
+set(handles.lickproperties, 'Enable', 'off');
+set(handles.experimentmode, 'Enable', 'on');
+set(handles.uploadButton, 'Enable', 'on');
+set(handles.openButton, 'Enable', 'off');
+set(handles.backgroundsolenoid, 'Enable', 'off');
+set(handles.T_bgd, 'Enable', 'off');
+set(handles.r_bgd, 'Enable', 'off');
+set(handles.mindelaybgdtocue, 'Enable', 'off'); 
+set(handles.mindelayfxdtobgd, 'Enable', 'off');
+set(handles.totPoisssolenoid, 'Enable', 'off');
+set(handles.checkboxtrialbytrial, 'Enable', 'off');
+set(handles.checkboxrandlaser, 'Enable', 'off');
+set(handles.lasertrialbytrial, 'Enable', 'off');
+set(handles.laserlatency, 'Enable', 'off');
+set(handles.laserduration, 'Enable', 'off');
+set(handles.laserpulseperiod, 'Enable', 'off');
+set(handles.laserpulseoffperiod, 'Enable', 'off');
+set(handles.checkboxexpiti, 'Enable', 'off');
+set(handles.maxdelaycuetovacuum, 'Enable', 'off');
+set(handles.minITI, 'Enable', 'off');
+set(handles.maxITI, 'Enable', 'off');
+set(handles.primesolenoid1, 'Enable', 'off');
+set(handles.primesolenoid2, 'Enable', 'off');
+set(handles.primesolenoid3, 'Enable', 'off');
+set(handles.primesolenoid4, 'Enable', 'off');
+set(handles.testcs1, 'Enable', 'off');
+set(handles.testcs2, 'Enable', 'off');
+set(handles.testcs3, 'Enable', 'off');
+set(handles.testlaser, 'Enable', 'off');
+set(handles.solenoid1Button, 'Enable', 'off');
+set(handles.solenoid2Button, 'Enable', 'off');
+set(handles.solenoid3Button, 'Enable', 'off');
+set(handles.solenoid4Button, 'Enable', 'off');
+set(handles.primesolenoid1, 'Enable', 'off');
+set(handles.primesolenoid2, 'Enable', 'off');
+set(handles.primesolenoid3, 'Enable', 'off');
+set(handles.primesolenoid4, 'Enable', 'off');
 
 % UIWAIT makes headfix_GUI wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
@@ -185,7 +224,31 @@ set(handles.startButton,'Enable','off')             % disable 'send' button
 set(handles.closeButton,'Enable','on')              % enable 'unlink' button
 set(handles.openButton,'Enable','off')              % disable 'link' button
 set(handles.refreshButton,'Enable','off')           % disable 'refresh' button
-set(handles.experimentmode,'Enable','on')           % enable 'experimentmode' selection
+
+selectedmode = get(handles.experimentmode, 'Value');
+if selectedmode == 1
+    set(handles.csproperties, 'Enable', 'on');
+    set(handles.checkboxtrialbytrial, 'Enable', 'on');
+    set(handles.checkboxrandlaser, 'Enable', 'on');
+    set(handles.lasertrialbytrial, 'Enable', 'on');
+    set(handles.laserlatency, 'Enable', 'on');
+    set(handles.laserduration, 'Enable', 'on');
+    set(handles.laserpulseperiod, 'Enable', 'on');
+    set(handles.laserpulseoffperiod, 'Enable', 'on');
+    set(handles.checkboxexpiti, 'Enable', 'on');
+    set(handles.maxdelaycuetovacuum, 'Enable', 'on');
+    set(handles.minITI, 'Enable', 'on');
+    set(handles.maxITI, 'Enable', 'on');
+elseif selectedmode == 2
+    set(handles.backgroundsolenoid, 'Enable', 'on');
+    set(handles.T_bgd, 'Enable', 'on');
+    set(handles.r_bgd, 'Enable', 'on');
+    set(handles.mindelaybgdtocue, 'Enable', 'on'); 
+    set(handles.mindelayfxdtobgd, 'Enable', 'on');
+    set(handles.totPoisssolenoid, 'Enable', 'on');
+elseif selectedmode == 3
+    set(handles.lickproperties, 'Enable', 'on');
+end
 
 
 % --- Executes on selection change in experimentmode.
@@ -196,16 +259,6 @@ function experimentmode_Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns experimentmode contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from experimentmode
-contents = cellstr(get(hObjects,'String'));
-selection = contents{get(hObjects,'Value')};
-
-if strcmp(selection, '1: Cues with or without lick req')
-    set(hObjects, 'Value') = 1;
-elseif strcmp(selection, '2: Random rewards (lick training)')
-    set(hObjects, 'Value') = 2;
-elseif strcmp(selection, '3: Lick for rewards')
-    set(hObjects, 'Value') = 3;
-end
 
 set(handles.uploadButton, 'Enable', 'on');
 
@@ -215,21 +268,31 @@ function uploadButton_Callback(hObject, eventdata, handles)
 % hObject    handle to uploadButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+portList = get(handles.availablePorts,'String');    % get list from popup menu
+selected = get(handles.availablePorts,'Value');     % find which is selected
+port     = portList{selected};                      % selected port
+           
+basecmd = strcat('"C:\Program Files (x86)\Arduino\hardware\tools\avr/bin/avrdude" -C"C:\Program Files (x86)\Arduino\hardware\tools\avr/etc/avrdude.conf" -v -patmega2560 -cwiring -P',port,' -b115200 -D -Uflash:w:');
+selectedmode = get(handles.experimentmode,'Value');
 
-if get(handles.experimentmode, 'Value') == 1
-    [status,cmdout] = dos(' paste file 1 path here ');
-elseif get(handles.experimentmode, 'Value') == 2
-    [status,cmdout] = dos(' paste file 2 path here ');
-elseif get(handles.experimentmode, 'Value') == 3
-    [status,cmdout] = dos(' paste file 3 path here ');
+if selectedmode == 1
+    [status,cmdout] = dos(strcat(basecmd,'C:\Users\mzhou9\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_cues.ino.hex',':i'));
+elseif selectedmode == 2
+    [status,cmdout] = dos(strcat(basecmd,'C:\Users\mzhou9\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_bgdsolenoid.ino.hex',':i'));
+elseif selectedmode == 3
+    [status,cmdout] = dos(strcat(basecmd,'C:\Users\mzhou9\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_licktraining.ino.hex',':i'));
 end
 
 
-if strcmp(str([status,cmdout]), 'avrdude done.  Thank you.')
+if contains(cmdout, 'avrdude done.') && status==0
     set(handles.uploadButton, 'String', 'Successfully uploaded');
+    set(handles.experimentmode, 'Enable', 'off');
     set(handles.uploadButton, 'Enable','off');
+    set(handles.openButton, 'Enable','on');
 else
     set(handles.uploadButton, 'String', 'Unable to upload');
+    pause(5);
+    set(handles.uploadButton, 'String', 'Upload');
 end
 
 
@@ -241,9 +304,49 @@ fclose(s)
 instrreset                                          % "closes serial"
 set(handles.port,'String','port not selected')      % remove port from menu
 set(handles.startButton,'Enable','off')             % turn off 'start' button
+set(handles.stopButton,'Enable','off')              % turn off 'stop' button
 set(handles.closeButton,'Enable','off')             % turn off 'unlink' button (self)
 set(handles.openButton,'Enable','on')               % turn on 'link' button
 set(handles.refreshButton,'Enable','on')            % turn on 'refresh' button
+set(handles.sendButton,'Enable','off')
+set(handles.experimentmode,'Enable','on')
+set(handles.uploadButton,'Enable','on')
+set(handles.uploadButton,'String','Upload')
+set(handles.csproperties,'Enable','off')
+set(handles.lickproperties,'Enable','off')
+set(handles.backgroundsolenoid, 'Enable', 'off');
+set(handles.T_bgd, 'Enable', 'off');
+set(handles.r_bgd, 'Enable', 'off');
+set(handles.mindelaybgdtocue, 'Enable', 'off'); 
+set(handles.mindelayfxdtobgd, 'Enable', 'off');
+set(handles.totPoisssolenoid, 'Enable', 'off');
+set(handles.checkboxtrialbytrial, 'Enable', 'off');
+set(handles.checkboxrandlaser, 'Enable', 'off');
+set(handles.lasertrialbytrial, 'Enable', 'off');
+set(handles.laserlatency, 'Enable', 'off');
+set(handles.laserduration, 'Enable', 'off');
+set(handles.laserpulseperiod, 'Enable', 'off');
+set(handles.laserpulseoffperiod, 'Enable', 'off');
+set(handles.checkboxexpiti, 'Enable', 'off');
+set(handles.maxdelaycuetovacuum, 'Enable', 'off');
+set(handles.minITI, 'Enable', 'off');
+set(handles.maxITI, 'Enable', 'off');
+set(handles.primesolenoid1, 'Enable', 'off');
+set(handles.primesolenoid2, 'Enable', 'off');
+set(handles.primesolenoid3, 'Enable', 'off');
+set(handles.primesolenoid4, 'Enable', 'off');
+set(handles.testcs1, 'Enable', 'off');
+set(handles.testcs2, 'Enable', 'off');
+set(handles.testcs3, 'Enable', 'off');
+set(handles.testlaser, 'Enable', 'off');
+set(handles.solenoid1Button, 'Enable', 'off');
+set(handles.solenoid2Button, 'Enable', 'off');
+set(handles.solenoid3Button, 'Enable', 'off');
+set(handles.solenoid4Button, 'Enable', 'off');
+set(handles.primesolenoid1, 'Enable', 'off');
+set(handles.primesolenoid2, 'Enable', 'off');
+set(handles.primesolenoid3, 'Enable', 'off');
+set(handles.primesolenoid4, 'Enable', 'off');
 
 
 % --- Executes on button press in solenoid1Button.
@@ -405,27 +508,30 @@ temp = {'Number of trials', 33, 33, 33;
         'Solenoid open time (ms)', '30+30', '30+30', '0+30';
         'Cue duration (ms)', 1000, 1000, 1000;
         'Delay to solenoid (ms)', '1500+3000', '1500+3000', '0+3000';
-        'Pulse tone (1) or not (0)', 0, 0, 1;
+        'Pulse tone (1) or not (0)', 0, 1, 1;
         'Speaker number', 1, 2, 1;
         'Go lick requirement', 1, 1, 0;
         'Go lick tube (or solenoid)', 1, 2, 3;
         'Sound(1), light(2) or both(3)', 1, 1, 1};
 set(hObject, 'Data', temp);
 
-
 % --- Executes during object creation, after setting all properties.
 function lickproperties_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to lickproperties (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
-temp = {'Number of licks required',  1, 1;
+temp = {'Number of licks required',  1, 1;    
         'Predicted solenoid',        3, 3;
         'Probability of solenoid', 100, 100;
         'Solenoid open time (ms)',  30, 30;
         'Delay to solenoid (ms)',    0, 0;
         'Delay to next lick (ms)',6000, 6000;
         'Min number of rewards',    20, 20;
-        'Light1(1), light2(2) or no(0)',  0, 0};
+        'Sound(1), light(2) or both(3)' 1 1;
+        'Pulse tone (1) or not (0)' 0 1;
+        'Sound Frequency (kHz)' 12 3;
+        'Sound Duration (ms)' 1000 1000;
+        'Speaker number' 1 2};
 set(hObject, 'Data', temp);
 
 
@@ -463,6 +569,7 @@ CSpulse      = cell2mat(csproperties(8,2:end));
 CSspeaker    = cell2mat(csproperties(9,2:end));
 golickreq    = cell2mat(csproperties(10,2:end));
 golicktube   = cell2mat(csproperties(11,2:end));
+CSsignal = cell2mat(csproperties(12, 2:end));
 
 %ITI
 minITI = get(handles.minITI,'String');
@@ -501,6 +608,10 @@ delaytoreward   = cell2mat(lickproperties(5,2:end));
 delaytolick     = cell2mat(lickproperties(6,2:end));
 minrewards      = cell2mat(lickproperties(7,2:end));
 signaltolickreq = cell2mat(lickproperties(8,2:end));
+soundsignalpulse   = cell2mat(lickproperties(9,2:end));
+soundfreq       = cell2mat(lickproperties(10,2:end));
+sounddur        = cell2mat(lickproperties(11,2:end));
+soundspeaker    = cell2mat(lickproperties(12,2:end));
 
 %Laser
 laserlatency = get(handles.laserlatency,'String');
@@ -515,13 +626,14 @@ laserpulseoffperiod = str2double(laserpulseoffperiod);
 lasertrialbytrialflag = get(handles.lasertrialbytrial,'Value');
 
 % Validate inputs
-inputs = [numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur, CS_t_fxd,... 
-          CSpulse, CSspeaker, golickreq, golicktube, minITI, maxITI, expitiflag,...
+inputs = [numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur, CS_t_fxd,...
+          CSpulse, CSspeaker, golickreq, golicktube, CSsignal, minITI, maxITI, expitiflag,...
           backgroundsolenoid, T_bgd, r_bgd, mindelaybgdtocue, mindelayfxdtobgd,...
           experimentmode, trialbytrialbgdsolenoidflag, totPoisssolenoid,...
           reqlicknum, licksolenoid, lickprob, lickopentime, delaytoreward, delaytolick,...
-          minrewards, signaltolickreq,laserlatency,laserduration, randlaserflag,... 
-          laserpulseperiod, laserpulseoffperiod,lasertrialbytrialflag, maxdelaycuetovacuum]; % collect all inputs into array
+          minrewards, signaltolickreq, soundsignalpulse, soundfreq, sounddur, soundspeaker,...
+          laserlatency, laserduration, randlaserflag, laserpulseperiod, laserpulseoffperiod,...
+          lasertrialbytrialflag, maxdelaycuetovacuum]; % collect all inputs into array
 
 negIn  = inputs < 0;
 intIn  = inputs - fix(inputs);
@@ -537,6 +649,7 @@ set(handles.sendButton,'Enable','off')
 set(handles.csproperties,'Enable','off')
 set(handles.lickproperties,'Enable','off')
 set(handles.experimentmode,'Enable','off')
+set(handles.uploadButton,'Enable','off')
 
 set(handles.minITI,'Enable','off')
 set(handles.maxITI,'Enable','off')
@@ -563,25 +676,29 @@ set(handles.testcs2,'Enable','on')
 set(handles.testcs3,'Enable','on')
 set(handles.solenoid1Button,'Enable','on')
 set(handles.primesolenoid1,'Visible','on')
+set(handles.primesolenoid1,'Enable','on')
 set(handles.solenoid2Button,'Enable','on')
 set(handles.primesolenoid2,'Visible','on')
+set(handles.primesolenoid2,'Enable','on')
 set(handles.solenoid3Button,'Enable','on')
 set(handles.primesolenoid3,'Visible','on')
+set(handles.primesolenoid3,'Enable','on')
 set(handles.solenoid4Button,'Enable','on')
 set(handles.primesolenoid4,'Visible','on')
+set(handles.primesolenoid4,'Enable','on')
 set(handles.vacuumButton,'Enable','on')
 set(handles.testlaser,'Enable','on')
 
 params = sprintf('%u+', numtrials, CSfreq, CSsolenoid, CSprob, CSopentime,...
-                 CSdur, CS_t_fxd, CSpulse, CSspeaker, golickreq, golicktube,...
+                 CSdur, CS_t_fxd, CSpulse, CSspeaker, golickreq, golicktube, CSsignal,...
                  minITI, maxITI, expitiflag, backgroundsolenoid, T_bgd, r_bgd,...
-                 mindelaybgdtocue, mindelayfxdtobgd, experimentmode,...
-                 trialbytrialbgdsolenoidflag, totPoisssolenoid, reqlicknum,...
-                 licksolenoid, lickprob, lickopentime, delaytoreward, delaytolick, minrewards,... 
-                 signaltolickreq, laserlatency, laserduration, randlaserflag, laserpulseperiod,...
+                 mindelaybgdtocue, mindelayfxdtobgd, experimentmode, trialbytrialbgdsolenoidflag,... 
+                 totPoisssolenoid, reqlicknum, licksolenoid, lickprob, lickopentime, delaytoreward,...
+                 delaytolick, minrewards, signaltolickreq, soundsignalpulse, soundfreq, sounddur, soundspeaker,...
+                 laserlatency, laserduration, randlaserflag, laserpulseperiod,...
                  laserpulseoffperiod, lasertrialbytrialflag, maxdelaycuetovacuum);
-
 params = params(1:end-1);
+
 % Run arduino code
 fprintf(s,params);                                  % send info to arduino
 flushinput(s)
@@ -618,6 +735,7 @@ CSpulse      = cell2mat(csproperties(8,2:end));
 CSspeaker    = cell2mat(csproperties(9,2:end));
 golickreq    = cell2mat(csproperties(10,2:end));
 golicktube   = cell2mat(csproperties(11,2:end));
+CSsignal     = cell2mat(csproperties(12,2:end));
 
 %ITI
 minITI = get(handles.minITI,'String');
@@ -656,6 +774,10 @@ delaytoreward   = cell2mat(lickproperties(5,2:end));
 delaytolick     = cell2mat(lickproperties(6,2:end));
 minrewards      = cell2mat(lickproperties(7,2:end));
 signaltolickreq = cell2mat(lickproperties(8,2:end));
+soundsignalpulse   = cell2mat(lickproperties(9,2:end));
+soundfreq       = cell2mat(lickproperties(10,2:end));
+sounddur        = cell2mat(lickproperties(11,2:end));
+soundspeaker    = cell2mat(lickproperties(12,2:end));
 
 %Laser
 laserlatency = get(handles.laserlatency,'String');
@@ -670,14 +792,14 @@ laserpulseoffperiod = str2double(laserpulseoffperiod);
 lasertrialbytrialflag = get(handles.lasertrialbytrial,'Value');
 
 % Validate inputs
-inputs = [numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur, CS_t_fxd,... 
-          CSpulse, CSspeaker, golickreq, golicktube, minITI, maxITI, expitiflag,...
+inputs = [numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur, CS_t_fxd,...
+          CSpulse, CSspeaker, golickreq, golicktube, CSsignal, minITI, maxITI, expitiflag,...
           backgroundsolenoid, T_bgd, r_bgd, mindelaybgdtocue, mindelayfxdtobgd,...
           experimentmode, trialbytrialbgdsolenoidflag, totPoisssolenoid,...
-          reqlicknum, licksolenoid, lickprob, lickopentime, delaytoreward,...
-          delaytolick, minrewards, signaltolickreq, laserlatency, laserduration, randlaserflag,... 
-          laserpulseperiod, laserpulseoffperiod, lasertrialbytrialflag,...
-          maxdelaycuetovacuum]; % collect all inputs into array
+          reqlicknum, licksolenoid, lickprob, lickopentime, delaytoreward,...                
+          delaytolick, minrewards, signaltolickreq, soundsignalpulse, soundfreq, sounddur, soundspeaker,...
+          laserlatency, laserduration, randlaserflag, laserpulseperiod, laserpulseoffperiod,...
+          lasertrialbytrialflag, maxdelaycuetovacuum]; % collect all inputs into array
           
 negIn  = inputs < 0;
 intIn  = inputs - fix(inputs);
@@ -722,14 +844,15 @@ end
 fname = get(handles.fileName,'String');
 
 params = sprintf('%u+', numtrials, CSfreq, CSsolenoid, CSprob, CSopentime,...
-                 CSdur, CS_t_fxd, CSpulse, CSspeaker, golickreq, golicktube,...
+                 CSdur, CS_t_fxd, CSpulse, CSspeaker, golickreq, golicktube, CSsignal,...
                  minITI, maxITI, expitiflag, backgroundsolenoid, T_bgd, r_bgd, ...
                  mindelaybgdtocue, mindelayfxdtobgd, experimentmode, ...
                  trialbytrialbgdsolenoidflag, totPoisssolenoid, reqlicknum,...
                  licksolenoid, lickprob, lickopentime, delaytoreward, delaytolick,...
-                 minrewards, signaltolickreq, laserlatency, laserduration, randlaserflag,...
-                 laserpulseperiod, laserpulseoffperiod, lasertrialbytrialflag, maxdelaycuetovacuum);
-
+                 minrewards, signaltolickreq, soundsignalpulse, soundfreq, sounddur, soundspeaker,...
+                 laserlatency, laserduration, randlaserflag, laserpulseperiod, laserpulseoffperiod,...
+                 lasertrialbytrialflag, maxdelaycuetovacuum);
+             
 params = params(1:end-1);
 
 % Run arduino code
@@ -738,46 +861,9 @@ conditioning_prog
 
 % Reset GUI
 set(handles.startButton,'Enable','off')
-set(handles.stopButton,'Enable','off')
+set(handles.stopButton,'Enable','on')
 set(handles.closeButton,'Enable','on')
-set(handles.sendButton,'Enable','on')
-
-set(handles.csproperties,'Enable','on')
-set(handles.lickproperties,'Enable','on')
-
-set(handles.minITI,'Enable','on')
-set(handles.maxITI,'Enable','on')
-set(handles.maxdelaycuetovacuum,'Enable','on')
-
-set(handles.backgroundsolenoid,'Enable','on')
-set(handles.T_bgd,'Enable','on')
-set(handles.r_bgd,'Enable','on')
-set(handles.mindelaybgdtocue,'Enable','on')
-set(handles.mindelayfxdtobgd,'Enable','on')
-set(handles.checkboxtrialbytrial,'Enable','on')
-set(handles.checkboxexpiti,'Enable','on')
-set(handles.totPoisssolenoid,'Enable','on')
-
-set(handles.laserlatency,'Enable','on')
-set(handles.laserduration,'Enable','on')
-set(handles.checkboxrandlaser,'Enable','on')
-set(handles.laserpulseperiod,'Enable','on')
-set(handles.laserpulseoffperiod,'Enable','on')
-set(handles.lasertrialbytrial,'Enable','on')
-
-set(handles.testcs1,'Enable','off')
-set(handles.testcs2,'Enable','off')
-set(handles.testcs3,'Enable','off')
-set(handles.solenoid1Button,'Enable','off')
-set(handles.primesolenoid1,'Visible','off')
-set(handles.solenoid2Button,'Enable','off')
-set(handles.primesolenoid2,'Visible','off')
-set(handles.solenoid3Button,'Enable','off')
-set(handles.primesolenoid3,'Visible','off')
-set(handles.solenoid4Button,'Enable','off')
-set(handles.primesolenoid4,'Visible','off')
-set(handles.vacuumButton,'Enable','off')
-set(handles.testlaser,'Enable','off')
+set(handles.sendButton,'Enable','off')
 
 flushinput(s);                                  % clear serial input buffer
 
@@ -788,3 +874,40 @@ function stopButton_Callback(hObject, eventdata, handles)
 global s running
 running = false;            % Stop running MATLAB code for monitoring arduino
 fprintf(s,'1');              % Send stop signal to arduino; 49 in the Arduino is the ASCII code for 1
+
+portList = get(handles.availablePorts,'String');    % get list from popup menu
+selected = get(handles.availablePorts,'Value');     % find which is selected
+port     = portList{selected};                      % selected port
+
+set(handles.port,'String',port)                     % write out port selected in menu
+set(handles.startButton,'Enable','off')             % disable 'start' button
+set(handles.sendButton,'Enable','on')              % enable 'send' button
+set(handles.closeButton,'Enable','on')              % enable 'unlink' button
+set(handles.openButton,'Enable','off')              % disable 'link' button
+set(handles.refreshButton,'Enable','off')           % disable 'refresh' button
+
+selectedmode = get(handles.experimentmode, 'Value');
+if selectedmode == 1
+    set(handles.csproperties, 'Enable', 'on');
+    set(handles.checkboxrandlaser, 'Enable', 'on');
+    set(handles.lasertrialbytrial, 'Enable', 'on');
+    set(handles.laserlatency, 'Enable', 'on');
+    set(handles.laserduration, 'Enable', 'on');
+    set(handles.laserpulseperiod, 'Enable', 'on');
+    set(handles.laserpulseoffperiod, 'Enable', 'on');
+    set(handles.maxdelaycuetovacuum, 'Enable', 'on');
+    set(handles.checkboxexpiti, 'Enable', 'on');
+    set(handles.minITI, 'Enable', 'on');
+    set(handles.maxITI, 'Enable', 'on');
+elseif selectedmode == 2
+    set(handles.backgroundsolenoid, 'Enable', 'on');
+    set(handles.T_bgd, 'Enable', 'on');
+    set(handles.r_bgd, 'Enable', 'on');
+    set(handles.mindelaybgdtocue, 'Enable', 'on'); 
+    set(handles.mindelayfxdtobgd, 'Enable', 'on');
+    set(handles.totPoisssolenoid, 'Enable', 'on');
+    set(handles.checkboxtrialbytrial, 'Enable', 'on');
+elseif selectedmode == 3
+    set(handles.lickproperties, 'Enable', 'on');
+end
+

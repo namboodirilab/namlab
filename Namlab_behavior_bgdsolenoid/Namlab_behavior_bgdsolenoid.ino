@@ -92,13 +92,19 @@
 //74) signal to meet number of lick requirements of tube 2
 //75) sound signal of 70) to pulse or not
 //76) sound signal of 71) to pulse or not
-//77) value of the latency wrt the cue at which the laser turns on (0 for cue start; t_fxd for solenoid start)
-//78) value of the duration for which the laser remains on. It can pulse within this duration
-//79) flag to run sessions with laser turning on randomly if==1
-//80) period for which laser is on in a cycle (ms)
-//81) period for which laser is off in a cycle (ms); If equal to laserpulseperiod, duty cycle is 50%
-//82) flag to turn laser on a trial-by-trial basis
-//83) maximum delay to vacuum after cue turns on. Change this if different cues have different delays to reward
+//77) sound signal frequency (kHz) of lick tube 1
+//78) sound signal frequency (kHz) of lick tube 2
+//79) sound signal duration (ms) of lick tube 1
+//80) sound signal duration (ms) of lick tube 2
+//81) sound signal speaker of lick tube 1
+//82) sound signal speaker of lick tube 2
+//83) value of the latency wrt the cue at which the laser turns on (0 for cue start; t_fxd for solenoid start)
+//84) value of the duration for which the laser remains on. It can pulse within this duration
+//85) flag to run sessions with laser turning on randomly if==1
+//86) period for which laser is on in a cycle (ms)
+//87) period for which laser is off in a cycle (ms); If equal to laserpulseperiod, duty cycle is 50%
+//88) flag to turn laser on a trial-by-trial basis
+//89) maximum delay to vacuum after cue turns on. Change this if different cues have different delays to reward
 // to be such that it is longer than the longest delay to reward. Basically, this quantity measures duration of trial.
 
 #include <math.h>
@@ -110,8 +116,10 @@ int lick2     = 24;   // lick2 sensor
 int lick3     = 26;   // lick3 sensor
 int speaker1  = 32;   // pin for speaker 1
 int speaker2  = 34;   // pin for speaker 2
+int light1    = 36;   // pin for light 1, light 1 is used to indicate that animal has met golickreq if CSsignal == 2 or 3;
+int light2    = 38;   // pin for light 2, light 2 is used to indicate that animal has met golickreq if CSsignal == 2 or 3;
 int solenoid1 = 35;  // pin for solenoid1
-int solenoid2 = 37;  // pin for solenoid2
+int solenoid2 = 43;  // pin for solenoid2
 int solenoid3 = 39;   // pin for solenoid3
 int solenoid4 = 41;   // pin for solenoid4
 int vacuum    = 40;   // pin for vacuum
@@ -148,6 +156,7 @@ unsigned long CSpulse[numCS];
 unsigned long CSspeaker[numCS];
 unsigned long golickreq[numCS];
 unsigned long golicktube[numCS];
+unsigned long CSsignal[numCS];
 unsigned long meanITI;           // mean duration of ITI for the exponential distribution OR minimum ITI for uniform distribution
 unsigned long maxITI;            // maximum duration of ITI
 boolean expitiflag;              // if ==1, itis are drawn from an exponential distribution
@@ -169,6 +178,10 @@ unsigned long delaytoreward[numlicktube];
 unsigned long delaytolick[numlicktube];
 unsigned long minrewards[numlicktube];
 unsigned long signaltolickreq[numlicktube];
+unsigned long soundsignalpulse[numlicktube];
+unsigned long soundfreq[numlicktube];
+unsigned long sounddur[numlicktube];
+unsigned long soundspeaker[numlicktube];
 
 unsigned long laserlatency;      // Laser latency wrt cue (ms)
 unsigned long laserduration;     // Laser duration (ms)
@@ -184,7 +197,7 @@ unsigned long truncITI;          // truncation for the exponential ITI distribut
 unsigned long ttloutdur = 100;   // duration that the TTL out pin for starting imaging lasts. This happens only for the case where ITI is uniformly distributed
 unsigned long baselinedur = 7000;// Duration prior to CS to turn on imaging through TTLOUTPIN. Only relevant when ITI is uniformly distributed
 unsigned long vacuumopentime = 200; // Duration to keep vacuum on
-
+unsigned long lightdur       = 500;   // Duration to keep light (signal for lick requirement being met) on
 
 int totalnumtrials = 0;
 unsigned long rewardct[numlicktube];                   // number of rewards given in lick dependent trials
@@ -199,6 +212,7 @@ unsigned long solenoidOff;       // timestamp to turn off solenoid
 unsigned long cueOff;            // timestamp to turn off cues (after cue started)
 unsigned long cuePulseOff;       // timestamp to pulse cue off (for CS-)
 unsigned long cuePulseOn;        // timestamp to pulse cue on (for CS-)
+unsigned long lightOff;          // timestamp to turn off light
 
 unsigned long nextttlouton;      // timestamp to turn on the TTL out pin for starting imaging
 unsigned long nextttloutoff;     // timestamp to turn off the TTL out pin for starting imaging
@@ -240,6 +254,8 @@ void setup() {
   pinMode(vacuum, OUTPUT);
   pinMode(speaker1, OUTPUT);
   pinMode(speaker2, OUTPUT);
+  pinMode(light1, OUTPUT);
+  pinMode(light2, OUTPUT);
   pinMode(ttloutpin, OUTPUT);
   pinMode(laser, OUTPUT);
   pinMode(ttloutstoppin, OUTPUT);
@@ -502,7 +518,8 @@ void setup() {
   ITIflag = true;
   solenoidOff = 0;
   licktubesactive = true;
-  
+  lightOff = 0;
+
   CSct = 0;                            // Number of CSs is initialized to 0
   rewardct[0] = 0;                        // Number of initial rewards for lick tube 1 is initialized to 0
   rewardct[1] = 0;                        // Number of initial rewards for lick tube 2 is initialized to 0
@@ -546,6 +563,8 @@ void loop() {
   // 15 = CS1
   // 16 = CS2
   // 17 = CS3                                   // leave possible codes for future CS
+  // 21 = light1
+  // 22 = light2
   // 23 = frame
   // 24 = laser
 
@@ -636,7 +655,7 @@ void loop() {
 
 // Accept parameters from MATLAB
 void getParams() {
-  int pn = 84;                              // number of parameter inputs
+  int pn = 90;                              // number of parameter inputs
   unsigned long param[pn];                  // parameters
 
   for (int p = 0; p < pn; p++) {
@@ -678,9 +697,9 @@ void getParams() {
   golicktube[0]          = param[42];
   golicktube[1]          = param[43];
   golicktube[2]          = param[44];
-  golickreqmetsignal[0]  = param[45];
-  golickreqmetsignal[1]  = param[46];
-  golickreqmetsignal[2]  = param[47];
+  CSsignal[0]            = param[45];
+  CSsignal[1]            = param[46];
+  CSsignal[2]            = param[47];
   meanITI                = param[48];                   // get meanITI, in ms
   maxITI                 = param[49];                   // get maxITI, in ms
   expitiflag             = (boolean)param[50];
@@ -692,8 +711,8 @@ void getParams() {
   experimentmode         = param[56];
   trialbytrialbgdsolenoidflag = (boolean)param[57];
   totbgdsolenoid         = param[58];                   // total number of background solenoids to stop the session if the session just has Poisson solenoids, i.e. experimentmode==1
-  reqlicknum[0]          = param[59]
-                           reqlicknum[1]          = param[60];
+  reqlicknum[0]          = param[59];
+  reqlicknum[1]          = param[60];
   licksolenoid[0]        = param[61];
   licksolenoid[1]        = param[62];
   lickprob[0]            = param[63];
@@ -710,14 +729,20 @@ void getParams() {
   signaltolickreq[1]     = param[74];
   soundsignalpulse[0]    = param[75];
   soundsignalpulse[1]    = param[76];
-  laserlatency           = param[77];
-  laserduration          = param[78];
-  randlaserflag          = (boolean)param[79];          // Random laser flag
-  laserpulseperiod       = param[80];
-  laserpulseoffperiod    = param[81];
-  lasertrialbytrialflag  = (boolean)param[82];          // laser on a trial-by-trial basis?
-  maxdelaytovacuumfromcueonset = param[83];
-  
+  soundfreq[0]           = param[77];
+  soundfreq[1]           = param[78];
+  sounddur[0]            = param[79];
+  sounddur[1]            = param[80];
+  soundspeaker[0]        = param[81];
+  soundspeaker[1]        = param[82];
+  laserlatency           = param[83];
+  laserduration          = param[84];
+  randlaserflag          = (boolean)param[85];          // Random laser flag
+  laserpulseperiod       = param[86];
+  laserpulseoffperiod    = param[87];
+  lasertrialbytrialflag  = (boolean)param[88];          // laser on a trial-by-trial basis?
+  maxdelaytovacuumfromcueonset = param[89];
+
 
   for (int p = 0; p < numCS; p++) {
     CSfreq[p] = CSfreq[p] * 1000;         // convert frequency from kHz to Hz

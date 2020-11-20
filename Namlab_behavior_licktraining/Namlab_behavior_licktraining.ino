@@ -119,7 +119,7 @@ int speaker2  = 34;   // pin for speaker 2
 int light1    = 36;   // pin for light1; Light1 is used to indicate that animals met lickreq if signaltolickreq == 2 or 3 for lick tube 1
 int light2    = 38;   // pin for light2; Light1 is used to indicate that animals met lickreq if signaltolickreq == 2 or 3 for lick tube 2
 int solenoid1 = 35;   // pin for solenoid1
-int solenoid2 = 37;   // pin for solenoid2
+int solenoid2 = 43;   // pin for solenoid2
 int solenoid3 = 39;   // pin for solenoid3
 int solenoid4 = 41;   // pin for solenoid4
 int vacuum    = 40;   // pin for vacuum
@@ -155,7 +155,7 @@ unsigned long CSpulse[numCS];
 unsigned long CSspeaker[numCS];
 unsigned long golickreq[numCS];
 unsigned long golicktube[numCS];
-unsigned long golickreqmetsignal[numCS];
+unsigned long CSsignal[numCS];
 unsigned long meanITI;           // mean duration of ITI for the exponential distribution OR minimum ITI for uniform distribution
 unsigned long maxITI;            // maximum duration of ITI
 boolean expitiflag;              // if ==1, itis are drawn from an exponential distribution
@@ -690,9 +690,9 @@ void getParams() {
   golicktube[0]          = param[42];
   golicktube[1]          = param[43];
   golicktube[2]          = param[44];
-  golickreqmetsignal[0]  = param[45];
-  golickreqmetsignal[1]  = param[46];
-  golickreqmetsignal[2]  = param[47];
+  CSsignal[0]            = param[45];
+  CSsignal[1]            = param[46];
+  CSsignal[2]            = param[47];
   meanITI                = param[48];                   // get meanITI, in ms
   maxITI                 = param[49];                   // get maxITI, in ms
   expitiflag             = (boolean)param[50];
@@ -704,8 +704,8 @@ void getParams() {
   experimentmode         = param[56];
   trialbytrialbgdsolenoidflag = (boolean)param[57];
   totbgdsolenoid         = param[58];                   // total number of background solenoids to stop the session if the session just has Poisson solenoids, i.e. experimentmode==1
-  reqlicknum[0]          = param[59]
-                           reqlicknum[1]          = param[60];
+  reqlicknum[0]          = param[59];
+  reqlicknum[1]          = param[60];
   licksolenoid[0]        = param[61];
   licksolenoid[1]        = param[62];
   lickprob[0]            = param[63];
@@ -906,7 +906,7 @@ void cues() {
     cuePulseOff = ts + 200;                  // Cue pulsing
     cuePulseOn = 0;
   }
-  else if (soundsignalpulse[licktubethatmetlickreq]] == 0) {
+  else if (soundsignalpulse[licktubethatmetlickreq] == 0) {
     cuePulseOff = 0;                         // No cue pulsing
     cuePulseOn = 0;                          // No cue pulsing
   }
