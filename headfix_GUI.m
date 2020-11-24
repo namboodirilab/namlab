@@ -22,7 +22,7 @@ function varargout = headfix_GUI(varargin)
 
 % Edit the above text to modify the response to help headfix_GUI
 
-% Last Modified by GUIDE v2.5 16-Nov-2020 16:12:08
+% Last Modified by GUIDE v2.5 22-Nov-2020 10:43:26
 
 % cd 'F:\acads\Stuber lab\headfix'; %Change to directory
 
@@ -211,7 +211,7 @@ portList = get(handles.availablePorts,'String');    % get list from popup menu
 selected = get(handles.availablePorts,'Value');     % find which is selected
 port     = portList{selected};                      % selected port
 
-s = serial(port,'BaudRate',9600,'Timeout',1);    % setup serial port with arduino, specify the terminator as a LF ('\n' in Arduino)
+s = serial(port,'BaudRate',57600,'Timeout',1);    % setup serial port with arduino, specify the terminator as a LF ('\n' in Arduino)
 fopen(s)                                            % open serial port with arduino
 % get(s)
 set(handles.openButton,'String','Wait 5s');
@@ -248,6 +248,8 @@ elseif selectedmode == 2
     set(handles.totPoisssolenoid, 'Enable', 'on');
 elseif selectedmode == 3
     set(handles.lickproperties, 'Enable', 'on');
+elseif selectedmode == 4
+    set(handles.testserialport, 'Enable', 'on');
 end
 
 
@@ -281,6 +283,8 @@ elseif selectedmode == 2
     [status,cmdout] = dos(strcat(basecmd,'C:\Users\mzhou9\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_bgdsolenoid.ino.hex',':i'));
 elseif selectedmode == 3
     [status,cmdout] = dos(strcat(basecmd,'C:\Users\mzhou9\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_licktraining.ino.hex',':i'));
+elseif selectedmode == 4
+    [status,cmdout] = dos(strcat(basecmd,'C:\Users\mzhou9\Desktop\Behavioral_acquisition_and_analysis\uploads\Serial_port_testing.ino.hex',':i'));
 end
 
 
@@ -339,6 +343,7 @@ set(handles.testcs1, 'Enable', 'off');
 set(handles.testcs2, 'Enable', 'off');
 set(handles.testcs3, 'Enable', 'off');
 set(handles.testlaser, 'Enable', 'off');
+set(handles.testserialport, 'Enable', 'off');
 set(handles.solenoid1Button, 'Enable', 'off');
 set(handles.solenoid2Button, 'Enable', 'off');
 set(handles.solenoid3Button, 'Enable', 'off');
@@ -373,7 +378,7 @@ function solenoid3Button_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 global s 
-    fprintf(s, 'G');        % Send solenoid signal to arduino; 71 in the Arduino is the ASCII code for G
+fprintf(s, 'G');        % Send solenoid signal to arduino; 71 in the Arduino is the ASCII code for G
     
 % --- Executes on button press in solenoid4Button.
 function solenoid4Button_Callback(hObject, eventdata, handles)
@@ -382,7 +387,7 @@ function solenoid4Button_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 global s
-    fprintf(s, 'J');       % Send solenoid signal to arduino; 74 in Arduino is the ASCII code for J
+fprintf(s, 'J');       % Send solenoid signal to arduino; 74 in Arduino is the ASCII code for J
 
 
 % --- Executes on button press in vacuumButton.
@@ -494,6 +499,22 @@ function testlaser_Callback(hObject, eventdata, handles)
 global s
 fprintf(s,'8');              % Send Laser signal to arduino; 56 in the Arduino is the ASCII code for 8
 flushinput(s)
+
+
+% --- Executes on button press in testserialport.
+function testserialport_Callback(hObject, eventdata, handles)
+% hObject    handle to testserialport (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global s running actvAx saveDir
+
+mainPath = 'C:\Users\mzhou9\Desktop\Behavioral_acquisition_and_analysis';	
+addpath(mainPath)	
+saveDir = [mainPath '\serialtest\'];          % save serial testing data here
+
+fprintf(s,'T');                          % Send test serial port signal to arduino; 84 in the Arduino is the ASCII code for T
+set(hObject,'Enable','off');
+serial_port_testing                      % Start figure for serial port connection signal
 
 
 % --- Executes during object creation, after setting all properties.
@@ -868,6 +889,7 @@ set(handles.sendButton,'Enable','off')
 flushinput(s);                                  % clear serial input buffer
 
 
+
 % --- Executes on button press in stopButton.
 function stopButton_Callback(hObject, eventdata, handles)
 
@@ -910,4 +932,3 @@ elseif selectedmode == 2
 elseif selectedmode == 3
     set(handles.lickproperties, 'Enable', 'on');
 end
-
