@@ -114,19 +114,21 @@
 int lick1     = 22;   // lick1 sensor
 int lick2     = 24;   // lick2 sensor
 int lick3     = 26;   // lick3 sensor
-int speaker1  = 32;   // pin for speaker 1
-int speaker2  = 34;   // pin for speaker 2
-int light1    = 36;   // pin for light1; Light1 is used to indicate that animals met lickreq if signaltolickreq == 2 or 3 for lick tube 1
-int light2    = 38;   // pin for light2; Light1 is used to indicate that animals met lickreq if signaltolickreq == 2 or 3 for lick tube 2
+int speaker1  = 28;   // pin for speaker 1
+int speaker2  = 30;   // pin for speaker 2
+int light1    = 23;   // pin for light 1, light 1 is used to indicate that animal has met golickreq if CSsignal == 2 or 3;
+int light2    = 25;   // pin for light 2, light 2 is used to indicate that animal has met golickreq if CSsignal == 2 or 3;
+int lickretractsolenoid1 = 31;  // pin for lick retraction solenoid 1
+int lickretractsolenoid2 = 33;  // pin for lick retraction solenoid 2
 int solenoid1 = 35;   // pin for solenoid1
-int solenoid2 = 43;   // pin for solenoid2
-int solenoid3 = 39;   // pin for solenoid3
-int solenoid4 = 41;   // pin for solenoid4
-int vacuum    = 40;   // pin for vacuum
-int laser     = 42;   // laser to pin 9
-int ttloutpin = 44;   // ttl out pin for starting imaging
-int framein   = 46;   // pin receiving the TTL input for frame start
-int ttloutstoppin = 48; // ttl out pin for stopping imaging
+int solenoid2 = 41;   // pin for solenoid2
+int solenoid3 = 43;   // pin for solenoid3
+int solenoid4 = 45;   // pin for solenoid4
+int framein   = 32;   // pin receiving the TTL input for frame start
+int vacuum    = 38;   // pin for vacuum
+int laser     = 40;   // laser to pin 9
+int ttloutpin = 42;   // ttl out pin for starting imaging
+int ttloutstoppin = 44; // ttl out pin for stopping imaging
 
 // Global variables
 unsigned long reading;           // variable to temporarily store data being read
@@ -193,10 +195,10 @@ unsigned long maxdelaytovacuumfromcueonset; // maximum delay to vacuum after cue
 
 unsigned long truncITI;          // truncation for the exponential ITI distribution: set at 3 times the meanITI or that hardcoded in maxITI
 
-unsigned long ttloutdur      = 100;  // duration that the TTL out pin for starting imaging lasts. This happens only for the case where ITI is uniformly distributed
-unsigned long baselinedur    = 7000; // Duration prior to CS to turn on imaging through TTLOUTPIN. Only relevant when ITI is uniformly distributed
-unsigned long vacuumopentime = 200;  // Duration to keep vacuum on
-unsigned long lightdur       = 500;  // Duration to keep light (signal for lick requirement being met) on
+unsigned long ttloutdur      = 100;   // duration that the TTL out pin for starting imaging lasts. This happens only for the case where ITI is uniformly distributed
+unsigned long baselinedur    = 7000;  // Duration prior to CS to turn on imaging through TTLOUTPIN. Only relevant when ITI is uniformly distributed
+unsigned long vacuumopentime = 200;   // Duration to keep vacuum on
+unsigned long lightdur       = 500;   // Duration to keep light (signal for lick requirement being met) on
 
 
 int totalnumtrials = 0;
@@ -243,7 +245,7 @@ int *Laserontrial = 0;             // Is there laser on any given trial?
 void setup() {
   wdt_disable();                   // Disable watchdog timer on bootup. This prevents constant resetting by the watchdog timer in the endSession() function
   // initialize arduino states
-  Serial.begin(9600);
+  Serial.begin(57600);
   randomSeed(analogRead(0));       // Generate a random sequence of numbers every time
   pinMode(lick1, INPUT);
   pinMode(lick2, INPUT);
@@ -252,6 +254,8 @@ void setup() {
   pinMode(solenoid2, OUTPUT);
   pinMode(solenoid3, OUTPUT);
   pinMode(solenoid4, OUTPUT);
+  pinMode(lickretractsolenoid1, OUTPUT);
+  pinMode(lickretractsolenoid2, OUTPUT);
   pinMode(vacuum, OUTPUT);
   pinMode(speaker1, OUTPUT);
   pinMode(speaker2, OUTPUT);
@@ -299,6 +303,12 @@ void setup() {
   // = 74 for turning solenoid 4 on for r_fxd duration, (J)
   // = 75 for turning solenoid 4 on, (K)
   // = 76 for turning solenoid 4 off, (L)
+  // = 77 for turning lick retract solenoid 1 on for r_fxd duration, (M)
+  // = 78 for turning lick retract solenoid 1 on, (N)
+  // = 79 for turning lick retract solenoid 1 off, (O)
+  // = 80 for turning lick retract solenoid 2 on for r_fxd duration, (P)
+  // = 81 for turning lick retract solenoid 2 on, (Q)
+  // = 82 for turning lick retract solenoid 2 off, (R)
   // = 86 for turning vacuum on for 200 ms duration, (V)
 
   while (reading != 48) {              // Before "Start" is pressed in MATLAB GUI
@@ -379,6 +389,34 @@ void setup() {
 
     if (reading == 76) {                 // TURN OFF SOLENOID 4
       digitalWrite(solenoid4, LOW);           // turn off solenoid 4
+    }
+
+    if (reading == 77) {                 // MANUAL lickretractsolenoid11
+      digitalWrite(lickretractsolenoid1, HIGH);          // turn on lickretractsolenoid1
+      delay(CSopentime[1]);
+      digitalWrite(lickretractsolenoid1, LOW);           // turn off lickretractsolenoid1
+    }
+
+    if (reading == 78) {                 // PRIME LICKRETRACTSOLENOID 1
+      digitalWrite(lickretractsolenoid1, HIGH);          // turn on lickretractsolenoid1
+    }
+
+    if (reading == 79) {                 // TURN OFF LICKRETRACTSOLENOID 1
+      digitalWrite(lickretractsolenoid1, LOW);           // turn off lickretractsolenoid1
+    }
+
+    if (reading == 80) {                 // MANUAL lickretractsolenoid12
+      digitalWrite(lickretractsolenoid2, HIGH);          // turn on lickretractsolenoid2
+      delay(CSopentime[1]);
+      digitalWrite(lickretractsolenoid2, LOW);           // turn off lickretractsolenoid2
+    }
+
+    if (reading == 81) {                 // PRIME LICKRETRACTSOLENOID 2
+      digitalWrite(lickretractsolenoid2, HIGH);          // turn on lickretractsolenoid2
+    }
+
+    if (reading == 82) {                 // TURN OFF LICKRETRACTSOLENOID 2
+      digitalWrite(lickretractsolenoid2, LOW);           // turn off lickretractsolenoid2
     }
 
     if (reading == 86) {                 // Vacuum
@@ -893,6 +931,7 @@ void frametimestamp() {
   }
 }
 
+// DELIVER CUE //////////////
 void cues() {
   Serial.print(15 + licktubethatmetlickreq);         // code data as CS1 or CS2 timestamp
   Serial.print(" ");
@@ -957,6 +996,8 @@ void endSession() {
   digitalWrite(solenoid2, LOW);                 //  turn off solenoid
   digitalWrite(solenoid3, LOW);                 //  turn off solenoid
   digitalWrite(solenoid4, LOW);                 //  turn off solenoid
+  digitalWrite(lickretractsolenoid1, LOW);
+  digitalWrite(lickretractsolenoid2, LOW);
   digitalWrite(vacuum, LOW);                 //  turn off solenoid
   noTone(speaker1);                         //  turn off tone
   noTone(speaker2);                         //  turn off tone

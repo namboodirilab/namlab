@@ -22,7 +22,7 @@ function varargout = headfix_GUI(varargin)
 
 % Edit the above text to modify the response to help headfix_GUI
 
-% Last Modified by GUIDE v2.5 22-Nov-2020 10:43:26
+% Last Modified by GUIDE v2.5 14-Dec-2020 10:15:48
 
 % cd 'F:\acads\Stuber lab\headfix'; %Change to directory
 
@@ -105,10 +105,6 @@ set(handles.checkboxexpiti, 'Enable', 'off');
 set(handles.maxdelaycuetovacuum, 'Enable', 'off');
 set(handles.minITI, 'Enable', 'off');
 set(handles.maxITI, 'Enable', 'off');
-set(handles.primesolenoid1, 'Enable', 'off');
-set(handles.primesolenoid2, 'Enable', 'off');
-set(handles.primesolenoid3, 'Enable', 'off');
-set(handles.primesolenoid4, 'Enable', 'off');
 set(handles.testcs1, 'Enable', 'off');
 set(handles.testcs2, 'Enable', 'off');
 set(handles.testcs3, 'Enable', 'off');
@@ -117,10 +113,15 @@ set(handles.solenoid1Button, 'Enable', 'off');
 set(handles.solenoid2Button, 'Enable', 'off');
 set(handles.solenoid3Button, 'Enable', 'off');
 set(handles.solenoid4Button, 'Enable', 'off');
+set(handles.lickretractsolenoid1Button, 'Enable','off')
+set(handles.lickretractsolenoid2Button, 'Enable','off')
 set(handles.primesolenoid1, 'Enable', 'off');
 set(handles.primesolenoid2, 'Enable', 'off');
 set(handles.primesolenoid3, 'Enable', 'off');
 set(handles.primesolenoid4, 'Enable', 'off');
+set(handles.primelickretractsolenoid1, 'Enable','off');
+set(handles.primelickretractsolenoid2, 'Enable','off');
+
 
 % UIWAIT makes headfix_GUI wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
@@ -335,10 +336,7 @@ set(handles.checkboxexpiti, 'Enable', 'off');
 set(handles.maxdelaycuetovacuum, 'Enable', 'off');
 set(handles.minITI, 'Enable', 'off');
 set(handles.maxITI, 'Enable', 'off');
-set(handles.primesolenoid1, 'Enable', 'off');
-set(handles.primesolenoid2, 'Enable', 'off');
-set(handles.primesolenoid3, 'Enable', 'off');
-set(handles.primesolenoid4, 'Enable', 'off');
+
 set(handles.testcs1, 'Enable', 'off');
 set(handles.testcs2, 'Enable', 'off');
 set(handles.testcs3, 'Enable', 'off');
@@ -348,10 +346,15 @@ set(handles.solenoid1Button, 'Enable', 'off');
 set(handles.solenoid2Button, 'Enable', 'off');
 set(handles.solenoid3Button, 'Enable', 'off');
 set(handles.solenoid4Button, 'Enable', 'off');
+set(handles.lickretractsolenoid1Button, 'Enable','off')
+set(handles.lickretractsolenoid2Button, 'Enable','off')
 set(handles.primesolenoid1, 'Enable', 'off');
 set(handles.primesolenoid2, 'Enable', 'off');
 set(handles.primesolenoid3, 'Enable', 'off');
 set(handles.primesolenoid4, 'Enable', 'off');
+set(handles.primelickretractsolenoid1, 'Enable','off')
+set(handles.primelickretractsolenoid2, 'Enable','off')
+
 
 
 % --- Executes on button press in solenoid1Button.
@@ -390,6 +393,26 @@ global s
 fprintf(s, 'J');       % Send solenoid signal to arduino; 74 in Arduino is the ASCII code for J
 
 
+% --- Executes on button press in lickretractsolenoid1Button.
+function lickretractsolenoid1Button_Callback(hObject, eventdata, handles)
+% hObject    handle to lickretractsolenoid1Button (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+global s
+fprintf(s, 'M');       % Send lickretractsolenoid signal to arduino; 77 in Arduino is teh ASCII code for M
+
+
+% --- Executes on button press in lickretractsolenoid2Button.
+function lickretractsolenoid2Button_Callback(hObject, eventdata, handles)
+% hObject    handle to lickretractsolenoid2Button (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+global s
+fprintf(s, 'P');       % Send lickretractsolenoid signal to arduino; 80 in Arduino is teh ASCII code for P
+
+
 % --- Executes on button press in vacuumButton.
 function vacuumButton_Callback(hObject, eventdata, handles)
 % hObject    handle to vacuumButton (see GCBO)
@@ -397,7 +420,7 @@ function vacuumButton_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 global s
-fprintf(s,'V');              % Send vacuum signal to arduino; 86 in the Arduino is the ASCII code for M
+fprintf(s,'V');              % Send vacuum signal to arduino; 86 in the Arduino is the ASCII code for V
 
 
 % --- Executes on button press in primesolenoid1.
@@ -430,7 +453,6 @@ else
     fprintf(s,'F');              % Send stop solenoid signal to arduino; 70 in the Arduino is the ASCII code for F
 end
 
-
 % --- Executes on button press in primesolenoid3.
 function primesolenoid3_Callback(hObject, eventdata, handles)
 % hObject    handle to primesolenoid3 (see GCBO)
@@ -461,6 +483,36 @@ else
     fprintf(s, 'L');            % Send prime solenoid signal to arduino; 76 in the Arduino is the ASCII code for L
 end
 
+% --- Executes on button press in primelickretractsolenoid1.
+function primelickretractsolenoid1_Callback(hObject, eventdata, handles)
+% hObject    handle to primelickretractsolenoid1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of primelickretractsolenoid1
+global s
+
+if get(hObject,'Value') == get(hObject,'Max')
+    fprintf(s, 'N');            % Send prime lickretractsolenoid signal to arduino; 78 in the Arduino is the ASCII code for N
+else
+    fprintf(s, 'O');            % Send prime lickretractsolenoid signal to arduino; 79 in the Arduino is the ASCII code for O
+end
+
+% --- Executes on button press in primelickretractsolenoid2.
+function primelickretractsolenoid2_Callback(hObject, eventdata, handles)
+% hObject    handle to primelickretractsolenoid2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of primelickretractsolenoid2
+global s
+
+if get(hObject,'Value') == get(hObject,'Max')
+    fprintf(s, 'Q');            % Send prime lickretractsolenoid signal to arduino; 81 in the Arduino is the ASCII code for Q
+else
+    fprintf(s, 'R');            % Send prime lickretractsolenoid signal to arduino; 82 in the Arduino is the ASCII code for R
+end
+
 % --- Executes on button press in testcs1.
 function testcs1_Callback(hObject, eventdata, handles)
 % hObject    handle to testcs1 (see GCBO)
@@ -488,7 +540,6 @@ function testcs3_Callback(hObject, eventdata, handles)
 global s
 fprintf(s,'4');              % Send CS3 signal to arduino; 52 in the Arduino is the ASCII code for 4
 flushinput(s)
-
 
 
 % --- Executes on button press in testlaser.
@@ -707,6 +758,12 @@ set(handles.primesolenoid3,'Enable','on')
 set(handles.solenoid4Button,'Enable','on')
 set(handles.primesolenoid4,'Visible','on')
 set(handles.primesolenoid4,'Enable','on')
+set(handles.lickretractsolenoid1Button,'Enable','on')
+set(handles.primelickretractsolenoid1,'Visible','on')
+set(handles.primelickretractsolenoid1,'Enable','on')
+set(handles.lickretractsolenoid2Button,'Enable','on')
+set(handles.primelickretractsolenoid2,'Visible','on')
+set(handles.primelickretractsolenoid2,'Enable','on')
 set(handles.vacuumButton,'Enable','on')
 set(handles.testlaser,'Enable','on')
 
@@ -844,6 +901,8 @@ set(handles.primesolenoid1,'Visible','off')
 set(handles.primesolenoid2,'Visible','off')
 set(handles.primesolenoid3,'Visible','off')
 set(handles.primesolenoid4,'Visible','off')
+set(handles.primelickretractsolenoid1, 'Visible','off')
+set(handles.primelickretractsolenoid2, 'Visible','off')
 
 % disable/enable certain options
 set(handles.startButton,'Enable','off')
@@ -932,3 +991,4 @@ elseif selectedmode == 2
 elseif selectedmode == 3
     set(handles.lickproperties, 'Enable', 'on');
 end
+
