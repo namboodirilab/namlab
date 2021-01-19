@@ -24,7 +24,7 @@ void loop() {
   // put your main code here, to run repeatedly:
   //  reading = Serial.read();
   ts = millis() - start;
-  if (tsct <= 1000 && ts >= nextevent) {
+  if (tsct <= 500 && ts >= nextevent) {
     Serial.print(25);
     Serial.print(" ");
     Serial.print(ts);
@@ -34,7 +34,7 @@ void loop() {
     nextevent = ts + interval;
     tsct = tsct + 1;
   }
-  if (tsctflag == true && tsct > 1000) {
+  if (tsctflag == true && tsct > 500) {
     Serial.print(0);                       //   signal end of timestamp collection
     Serial.print(" ");
     Serial.print(ts);                      //   send timestamp

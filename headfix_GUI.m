@@ -220,7 +220,7 @@ pause(5);
 set(handles.openButton,'String','Link');
 
 set(handles.port,'String',port)                     % write out port selected in menu
-set(handles.sendButton,'Enable','on')               % enable 'send' button
+%set(handles.sendButton,'Enable','on')               % enable 'send' button
 set(handles.startButton,'Enable','off')             % disable 'send' button
 set(handles.closeButton,'Enable','on')              % enable 'unlink' button
 set(handles.openButton,'Enable','off')              % disable 'link' button
@@ -228,6 +228,7 @@ set(handles.refreshButton,'Enable','off')           % disable 'refresh' button
 
 selectedmode = get(handles.experimentmode, 'Value');
 if selectedmode == 1
+    set(handles.sendButton,'Enable','on') 
     set(handles.csproperties, 'Enable', 'on');
     set(handles.checkboxtrialbytrial, 'Enable', 'on');
     set(handles.checkboxrandlaser, 'Enable', 'on');
@@ -241,6 +242,7 @@ if selectedmode == 1
     set(handles.minITI, 'Enable', 'on');
     set(handles.maxITI, 'Enable', 'on');
 elseif selectedmode == 2
+    set(handles.sendButton,'Enable','on') 
     set(handles.backgroundsolenoid, 'Enable', 'on');
     set(handles.T_bgd, 'Enable', 'on');
     set(handles.r_bgd, 'Enable', 'on');
@@ -248,6 +250,7 @@ elseif selectedmode == 2
     set(handles.mindelayfxdtobgd, 'Enable', 'on');
     set(handles.totPoisssolenoid, 'Enable', 'on');
 elseif selectedmode == 3
+    set(handles.sendButton,'Enable','on') 
     set(handles.lickproperties, 'Enable', 'on');
 elseif selectedmode == 4
     set(handles.testserialport, 'Enable', 'on');
