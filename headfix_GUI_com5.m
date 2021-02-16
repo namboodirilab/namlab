@@ -1,28 +1,28 @@
-function varargout = headfix_GUI(varargin)
-% HEADFIX_GUI MATLAB code for headfix_GUI.fig
-%      HEADFIX_GUI, by itself, creates a new HEADFIX_GUI or raises the existing
+function varargout = headfix_GUI_com5(varargin)
+% HEADFIX_GUI_COM5 MATLAB code for headfix_GUI_com5.fig
+%      HEADFIX_GUI_COM5, by itself, creates a new HEADFIX_GUI_COM5 or raises the existing
 %      singleton*.
 %
-%      H = HEADFIX_GUI returns the handle to a new HEADFIX_GUI or the handle to
+%      H = HEADFIX_GUI_COM5 returns the handle to a new HEADFIX_GUI_COM5 or the handle to
 %      the existing singleton*.
 %
-%      HEADFIX_GUI('CALLBACK',hObject,eventData,handles,...) calls the local
-%      function named CALLBACK in HEADFIX_GUI.M with the given input arguments.
+%      HEADFIX_GUI_COM5('CALLBACK',hObject,eventData,handles,...) calls the local
+%      function named CALLBACK in HEADFIX_GUI_COM5.M with the given input arguments.
 %
-%      HEADFIX_GUI('Property','Value',...) creates a new HEADFIX_GUI or raises the
+%      HEADFIX_GUI_COM5('Property','Value',...) creates a new HEADFIX_GUI_COM5 or raises the
 %      existing singleton*.  Starting from the left, property value pairs are
-%      applied to the GUI before headfix_GUI_OpeningFcn gets called.  An
+%      applied to the GUI before headfix_GUI_com5_OpeningFcn gets called.  An
 %      unrecognized property name or invalid value makes property application
-%      stop.  All inputs are passed to headfix_GUI_OpeningFcn via varargin.
+%      stop.  All inputs are passed to headfix_GUI_com5_OpeningFcn via varargin.
 %
 %      *See GUI Options on GUIDE's Tools menu.  Choose "GUI allows only one
 %      instance to run (singleton)".
 %
 % See also: GUIDE, GUIDATA, GUIHANDLES
 
-% Edit the above text to modify the response to help headfix_GUI
+% Edit the above text to modify the response to help headfix_GUI_com5
 
-% Last Modified by GUIDE v2.5 08-Feb-2021 11:18:40
+% Last Modified by GUIDE v2.5 09-Feb-2021 15:07:46
 
 % cd 'F:\acads\Stuber lab\headfix'; %Change to directory
 
@@ -30,8 +30,8 @@ function varargout = headfix_GUI(varargin)
 gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
                    'gui_Singleton',  gui_Singleton, ...
-                   'gui_OpeningFcn', @headfix_GUI_OpeningFcn, ...
-                   'gui_OutputFcn',  @headfix_GUI_OutputFcn, ...
+                   'gui_OpeningFcn', @headfix_GUI_com5_OpeningFcn, ...
+                   'gui_OutputFcn',  @headfix_GUI_com5_OutputFcn, ...
                    'gui_LayoutFcn',  [] , ...
                    'gui_Callback',   []);
 if nargin && ischar(varargin{1})
@@ -45,29 +45,29 @@ else
 end
 % End initialization code - DO NOT EDIT
 
-% --- Executes just before headfix_GUI is made visible.
-function headfix_GUI_OpeningFcn(hObject, eventdata, handles, varargin)
+% --- Executes just before headfix_GUI_com5 is made visible.
+function headfix_GUI_com5_OpeningFcn(hObject, eventdata, handles, varargin)
 % This function has no output args, see OutputFcn.
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-% varargin   command line arguments to headfix_GUI (see VARARGIN)
+% varargin   command line arguments to headfix_GUI_com5 (see VARARGIN)
 
-% Choose default command line output for headfix_GUI
+% Choose default command line output for headfix_GUI_com5
 handles.output = hObject;
 
 % Update handles structure
 guidata(hObject, handles);
 
 % This sets up the initial plot - only do when we are invisible
-% so window can get raised using headfix_GUI.
+% so window can get raised using headfix_GUI_com5.
 % if strcmp(get(hObject,'Visible'),'off')
 %     plot(rand(5));
 % end
 
 global actvAx saveDir
 
-mainPath = 'C:\Users\namboodirilab\OneDrive - University of California, San Francisco\Behavioral_acquisition_and_analysis';
+mainPath = 'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis';
 addpath(mainPath)
 saveDir = [mainPath '\data\'];          % where to save data
 
@@ -81,7 +81,7 @@ if ~isempty(port)
 end
 
 % Change window title
-set(gcf,'name','Head-fixed behavior')
+set(gcf,'name','Head-fixed behavior_COM5')
 
 set(handles.csproperties, 'Enable', 'off');
 set(handles.lickproperties, 'Enable', 'off');
@@ -123,7 +123,7 @@ set(handles.primelickretractsolenoid1, 'Enable','off');
 set(handles.primelickretractsolenoid2, 'Enable','off');
 
 
-% UIWAIT makes headfix_GUI wait for user response (see UIRESUME)
+% UIWAIT makes headfix_GUI_com5 wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
 
 % --- Executes during object creation, after setting all properties.
@@ -135,7 +135,7 @@ function figure1_CreateFcn(hObject, eventdata, handles)
 set(hObject,'Units','pixels','Position',[60 80 1500 870])
 
 % --- Outputs from this function are returned to the command line.
-function varargout = headfix_GUI_OutputFcn(hObject, eventdata, handles)
+function varargout = headfix_GUI_com5_OutputFcn(hObject, eventdata, handles)
 % varargout  cell array for returning output args (see VARARGOUT);
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB

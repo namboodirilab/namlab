@@ -156,6 +156,7 @@ unsigned long CSdur[numCS];
 unsigned long CS_t_fxd[2 * numCS];
 unsigned long CSpulse[numCS];
 unsigned long CSspeaker[numCS];
+unsigned long CSlight[numCS];
 unsigned long golickreq[numCS];
 unsigned long golicktube[numCS];
 unsigned long CSsignal[numCS];
@@ -336,7 +337,7 @@ void setup() {
 
     if (reading == 65) {                 // MANUAL solenoid 1
       digitalWrite(solenoid1, HIGH);          // turn on solenoid 1
-      delay(CSopentime[1]);
+      delay(r_bgd);
       digitalWrite(solenoid1, LOW);           // turn off solenoid 1
     }
 
@@ -350,7 +351,7 @@ void setup() {
 
     if (reading == 68) {                 // MANUAL solenoid 2
       digitalWrite(solenoid2, HIGH);          // turn on solenoid 2
-      delay(CSopentime[1]);
+      delay(r_bgd);
       digitalWrite(solenoid2, LOW);           // turn off solenoid 2
     }
 
@@ -364,7 +365,7 @@ void setup() {
 
     if (reading == 71) {                 // MANUAL solenoid 3
       digitalWrite(solenoid3, HIGH);          // turn on solenoid 3
-      delay(CSopentime[1]);
+      delay(r_bgd);
       digitalWrite(solenoid3, LOW);           // turn off solenoid 3
     }
 
@@ -378,7 +379,7 @@ void setup() {
 
     if (reading == 74) {                 // MANUAL solenoid 4
       digitalWrite(solenoid4, HIGH);          // turn on solenoid 4
-      delay(CSopentime[1]);
+      delay(r_bgd);
       digitalWrite(solenoid4, LOW);           // turn off solenoid 4
     }
 
@@ -392,7 +393,7 @@ void setup() {
 
     if (reading == 77) {                 // MANUAL lickretractsolenoid11
       digitalWrite(lickretractsolenoid1, HIGH);          // turn on lickretractsolenoid1
-      delay(CSopentime[1]);
+      delay(r_bgd);
       digitalWrite(lickretractsolenoid1, LOW);           // turn off lickretractsolenoid1
     }
 
@@ -406,7 +407,7 @@ void setup() {
 
     if (reading == 80) {                 // MANUAL lickretractsolenoid12
       digitalWrite(lickretractsolenoid2, HIGH);          // turn on lickretractsolenoid2
-      delay(CSopentime[1]);
+      delay(r_bgd);
       digitalWrite(lickretractsolenoid2, LOW);           // turn off lickretractsolenoid2
     }
 
@@ -548,9 +549,9 @@ void setup() {
   else if (trialbytrialbgdsolenoidflag == 1) {
     nextbgdsolenoid = 0 - T_bgdvec[0] * temp;
   }
-  if (nextbgdsolenoid > (nextcue - mindelaybgdtocue) && experimentmode != 1) {
-    nextbgdsolenoid = 0;
-  }
+  //  if (nextbgdsolenoid > (nextcue - mindelaybgdtocue) && experimentmode != 1) {
+  //    nextbgdsolenoid = 0;
+  //  }
 
   cueOff     = nextcue + CSdur[cueList[0]];           // get timestamp of first cue cessation
   ITIflag = true;
@@ -601,11 +602,14 @@ void loop() {
   // 15 = CS1
   // 16 = CS2
   // 17 = CS3                                   // leave possible codes for future CS
-  // 21 = light1
-  // 22 = light2
-  // 23 = frame
-  // 24 = laser
-
+  // 21 = Light 1
+  // 22 = Light 2
+  // 23 = light 3
+  // 25 = both CSsound1 and CSlight1
+  // 26 = both CSsound2 and CSlight2
+  // 27 = both CSsound3 and CSlight3
+  // 30 = frame
+  // 31 = laser
 
   licking();                           // determine if lick occured or was withdrawn
   frametimestamp();                    // store timestamps of frames
@@ -630,15 +634,16 @@ void loop() {
       Serial.print(0);
       Serial.print('\n');
     }
-
-    u = random(0, 10000);
-    temp = (float)u / 10000;
-    temp = log(temp);
-    nextbgdsolenoid = ts + r_bgd - T_bgd * temp;
+    nextbgdsolenoid = 0;
+    //    u = random(0, 10000);
+    //    temp = (float)u / 10000;
+    //    temp = log(temp);
+    //    nextbgdsolenoid = ts + r_bgd - T_bgd * temp;
   }
 
   if (reading == 65) {                 // MANUAL solenoid 1
     digitalWrite(solenoid1, HIGH);          // turn on solenoid
+    nextbgdsolenoid = 0;
     solenoidOff = ts + r_bgd;              // set solenoid off time
     Serial.print(8);                   //   code data as solenoid1 onset timestamp
     Serial.print(" ");
@@ -649,6 +654,7 @@ void loop() {
   }
   if (reading == 68) {                 // MANUAL solenoid 2
     digitalWrite(solenoid2, HIGH);          // turn on solenoid
+    nextbgdsolenoid = 0;
     solenoidOff = ts + r_bgd;              // set solenoid off time
     Serial.print(9);                   //   code data as solenoid2 onset timestamp
     Serial.print(" ");
@@ -659,6 +665,7 @@ void loop() {
   }
   if (reading == 71) {                 // MANUAL solenoid 3
     digitalWrite(solenoid3, HIGH);          // turn on solenoid
+    nextbgdsolenoid = 0;
     solenoidOff = ts + r_bgd;              // set solenoid off time
     Serial.print(10);                   //   code data as solenoid3 onset timestamp
     Serial.print(" ");
@@ -669,6 +676,7 @@ void loop() {
   }
   if (reading == 74) {                 // MANUAL solenoid 4
     digitalWrite(solenoid4, HIGH);          // turn on solenoid
+    nextbgdsolenoid = 0;
     solenoidOff = ts + r_bgd;              // set solenoid off time
     Serial.print(11);                   //   code data as solenoid4 onset timestamp
     Serial.print(" ");
@@ -686,6 +694,10 @@ void loop() {
     solenoidOff = 0;
     if (r_bgd > 0) {
       numbgdsolenoid = numbgdsolenoid + 1;            // Count background solenoids
+      u = random(0, 10000);
+      temp = (float)u / 10000;
+      temp = log(temp);
+      nextbgdsolenoid = ts - T_bgd * temp;
     }
   }
 }
@@ -693,7 +705,7 @@ void loop() {
 
 // Accept parameters from MATLAB
 void getParams() {
-  int pn = 90;                              // number of parameter inputs
+  int pn = 93;                              // number of parameter inputs
   unsigned long param[pn];                  // parameters
 
   for (int p = 0; p < pn; p++) {
@@ -780,7 +792,9 @@ void getParams() {
   laserpulseoffperiod    = param[87];
   lasertrialbytrialflag  = (boolean)param[88];          // laser on a trial-by-trial basis?
   maxdelaytovacuumfromcueonset = param[89];
-
+  CSlight[0]             = param[90];
+  CSlight[1]             = param[91];
+  CSlight[2]             = param[92];
 
   for (int p = 0; p < numCS; p++) {
     CSfreq[p] = CSfreq[p] * 1000;         // convert frequency from kHz to Hz
@@ -814,10 +828,10 @@ void getParams() {
     backgroundsolenoid = solenoid2;
   }
   else if (backgroundsolenoid == 3) {
-    backgroundsolenoid == solenoid3;
+    backgroundsolenoid = solenoid3;
   }
   else if (backgroundsolenoid == 4) {
-    backgroundsolenoid == solenoid4;
+    backgroundsolenoid = solenoid4;
   }
 
   for (int p = 0; p < numlicktube; p++) {
@@ -920,7 +934,7 @@ void frametimestamp() {
   frameon = framestate > prevframe;
 
   if (frameon) {
-    Serial.print(23);                       //   code data as frame timestamp
+    Serial.print(30);                       //   code data as frame timestamp
     Serial.print(" ");
     Serial.print(ts);                       //   send timestamp of frame
     Serial.print(" ");

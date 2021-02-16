@@ -106,6 +106,9 @@
 //88) flag to turn laser on a trial-by-trial basis
 //89) maximum delay to vacuum after cue turns on. Change this if different cues have different delays to reward
 // to be such that it is longer than the longest delay to reward. Basically, this quantity measures duration of trial.
+//90) light number for CS1
+//91) light number for CS2
+//92) light number for CS3
 
 #include <math.h>
 #include <avr/wdt.h>
@@ -155,6 +158,7 @@ unsigned long CSdur[numCS];
 unsigned long CS_t_fxd[2 * numCS];
 unsigned long CSpulse[numCS];
 unsigned long CSspeaker[numCS];
+unsigned long CSlight[numCS];
 unsigned long golickreq[numCS];
 unsigned long golicktube[numCS];
 unsigned long CSsignal[numCS];
@@ -483,8 +487,12 @@ void loop() {
   // 17 = CS3                                   // leave possible codes for future CS
   // 21 = light1
   // 22 = light2
-  // 23 = frame
-  // 24 = laser
+  // 23 = light 3
+  // 25 = both CSsound1 and CSlight1
+  // 26 = both CSsound2 and CSlight2
+  // 27 = both CSsound3 and CSlight3
+  // 30 = frame
+  // 31 = laser
 
 
   licking();                           // record licking
@@ -504,60 +512,32 @@ void loop() {
     licktubesactive = false;
 
     if (signaltolickreq[licktubethatmetlickreq] == 1) {    // Turn on sound cue 1, same frequency and duration as CS1
-
+      Serial.print(15 + licktubethatmetlickreq);         // code data as CS1, CS2 or CS3 timestamp
+      Serial.print(" ");
+      Serial.print(ts);                         // send timestamp of cue
+      Serial.print(" ");
+      Serial.print(0);
+      Serial.print('\n');
       cues();
-
-      if (ts >= cuePulseOff && cuePulseOff != 0) {     // turn off tone
-        noTone(soundspeaker[licktubethatmetlickreq]);
-        cuePulseOn = ts + 200;
-        cuePulseOff = 0;
-      }
-      if (ts >= cuePulseOn && cuePulseOn != 0) {       // turn on tone
-        tone(soundspeaker[licktubethatmetlickreq], soundfreq[licktubethatmetlickreq]);
-        cuePulseOff = ts + 200;
-        cuePulseOn = 0;
-      }
-      if (ts >= cueOff && cueOff != 0) {              // Turn off cue
-        cueOff = 0;
-        cuePulseOn = 0;
-        cuePulseOff = 0;
-      }
     }
     else if (signaltolickreq[licktubethatmetlickreq] == 2) {    // Turn on light1
-
+      Serial.print(21 + licktubethatmetlickreq);           // code data as light1 ot light2 timestamp
+      Serial.print(" ");
+      Serial.print(ts);                         // send timestamp of light cue
+      Serial.print(" ");
+      Serial.print(0);
+      Serial.print('\n');
       lights();
-
-      if (ts >= lightOff && lightOff != 0) {                    // Turn off light
-        digitalWrite(light1, LOW);
-        digitalWrite(light2, LOW);
-        lightOff = 0;
-      }
     }
     else if (signaltolickreq[licktubethatmetlickreq] == 3) {     // Turn on both sound cue and light signal
-
+      Serial.print(25 + licktubethatmetlickreq);           // code data as light1 ot light2 timestamp
+      Serial.print(" ");
+      Serial.print(ts);                         // send timestamp of light cue
+      Serial.print(" ");
+      Serial.print(0);
+      Serial.print('\n');
       cues();
       lights();
-
-      if (ts >= cuePulseOff && cuePulseOff != 0) {     // turn off tone
-        noTone(soundspeaker[licktubethatmetlickreq]);
-        cuePulseOn = ts + 200;
-        cuePulseOff = 0;
-      }
-      if (ts >= cuePulseOn && cuePulseOn != 0) {       // turn on tone
-        tone(soundspeaker[licktubethatmetlickreq], soundfreq[licktubethatmetlickreq]);
-        cuePulseOff = ts + 200;
-        cuePulseOn = 0;
-      }
-      if (ts >= cueOff && cueOff != 0) {          // Turn off cue
-        cueOff = 0;
-        cuePulseOn = 0;
-        cuePulseOff = 0;
-      }
-      if (ts >= lightOff && lightOff != 0) {     // Turn off light
-        digitalWrite(light1, LOW);
-        digitalWrite(light2, LOW);
-        lightOff = 0;
-      }
     }
   }
 
@@ -567,63 +547,60 @@ void loop() {
     licktubesactive = false;
 
     if (signaltolickreq[licktubethatmetlickreq] == 1) {    // Turn on sound cue
-
+      Serial.print(15 + licktubethatmetlickreq);         // code data as CS1, CS2 or CS3 timestamp
+      Serial.print(" ");
+      Serial.print(ts);                         // send timestamp of cue
+      Serial.print(" ");
+      Serial.print(0);
+      Serial.print('\n');
       cues();
-
-      if (ts >= cuePulseOff && cuePulseOff != 0) {     // turn off tone
-        noTone(soundspeaker[licktubethatmetlickreq]);
-        cuePulseOn = ts + 200;
-        cuePulseOff = 0;
-      }
-      if (ts >= cuePulseOn && cuePulseOn != 0) {       // turn on tone
-        tone(soundspeaker[licktubethatmetlickreq], soundfreq[licktubethatmetlickreq]);
-        cuePulseOff = ts + 200;
-        cuePulseOn = 0;
-      }
-      if (ts >= cueOff && cueOff != 0) {              // Turn off cue
-        cueOff = 0;
-        cuePulseOn = 0;
-        cuePulseOff = 0;
-      }
     }
     else if (signaltolickreq[licktubethatmetlickreq] == 2) {    // Turn on light2
-
+      Serial.print(21 + licktubethatmetlickreq);           // code data as light1 ot light2 timestamp
+      Serial.print(" ");
+      Serial.print(ts);                         // send timestamp of light cue
+      Serial.print(" ");
+      Serial.print(0);
+      Serial.print('\n');
       lights();
-
-      if (ts >= lightOff && lightOff != 0) {                    // Turn off light
-        digitalWrite(light1, LOW);
-        digitalWrite(light2, LOW);
-        lightOff = 0;
-      }
     }
     else if (signaltolickreq[licktubethatmetlickreq] == 3) {     // Turn on both sound cue and light signal
-
+      Serial.print(25 + licktubethatmetlickreq);           // code data as light1 ot light2 timestamp
+      Serial.print(" ");
+      Serial.print(ts);                         // send timestamp of light cue
+      Serial.print(" ");
+      Serial.print(0);
+      Serial.print('\n');
       cues();
       lights();
-
-      if (ts >= cuePulseOff && cuePulseOff != 0) {     // turn off tone
-        noTone(soundspeaker[licktubethatmetlickreq]);
-        cuePulseOn = ts + 200;
-        cuePulseOff = 0;
-      }
-      if (ts >= cuePulseOn && cuePulseOn != 0) {       // turn on tone
-        tone(soundspeaker[licktubethatmetlickreq], soundfreq[licktubethatmetlickreq]);
-        cuePulseOff = ts + 200;
-        cuePulseOn = 0;
-      }
-      if (ts >= cueOff && cueOff != 0) {          // Turn off cue
-        cueOff = 0;
-        cuePulseOn = 0;
-        cuePulseOff = 0;
-      }
-      if (ts >= lightOff && lightOff != 0) {     // Turn off light
-        digitalWrite(light1, LOW);
-        digitalWrite(light2, LOW);
-        lightOff = 0;
-      }
     }
   }
 
+  if (ts >= cuePulseOff && cuePulseOff != 0) {     // turn off tone
+    noTone(soundspeaker[licktubethatmetlickreq]);
+    cuePulseOn = ts + 200;
+    cuePulseOff = 0;
+  }
+  if (ts >= cuePulseOn && cuePulseOn != 0) {       // turn on tone
+    tone(soundspeaker[licktubethatmetlickreq], soundfreq[licktubethatmetlickreq]);
+    cuePulseOff = ts + 200;
+    cuePulseOn = 0;
+  }
+  if (ts >= cueOff && cueOff != 0) {              // Turn off cue
+    noTone(soundspeaker[licktubethatmetlickreq]);
+    cueOff = 0;
+    cuePulseOn = 0;
+    cuePulseOff = 0;
+  }
+
+  if (ts >= lightOff && lightOff != 0) {                    // Turn off light
+    digitalWrite(light1, LOW);
+    digitalWrite(light2, LOW);
+    lightOff = 0;
+  }
+
+
+  
   if (ts >= nextfxdsolenoid && nextfxdsolenoid != 0) {
     if (licksolenoid[licktubethatmetlickreq] == solenoid1) {            // setup which solenoid to give for lick onset
       Serial.print(8);                                // code data
@@ -686,7 +663,7 @@ void loop() {
 
 // Accept parameters from MATLAB
 void getParams() {
-  int pn = 90;                              // number of parameter inputs
+  int pn = 93;                              // number of parameter inputs
   unsigned long param[pn];                  // parameters
 
   for (int p = 0; p < pn; p++) {
@@ -773,6 +750,9 @@ void getParams() {
   laserpulseoffperiod    = param[87];
   lasertrialbytrialflag  = (boolean)param[88];          // laser on a trial-by-trial basis?
   maxdelaytovacuumfromcueonset = param[89];
+  CSlight[0]             = param[90];
+  CSlight[1]             = param[91];
+  CSlight[2]             = param[92];
 
 
   for (int p = 0; p < numCS; p++) {
@@ -783,6 +763,12 @@ void getParams() {
     }
     else if (CSspeaker[p] == 2) {
       CSspeaker[p] = speaker2;
+    }
+    if (CSlight[p] == 1) {
+      CSlight[p] = light1;
+    }
+    else if (CSlight[p] == 2) {
+      CSlight[p] = light2;
     }
   }
   for (int p = 0; p < 2 * numCS; p++) {
@@ -922,7 +908,7 @@ void frametimestamp() {
   frameon = framestate > prevframe;
 
   if (frameon) {
-    Serial.print(23);                       //   code data as frame timestamp
+    Serial.print(30);                       //   code data as frame timestamp
     Serial.print(" ");
     Serial.print(ts);                       //   send timestamp of frame
     Serial.print(" ");
@@ -933,12 +919,12 @@ void frametimestamp() {
 
 // DELIVER CUE //////////////
 void cues() {
-  Serial.print(15 + licktubethatmetlickreq);         // code data as CS1 or CS2 timestamp
-  Serial.print(" ");
-  Serial.print(ts);                         // send timestamp of cue
-  Serial.print(" ");
-  Serial.print(0);
-  Serial.print('\n');
+  //  Serial.print(15 + licktubethatmetlickreq);         // code data as CS1 or CS2 timestamp
+  //  Serial.print(" ");
+  //  Serial.print(ts);                         // send timestamp of cue
+  //  Serial.print(" ");
+  //  Serial.print(0);
+  //  Serial.print('\n');
   tone(soundspeaker[licktubethatmetlickreq], soundfreq[licktubethatmetlickreq]);               // turn on tone
 
   if (soundsignalpulse[licktubethatmetlickreq] == 1) {
@@ -950,24 +936,25 @@ void cues() {
     cuePulseOn = 0;                          // No cue pulsing
   }
 
-  cueOff  = ts + sounddur[licktubethatmetlickreq];                   // set timestamp of cue cessation
+  cueOff  = ts + int(sounddur[licktubethatmetlickreq]);                   // set timestamp of cue cessation
 }
 
 
 void lights() {
-  if (licktubethatmetlickreq == 0) {
-    digitalWrite(light1, HIGH);
-    Serial.print(21);
-  }
-  else if (licktubethatmetlickreq == 1) {
-    digitalWrite(light2, HIGH);
-    Serial.print(22);
-  }
-  Serial.print(" ");
-  Serial.print(ts);
-  Serial.print(" ");
-  Serial.print(0);
+  //  if (licktubethatmetlickreq == 0) {
+  //    digitalWrite(light1, HIGH);
+  //    Serial.print(21);
+  //  }
+  //  else if (licktubethatmetlickreq == 1) {
+  //    digitalWrite(light2, HIGH);
+  //    Serial.print(22);
+  //  }
+  //  Serial.print(" ");
+  //  Serial.print(ts);
+  //  Serial.print(" ");
+  //  Serial.print(0);
 
+  digitalWrite(CSlight[licktubethatmetlickreq], HIGH);
   lightOff = ts + lightdur;
 }
 
