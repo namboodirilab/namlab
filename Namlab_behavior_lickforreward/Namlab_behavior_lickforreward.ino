@@ -614,6 +614,12 @@ void loop() {
     else if (licksolenoid[licktubethatmetlickreq] == solenoid4) {
       Serial.print(11);
     }
+    else if (licksolenoid[licktubethatmetlickreq] == lickretractsolenoid1) {
+      Serial.print(12);
+    }
+    else if (licksolenoid[licktubethatmetlickreq] == lickretractsolenoid2) {
+      Serial.print(13);
+    }
     Serial.print(" ");
     Serial.print(ts);
     Serial.print(" ");
@@ -784,6 +790,12 @@ void getParams() {
     else if (CSsolenoid[p] == 4) {
       CSsolenoid[p] = solenoid4;
     }
+    else if (CSsolenoid[p] == 5) {
+      CSsolenoid[p] = lickretractsolenoid1;
+    }
+    else if (CSsolenoid[p] == 6) {
+      CSsolenoid[p] = lickretractsolenoid2;
+    }
   }
 
   if (backgroundsolenoid == 1) {
@@ -811,6 +823,12 @@ void getParams() {
     }
     else if (licksolenoid[p] == 4) {
       licksolenoid[p] = solenoid4;
+    }
+    else if (licksolenoid[p] == 5) {
+      licksolenoid[p] = lickretractsolenoid1;
+    }
+    else if (licksolenoid[p] == 6) {
+      licksolenoid[p] = lickretractsolenoid2;
     }
   }
   for (int p = 0; p < numlicktube; p++) {

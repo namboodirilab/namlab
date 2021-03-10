@@ -22,7 +22,7 @@ function varargout = headfix_GUI(varargin)
 
 % Edit the above text to modify the response to help headfix_GUI
 
-% Last Modified by GUIDE v2.5 08-Feb-2021 11:18:40
+% Last Modified by GUIDE v2.5 05-Mar-2021 15:32:46
 
 % cd 'F:\acads\Stuber lab\headfix'; %Change to directory
 
@@ -67,7 +67,7 @@ guidata(hObject, handles);
 
 global actvAx saveDir
 
-mainPath = 'C:\Users\namboodirilab\OneDrive - University of California, San Francisco\Behavioral_acquisition_and_analysis';
+mainPath = 'C:\Users\mzhou9\Desktop\Behavioral_acquisition_and_analysis';
 addpath(mainPath)
 saveDir = [mainPath '\data\'];          % where to save data
 
@@ -227,7 +227,7 @@ set(handles.openButton,'Enable','off')              % disable 'link' button
 set(handles.refreshButton,'Enable','off')           % disable 'refresh' button
 
 selectedmode = get(handles.experimentmode, 'Value');
-if selectedmode == 1
+if selectedmode == 1 || selectedmode == 4;
     set(handles.sendButton,'Enable','on') 
     set(handles.csproperties, 'Enable', 'on');
     set(handles.checkboxtrialbytrial, 'Enable', 'on');
@@ -257,7 +257,7 @@ elseif selectedmode == 2
 elseif selectedmode == 3
     set(handles.sendButton,'Enable','on') 
     set(handles.lickproperties, 'Enable', 'on');
-elseif selectedmode == 4
+elseif selectedmode == 5
     set(handles.testserialport, 'Enable', 'on');
 end
 
@@ -287,13 +287,15 @@ basecmd = strcat('"C:\Program Files (x86)\Arduino\hardware\tools\avr/bin/avrdude
 selectedmode = get(handles.experimentmode,'Value');
 
 if selectedmode == 1
-    [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_cues.ino.hex',':i'));
+    [status,cmdout] = dos(strcat(basecmd,'C:\Users\mzhou9\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_cues.ino.hex',':i'));
 elseif selectedmode == 2
-    [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_randomrewards.ino.hex',':i'));
+    [status,cmdout] = dos(strcat(basecmd,'C:\Users\mzhou9\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_randomrewards.ino.hex',':i'));
 elseif selectedmode == 3
-    [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_lickforreward.ino.hex',':i'));
+    [status,cmdout] = dos(strcat(basecmd,'C:\Users\mzhou9\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_lickforreward.ino.hex',':i'));
 elseif selectedmode == 4
-    [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis\uploads\Serial_port_testing.ino.hex',':i'));
+    [status,cmdout] = dos(strcat(basecmd,'C:\Users\mzhou9\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_decisionmaking.ino.hex',':i'));
+elseif selectedmode == 5
+    [status,cmdout] = dos(strcat(basecmd,'C:\Users\mzhou9\Desktop\Behavioral_acquisition_and_analysis\uploads\Serial_port_testing.ino.hex',':i'));
 end
 
 
@@ -595,6 +597,50 @@ function csproperties_CreateFcn(hObject, eventdata, handles)
 %         'Go lick tube (or solenoid)', 1, 2, 3;
 %         'Sound(1), light(2) or both(3)', 1, 1, 1};
 
+%%%% DEFAULT FOR TIMING TASK
+% temp = {'Number of trials', 100, 0, 0;
+%         'Frequency(kHz)', 12, 3, 7;
+%         'Predicted solenoid', '1+3', '2+3', '1+3';
+%         'Probability of solenoid', '0+80', '0+0', '0+0';
+%         'Solenoid open time (ms)', '0+30', '30+30', '0+30';
+%         'Cue duration (ms)', 0, 0, 0;
+%         'Delay to solenoid (ms)', '1500+0', '1500+3000', '0+3000';
+%         'Pulse tone (1) or not (0)', 0, 1, 1;
+%         'Speaker number', 1, 2, 1;
+%         'Light number', 1, 2, 1;
+%         'Go lick requirement', 0, 0, 0;
+%         'Go lick tube (or solenoid)', 1, 2, 3;
+%         'Sound(1), light(2) or both(3)', 1, 1, 1};
+
+%%%% DEFAULT FOR LICK REQUIREMENT TASK
+% temp = {'Number of trials', 50, 50, 0;
+%         'Frequency(kHz)', 12, 3, 7;
+%         'Predicted solenoid', '5+3', '5+3', '1+3';
+%         'Probability of solenoid', '100+100', '100+0', '0+100';
+%         'Solenoid open time (ms)', '3000+30', '3000+30', '0+30';
+%         'Cue duration (ms)', 2000, 2000, 0;
+%         'Delay to solenoid (ms)', '0+0', '0+0', '0+3000';
+%         'Pulse tone (1) or not (0)', 0, 1, 1;
+%         'Speaker number', 1, 2, 1;
+%         'Light number', 1, 2, 1
+%         'Go lick requirement', 3, 0, 0;
+%         'Go lick tube (or solenoid)', 1, 1, 3;
+%         'Sound(1), light(2) or both(3)', 1, 1, 1};
+
+%%%% DEFAULT FOR DECISION MAKING TASK
+% temp = {'Number of trials', 33, 33, 33;
+%         'Frequency(kHz)', 12, 3, 12;
+%         'Predicted solenoid', '5+3', '6+3', '5/6+3';
+%         'Probability of solenoid', '100+100', '100+100', '100+100';
+%         'Solenoid open time (ms)', '3000+60', '3000+30', '3000+30';
+%         'Cue duration (ms)', 2000, 2000, 2000;
+%         'Delay to solenoid (ms)', '0+0', '0+0', '0+3000';
+%         'Pulse tone (1) or not (0)', 0, 1, 1;
+%         'Speaker number', 1, 2, 1;
+%         'Light number', 1, 2, 2
+%         'Go lick requirement', 3, 3, 3;
+%         'Go lick tube (or solenoid)', 1, 2, 1/2;
+%         'Sound(1), light(2) or both(3)', 1, 2, 3};
 
 %%%% DEFAULT FOR PAVLOVIAN CONDITIONING
 temp = {'Number of trials', 50, 50, 0;
@@ -928,6 +974,8 @@ set(handles.fxdsolenoids1Edit,'String','0')
 set(handles.fxdsolenoids2Edit,'String','0')
 set(handles.fxdsolenoids3Edit,'String','0')
 set(handles.fxdsolenoids4Edit,'String','0')
+set(handles.lickretractsolenoid1Edit,'String','0')
+set(handles.lickretractsolenoid2Edit,'String','0')
 set(handles.primesolenoid1,'Visible','off')
 set(handles.primesolenoid2,'Visible','off')
 set(handles.primesolenoid3,'Visible','off')

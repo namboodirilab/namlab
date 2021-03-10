@@ -749,7 +749,12 @@ void loop() {
     else if (CSsolenoid[2 * cueList[CSct] + numfxdsolenoids] == solenoid4) {
       Serial.print(11);                      //   code data as fixed solenoid4 onset timestamp
     }
-
+    else if (CSsolenoid[2 * cueList[CSct] + numfxdsolenoids] == lickretractsolenoid1) {
+      Serial.print(12);                      //   code data as fixed solenoid4 onset timestamp
+    }
+    else if (CSsolenoid[2 * cueList[CSct] + numfxdsolenoids] == lickretractsolenoid2) {
+      Serial.print(13);                      //   code data as fixed solenoid4 onset timestamp
+    }
     Serial.print(" ");
     Serial.print(ts);                      //   send timestamp of solenoid onset
     Serial.print(" ");
@@ -869,6 +874,8 @@ void loop() {
     digitalWrite(solenoid2, LOW);           // turn off solenoid
     digitalWrite(solenoid3, LOW);           // turn off solenoid
     digitalWrite(solenoid4, LOW);           // turn off solenoid
+    digitalWrite(lickretractsolenoid1, LOW);
+    digitalWrite(lickretractsolenoid2, LOW);
     solenoidOff = 0;
   }
 
@@ -1062,6 +1069,12 @@ void getParams() {
     else if (CSsolenoid[p] == 4) {
       CSsolenoid[p] = solenoid4;
     }
+    else if (CSsolenoid[p] == 5) {
+      CSsolenoid[p] = lickretractsolenoid1;
+    }
+    else if (CSsolenoid[p] == 6) {
+      CSsolenoid[p] = lickretractsolenoid2;
+    }
   }
 
   if (backgroundsolenoid == 1) {
@@ -1089,6 +1102,12 @@ void getParams() {
     }
     else if (licksolenoid[p] == 4) {
       licksolenoid[p] = solenoid4;
+    }
+    else if (licksolenoid[p] == 5) {
+      licksolenoid[p] = lickretractsolenoid1;
+    }
+    else if (licksolenoid[p] == 6) {
+      licksolenoid[p] = lickretractsolenoid2;
     }
   }
 }
@@ -1226,12 +1245,12 @@ void deliverlasertocues() {
 }
 
 void lights() {
-//  Serial.print(21 + cueList[CSct]);           // code data as light1 ot light2 timestamp
-//  Serial.print(" ");
-//  Serial.print(ts);                         // send timestamp of light cue
-//  Serial.print(" ");
-//  Serial.print(0);
-//  Serial.print('\n');
+  //  Serial.print(21 + cueList[CSct]);           // code data as light1 ot light2 timestamp
+  //  Serial.print(" ");
+  //  Serial.print(ts);                         // send timestamp of light cue
+  //  Serial.print(" ");
+  //  Serial.print(0);
+  //  Serial.print('\n');
 
   nextfxdsolenoid = ts + CS_t_fxd[2 * cueList[CSct]];
   numfxdsolenoids = 0;
