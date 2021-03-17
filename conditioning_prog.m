@@ -332,6 +332,30 @@ try
                 temptrialdur = trial*durationtrialpartitionnocues;                
                 plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0.97 0.28 0.18],'LineWidth',2);hold on
             end 
+        elseif code == 18                            % Lick retraction solenoid 1 and 2
+            if experimentmode == 1 || experimentmode == 4       
+                if nosolenoidflag == 0                      % Indicates trial with solenoid
+                    lickretractsolenoid1 = lickretractsolenoid1 + 1;          
+                    set(handles.lickretractsolenoid1Edit,'String',num2str(lickretractsolenoid1))
+                    tempsolenoidsct(5) = tempsolenoidsct(5)+1;      % keep track of solenoid4 count
+                    tempsolenoids(tempsolenoidsct(5), 5) = time;   % keep track of solenoid4 timestamp
+                    lickretractsolenoid2 = lickretractsolenoid2 + 1;            
+                    set(handles.lickretractsolenoid2Edit,'String',num2str(lickretractsolenoid2))
+                    tempsolenoidsct(6) = tempsolenoidsct(6)+1;      % keep track of solenoid4 count
+                    tempsolenoids(tempsolenoidsct(6), 6) = time;   % keep track of solenoid4 timestamp
+                end 
+             elseif experimentmode == 3
+                lickretractsolenoid1 = lickretractsolenoid1 + 1;
+                set(handles.lickretractsolenoid1Edit,'String',num2str(lickretractsolenoid1))
+                trial = floor(time/durationtrialpartitionnocues);
+                temptrialdur = trial*durationtrialpartitionnocues;                
+                plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0.3 0.75 0.93],'LineWidth',2);hold on
+                lickretractsolenoid2 = lickretractsolenoid2 + 1;
+                set(handles.lickretractsolenoid2Edit,'String',num2str(lickretractsolenoid2))
+                trial = floor(time/durationtrialpartitionnocues);
+                temptrialdur = trial*durationtrialpartitionnocues;                
+                plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0.97 0.28 0.18],'LineWidth',2);hold on
+            end             
         elseif code == 14                            % Vaccum;            
             if experimentmode ==1 || experimentmode == 4
                 tempcuetovacuumdelay = NaN;

@@ -67,7 +67,7 @@ guidata(hObject, handles);
 
 global actvAx saveDir
 
-mainPath = 'C:\Users\mzhou9\Desktop\Behavioral_acquisition_and_analysis';
+mainPath = 'C:\Users\namboodiri\Desktop\Behavioral_acquisition_and_analysis';
 addpath(mainPath)
 saveDir = [mainPath '\data\'];          % where to save data
 
