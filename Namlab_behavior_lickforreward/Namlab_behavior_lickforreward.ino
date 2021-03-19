@@ -600,7 +600,7 @@ void loop() {
   }
 
 
-  
+
   if (ts >= nextfxdsolenoid && nextfxdsolenoid != 0) {
     if (licksolenoid[licktubethatmetlickreq] == solenoid1) {            // setup which solenoid to give for lick onset
       Serial.print(8);                                // code data
@@ -637,6 +637,57 @@ void loop() {
       Serial.print(1);                                // indicates no reward given
       Serial.print('\n');
     }
+  }
+
+  if (reading == 65) {                 // MANUAL solenoid 1
+    digitalWrite(solenoid1, HIGH);          // turn on solenoid
+    solenoidOff = ts + CSopentime[1];              // set solenoid off time
+    Serial.print(8);                   //   code data as solenoid1 onset timestamp
+    Serial.print(" ");
+    Serial.print(ts);                  //   send timestamp of solenoid onset
+    Serial.print(" ");
+    Serial.print(0);
+    Serial.print('\n');
+  }
+  if (reading == 68) {                 // MANUAL solenoid 2
+    digitalWrite(solenoid2, HIGH);          // turn on solenoid
+    solenoidOff = ts + CSopentime[1];              // set solenoid off time
+    Serial.print(9);                   //   code data as solenoid2 onset timestamp
+    Serial.print(" ");
+    Serial.print(ts);                  //   send timestamp of solenoid onset
+    Serial.print(" ");
+    Serial.print(0);
+    Serial.print('\n');
+  }
+  if (reading == 71) {                 // MANUAL solenoid 3
+    digitalWrite(solenoid3, HIGH);          // turn on solenoid
+    solenoidOff = ts + CSopentime[1];              // set solenoid off time
+    Serial.print(10);                   //   code data as solenoid3 onset timestamp
+    Serial.print(" ");
+    Serial.print(ts);                  //   send timestamp of solenoid onset
+    Serial.print(" ");
+    Serial.print(0);
+    Serial.print('\n');
+  }
+  if (reading == 74) {                 // MANUAL solenoid 4
+    digitalWrite(solenoid4, HIGH);          // turn on solenoid
+    solenoidOff = ts + CSopentime[1];              // set solenoid off time
+    Serial.print(11);                   //   code data as solenoid4 onset timestamp
+    Serial.print(" ");
+    Serial.print(ts);                  //   send timestamp of solenoid onset
+    Serial.print(" ");
+    Serial.print(0);
+    Serial.print('\n');
+  }
+  if (reading == 86) {                 // Vacuum
+    digitalWrite(vacuum, HIGH);          // turn on vacuum
+    nextvacuumOff = ts + vacuumopentime;              // set vacuum off time
+    Serial.print(14);                   //   code data as vacuum onset timestamp
+    Serial.print(" ");
+    Serial.print(ts);                  //   send timestamp of vacuum onset
+    Serial.print(" ");
+    Serial.print(0);
+    Serial.print('\n');
   }
 
   if (ts >= solenoidOff && solenoidOff != 0) {
@@ -943,7 +994,9 @@ void cues() {
   //  Serial.print(" ");
   //  Serial.print(0);
   //  Serial.print('\n');
-  tone(soundspeaker[licktubethatmetlickreq], soundfreq[licktubethatmetlickreq]);               // turn on tone
+  if (sounddur[licktubethatmetlickreq] > 0) {
+    tone(soundspeaker[licktubethatmetlickreq], soundfreq[licktubethatmetlickreq]);               // turn on tone
+  }
 
   if (soundsignalpulse[licktubethatmetlickreq] == 1) {
     cuePulseOff = ts + 200;                  // Cue pulsing

@@ -1213,7 +1213,9 @@ void cues() {
   //  Serial.print(" ");
   //  Serial.print(0);
   //  Serial.print('\n');
-  tone(CSspeaker[cueList[CSct]], CSfreq[cueList[CSct]]);               // turn on tone
+  if (CSdur[cueList[CSct]] > 0) {
+    tone(CSspeaker[cueList[CSct]], CSfreq[cueList[CSct]]);               // turn on tone
+  }
 
   if (CSpulse[cueList[CSct]] == 1) {
     cuePulseOff = ts + 200;                  // Cue pulsing
