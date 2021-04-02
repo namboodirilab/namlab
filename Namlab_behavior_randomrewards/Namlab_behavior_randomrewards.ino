@@ -568,10 +568,14 @@ void setup() {
   lickctforreq[1] = 0;                 // Number of licks2 during cue for first trial is initialized to 0
   lickctforreq[2] = 0;                 // Number of licks3 during cue for first trial is initialized to 0
 
-  // UNCOMMENT THESE LINES FOR TRIGGERING IMAGE COLLECTION AT BEGINNING
+  // UNCOMMENT THESE LINES FOR TRIGGERING 2P IMAGE COLLECTION AT BEGINNING
+//  digitalWrite(ttloutpin, HIGH);
+//  delay(100);
+//  digitalWrite(ttloutpin, LOW);
+  // TILL HERE
+  
+  // UNCOMMENT THESE LINES FOR TRIGGERING PHOTOMETRY IMAGE COLLECTION AT BEGINNING
   digitalWrite(ttloutpin, HIGH);
-  delay(100);
-  digitalWrite(ttloutpin, LOW);
   // TILL HERE
 
   // start session
@@ -993,9 +997,14 @@ void software_Reboot()
 
 // End session //////////////
 void endSession() {
-  digitalWrite(ttloutstoppin, HIGH);
-  delay(100);
-  digitalWrite(ttloutstoppin, LOW);
+  // TURN OFF 2P IMAGING
+//  digitalWrite(ttloutstoppin, HIGH);
+//  delay(100);
+//  digitalWrite(ttloutstoppin, LOW);
+
+  //TURN OFF PHOTOMETRY  
+  digitalWrite(ttloutpin, LOW);
+  
   Serial.print(0);                       //   code data as end of session
   Serial.print(" ");
   Serial.print(ts);                      //   send timestamp
