@@ -618,11 +618,11 @@ void setup() {
   lickctforreq[2] = 0;                 // Number of licks3 during cue for first trial is initialized to 0
 
   // UNCOMMENT THESE LINES FOR TRIGGERING 2P IMAGE COLLECTION AT BEGINNING
-//  digitalWrite(ttloutpin, HIGH);
-//  delay(100);
-//  digitalWrite(ttloutpin, LOW);
+  //  digitalWrite(ttloutpin, HIGH);
+  //  delay(100);
+  //  digitalWrite(ttloutpin, LOW);
   // TILL HERE
-  
+
   // UNCOMMENT THESE LINES FOR TRIGGERING PHOTOMETRY IMAGE COLLECTION AT BEGINNING
   digitalWrite(ttloutpin, HIGH);
   // TILL HERE
@@ -686,6 +686,8 @@ void loop() {
       Serial.print(" ");
       Serial.print(0);
       Serial.print('\n');
+      // Sync with fiber photometry
+      digitalWrite(ttloutstoppin, HIGH);
     }
     nextbgdsolenoid = 0;
     //    u = random(0, 10000);
@@ -744,6 +746,8 @@ void loop() {
     digitalWrite(solenoid2, LOW);           // turn off solenoid
     digitalWrite(solenoid3, LOW);           // turn off solenoid
     digitalWrite(solenoid4, LOW);           // turn off solenoid
+    // Sync with fiber photometry
+    digitalWrite(ttloutstoppin, LOW);
     solenoidOff = 0;
     if (r_bgd > 0) {
       numbgdsolenoid = numbgdsolenoid + 1;            // Count background solenoids
@@ -1047,13 +1051,13 @@ void software_Reboot()
 // End session //////////////
 void endSession() {
   // TURN OFF 2P IMAGING
-//  digitalWrite(ttloutstoppin, HIGH);
-//  delay(100);
-//  digitalWrite(ttloutstoppin, LOW);
+  //  digitalWrite(ttloutstoppin, HIGH);
+  //  delay(100);
+  //  digitalWrite(ttloutstoppin, LOW);
 
-  //TURN OFF PHOTOMETRY  
+  //TURN OFF PHOTOMETRY
   digitalWrite(ttloutpin, LOW);
-  
+
   Serial.print(0);                       //   code data as end of session
   Serial.print(" ");
   Serial.print(ts);                      //   send timestamp
