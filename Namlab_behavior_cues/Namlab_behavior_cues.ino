@@ -319,26 +319,74 @@ void setup() {
     reading = Serial.read();
     if (reading == 50 || reading == 51 || reading == 52) {                       // Test CS1 or CS2 or CS3
       reading -= 50;
-      if (CSpulse[reading] == 1) {
-        tone(CSspeaker[reading], CSfreq[reading]);               // turn on tone
-        delay(200);                               // Pulse with 200ms cycle
-        noTone(CSspeaker[reading]);
-        delay(200);
-        tone(CSspeaker[reading], CSfreq[reading]);               // turn on tone
-        delay(200);                               // Pulse with 200ms cycle
-        noTone(CSspeaker[reading]);
-        delay(200);
-        tone(CSspeaker[reading], CSfreq[reading]);               // turn on tone
-        delay(200);                               // Pulse with 200ms cycle
-        noTone(CSspeaker[reading]);
+      if (CSsignal[reading] == 1) {
+        if (CSpulse[reading] == 1) {
+          tone(CSspeaker[reading], CSfreq[reading]);               // turn on tone
+          delay(200);                               // Pulse with 200ms cycle
+          noTone(CSspeaker[reading]);
+          delay(200);
+          tone(CSspeaker[reading], CSfreq[reading]);               // turn on tone
+          delay(200);                               // Pulse with 200ms cycle
+          noTone(CSspeaker[reading]);
+          delay(200);
+          tone(CSspeaker[reading], CSfreq[reading]);               // turn on tone
+          delay(200);                               // Pulse with 200ms cycle
+          noTone(CSspeaker[reading]);
+        }
+        else if (CSpulse[reading] == 0) {
+          tone(CSspeaker[reading], CSfreq[reading]);               // turn on tone
+          delay(1000);
+          noTone(CSspeaker[reading]);
+        }
       }
-      else if (CSpulse[reading] == 0) {
-        tone(CSspeaker[reading], CSfreq[reading]);               // turn on tone
-        delay(1000);
-        noTone(CSspeaker[reading]);
+      else if (CSsignal[reading] == 2) {
+        if (CSpulse[reading] == 1) {
+          digitalWrite(CSlight[reading], HIGH);               // turn on light
+          delay(200);                               // Pulse with 200ms cycle
+          digitalWrite(CSlight[reading], LOW);
+          delay(200);
+          digitalWrite(CSlight[reading], HIGH);               // turn on light
+          delay(200);                               // Pulse with 200ms cycle
+          digitalWrite(CSlight[reading], LOW);
+          delay(200);
+          digitalWrite(CSlight[reading], HIGH);               // turn on light
+          delay(200);                               // Pulse with 200ms cycle
+          digitalWrite(CSlight[reading], LOW);
+        }
+        else if (CSpulse[reading] == 0) {
+          digitalWrite(CSlight[reading], HIGH);               // turn on light
+          delay(1000);                               // delay 1s
+          digitalWrite(CSlight[reading], LOW);
+        }
+      }
+      else if (CSsignal[reading] == 3) {
+        if (CSpulse[reading] == 1) {
+          tone(CSspeaker[reading], CSfreq[reading]);               // turn on tone
+          digitalWrite(CSlight[reading], HIGH);               // turn on light
+          delay(200);                               // Pulse with 200ms cycle
+          noTone(CSspeaker[reading]);
+          digitalWrite(CSlight[reading], LOW);
+          delay(200);
+          tone(CSspeaker[reading], CSfreq[reading]);               // turn on tone
+          digitalWrite(CSlight[reading], HIGH);               // turn on light
+          delay(200);                               // Pulse with 200ms cycle
+          noTone(CSspeaker[reading]);
+          digitalWrite(CSlight[reading], LOW);
+          delay(200);
+          digitalWrite(CSlight[reading], HIGH);               // turn on light
+          delay(200);                               // Pulse with 200ms cycle
+          noTone(CSspeaker[reading]);
+          digitalWrite(CSlight[reading], LOW);
+        }
+        else if (CSpulse[reading] == 0) {
+          tone(CSspeaker[reading], CSfreq[reading]);               // turn on tone
+          digitalWrite(CSlight[reading], HIGH);               // turn on light
+          delay(1000);                               // delay 1s
+          noTone(CSspeaker[reading]);
+          digitalWrite(CSlight[reading], LOW);
+        }
       }
     }
-
     if (reading == 65) {                 // MANUAL solenoid 1
       digitalWrite(solenoid1, HIGH);          // turn on solenoid 1
       delay(CSopentime[1]);
@@ -1253,6 +1301,9 @@ void lights() {
   //  Serial.print(" ");
   //  Serial.print(0);
   //  Serial.print('\n');
+  if (CSdur[cueList[CSct]] > 0) {
+    digitalWrite(CSlight[cueList[CSct]], HIGH);
+  }
 
   nextfxdsolenoid = ts + CS_t_fxd[2 * cueList[CSct]];
   numfxdsolenoids = 0;
