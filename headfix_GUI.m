@@ -67,7 +67,7 @@ guidata(hObject, handles);
 
 global actvAx saveDir
 
-mainPath = 'C:\Users\namboodiri\Desktop\Behavioral_acquisition_and_analysis';
+mainPath = 'C:\Users\mzhou9\Desktop\Behavioral_acquisition_and_analysis';
 addpath(mainPath)
 saveDir = [mainPath '\data\'];          % where to save data
 
@@ -628,34 +628,34 @@ function csproperties_CreateFcn(hObject, eventdata, handles)
 %         'Sound(1), light(2) or both(3)', 1, 1, 1};
 
 %%%% DEFAULT FOR DECISION MAKING TASK
-% temp = {'Number of trials', 33, 33, 33;
-%         'Frequency(kHz)', 12, 3, 12;
-%         'Predicted solenoid', '5+3', '6+3', '5/6+3';
-%         'Probability of solenoid', '100+100', '100+100', '100+100';
-%         'Solenoid open time (ms)', '3000+60', '3000+30', '3000+30';
-%         'Cue duration (ms)', 2000, 2000, 2000;
-%         'Delay to solenoid (ms)', '0+0', '0+0', '0+3000';
-%         'Pulse tone (1) or not (0)', 0, 1, 1;
-%         'Speaker number', 1, 2, 1;
-%         'Light number', 1, 2, 2
-%         'Go lick requirement', 3, 3, 3;
-%         'Go lick tube (or solenoid)', 1, 2, 1/2;
-%         'Sound(1), light(2) or both(3)', 1, 2, 3};
+temp = {'Number of trials', 33, 33, 33;
+        'Frequency(kHz)', 12, 3, 12;
+        'Predicted solenoid', '5+3', '6+3', '56+0';
+        'Probability of solenoid', '100+100', '100+100', '100+100';
+        'Solenoid open time (ms)', '3000+60', '3000+30', '3000+30';
+        'Cue duration (ms)', 2000, 2000, 2000;
+        'Delay to solenoid (ms)', '0+3000', '0+5000', '0+3000';
+        'Pulse tone (1) or not (0)', 0, 1, 0;
+        'Speaker number', 1, 2, 1;
+        'Light number', 1, 2, 2
+        'Go lick requirement', 1, 1, 1;
+        'Go lick tube (or solenoid)', 1, 2, 1;
+        'Sound(1), light(2) or both(3)', 1, 2, 3};
 
 %%%% DEFAULT FOR PAVLOVIAN CONDITIONING
-temp = {'Number of trials', 50, 50, 0;
-        'Frequency(kHz)', 12, 3, 7;
-        'Predicted solenoid', '1+3', '2+3', '1+3';
-        'Probability of solenoid', '0+100', '0+0', '0+100';
-        'Solenoid open time (ms)', '30+30', '30+30', '0+30';
-        'Cue duration (ms)', 2000, 2000, 2000;
-        'Delay to solenoid (ms)', '1500+3000', '1500+3000', '0+3000';
-        'Pulse tone (1) or not (0)', 0, 1, 1;
-        'Speaker number', 1, 2, 1;
-        'Light number', 1, 2, 1;
-        'Go lick requirement', 0, 0, 0;
-        'Go lick tube (or solenoid)', 1, 2, 3;
-        'Sound(1), light(2) or both(3)', 1, 1, 1};
+% temp = {'Number of trials', 50, 50, 0;
+%         'Frequency(kHz)', 12, 3, 7;
+%         'Predicted solenoid', '1+3', '2+3', '1+3';
+%         'Probability of solenoid', '0+100', '0+0', '0+100';
+%         'Solenoid open time (ms)', '30+30', '30+30', '0+30';
+%         'Cue duration (ms)', 2000, 2000, 2000;
+%         'Delay to solenoid (ms)', '1500+3000', '1500+3000', '0+3000';
+%         'Pulse tone (1) or not (0)', 0, 1, 1;
+%         'Speaker number', 1, 2, 1;
+%         'Light number', 1, 2, 1;
+%         'Go lick requirement', 0, 0, 0;
+%         'Go lick tube (or solenoid)', 1, 2, 3;
+%         'Sound(1), light(2) or both(3)', 1, 1, 1};
 set(hObject, 'Data', temp);
 
 % --- Executes during object creation, after setting all properties.
@@ -663,17 +663,19 @@ function lickproperties_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to lickproperties (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
-temp = {'Number of licks required',  1, 1;    
+temp = {'Number of licks required',  5, 5;
+        'Fixed/variable check',      0, 0;
         'Predicted solenoid',        3, 3;
-        'Probability of solenoid', 100, 100;
+        'Probability of solenoid', 100, 0;
         'Solenoid open time (ms)',  30, 30;
         'Delay to solenoid (ms)',    0, 0;
-        'Delay to next lick (ms)',6000, 6000;
-        'Min number of rewards',    20, 20;
+        'Delay to next lick (ms)',100, 100;
+        'Fixed/variable check',      0, 0;                
+        'Min number of rewards',    100, 0;
         'Sound(1), light(2) or both(3)' 1 1;
         'Pulse tone (1) or not (0)' 0 1;
         'Sound Frequency (kHz)' 12 3;
-        'Sound Duration (ms)' 1000 1000;
+        'Sound Duration (ms)' 0 1000;
         'Speaker number' 1 2};
 set(hObject, 'Data', temp);
 
