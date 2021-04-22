@@ -177,6 +177,8 @@ unsigned long totbgdsolenoid;         // total number of background solenoids if
 const int numlicktube = 2;       // number of recording lick tubes for lick dependent experiments
 unsigned long reqlicknum[numlicktube];
 unsigned long licksolenoid[numlicktube];
+unsigned long fixedratioflag[numlicktube];
+unsigned long fixedintervalflag[numlicktube];
 unsigned long lickprob[numlicktube];
 unsigned long lickopentime[numlicktube];
 unsigned long delaytoreward[numlicktube];
@@ -996,7 +998,7 @@ void loop() {
 
 // Accept parameters from MATLAB
 void getParams() {
-  int pn = 93;                              // number of parameter inputs
+  int pn = 97;                              // number of parameter inputs
   unsigned long param[pn];                  // parameters
 
   for (int p = 0; p < pn; p++) {
@@ -1086,6 +1088,11 @@ void getParams() {
   CSlight[0]             = param[90];
   CSlight[1]             = param[91];
   CSlight[2]             = param[92];
+  fixedratioflag[0]      = param[93];
+  fixedratioflag[1]      = param[94];
+  fixedintervalflag[0]   = param[95];
+  fixedintervalflag[1]   = param[96];
+  
 
 
   for (int p = 0; p < numCS; p++) {

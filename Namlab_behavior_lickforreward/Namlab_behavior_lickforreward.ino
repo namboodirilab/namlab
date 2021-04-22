@@ -187,8 +187,8 @@ unsigned long soundsignalpulse[numlicktube];
 unsigned long soundfreq[numlicktube];
 unsigned long sounddur[numlicktube];
 unsigned long soundspeaker[numlicktube];
-unsigned long fixedratioflag;
-unsigned long fixedintervalflag;
+unsigned long fixedratioflag[numlicktube];
+unsigned long fixedintervalflag[numlicktube];
 unsigned long rewardprobforlick[numlicktube];
 
 unsigned long laserlatency;      // Laser latency wrt cue (ms)
@@ -558,10 +558,11 @@ void loop() {
   }
 
 
-  if (fixedratioflag == 0) {
+//First lick tube for fixed variable check determines both of the lick tubes for now
+  if (fixedratioflag[0] == 0) {
     SignalForMeetingLickReq_Fixed();
   }
-  else if (fixedratioflag == 1) {
+  else if (fixedratioflag[0] == 1) {
     SignalForMeetingLickReq_Variable();
   }
 
@@ -623,7 +624,7 @@ void loop() {
 
       u = random(0, 10000);
       temp = (float)u / 10000;
-      if (fixedintervalflag == 1) {
+      if (fixedintervalflag[0] == 1) {
         temp1 = 3;
         temp1 = exp(-temp1);
         temp1 = 1 - temp1;
@@ -631,7 +632,7 @@ void loop() {
         temp = -log(1 - temp);
         nextvacuum = (unsigned long)ts + lickopentime[licktubethatmetlickreq] + delaytolick[licktubethatmetlickreq] * temp;       // variable vacuum onset
       }
-      else if (fixedintervalflag == 0) {
+      else if (fixedintervalflag[1] == 0) {
         nextvacuum = ts + lickopentime[licktubethatmetlickreq] + delaytolick[licktubethatmetlickreq];       // fixed vacuum onset
       }
     }
@@ -721,7 +722,7 @@ void loop() {
 
 // Accept parameters from MATLAB
 void getParams() {
-  int pn = 95;                              // number of parameter inputs
+  int pn = 97;                              // number of parameter inputs
   unsigned long param[pn];                  // parameters
 
   for (int p = 0; p < pn; p++) {
@@ -811,8 +812,11 @@ void getParams() {
   CSlight[0]             = param[90];
   CSlight[1]             = param[91];
   CSlight[2]             = param[92];
-  fixedratioflag         = (boolean)param[93];
-  fixedintervalflag      = (boolean)param[94];
+  fixedratioflag[0]      = (boolean)param[93];
+  fixedratioflag[1]      = (boolean)param[94];
+  fixedintervalflag[0]   = (boolean)param[95];
+  fixedintervalflag[1]   = (boolean)param[96];
+
 
   for (int p = 0; p < numCS; p++) {
     CSfreq[p] = CSfreq[p] * 1000;         // convert frequency from kHz to Hz
@@ -893,7 +897,7 @@ void getParams() {
       soundspeaker[p] = speaker2;
     }
   }
-  if (fixedratioflag == 1) {
+  if (fixedratioflag[0] == 1) {
     rewardprobforlick[0] = (float)(1 / reqlicknum[0]);
     rewardprobforlick[1] = (float)(1 / reqlicknum[1]);
   }
