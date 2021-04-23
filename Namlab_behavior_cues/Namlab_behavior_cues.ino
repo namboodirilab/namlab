@@ -816,7 +816,12 @@ void loop() {
     else {
       temp = 0;
     }
-    if (CSopentime[2 * cueList[CSct] + numfxdsolenoids] > 0 && u < CSprob[2 * cueList[CSct] + numfxdsolenoids] && lickctforreq[golicktube[cueList[CSct]]] >= temp) {
+    if (CSopentime[2 * cueList[CSct] + numfxdsolenoids] > 0 && u < CSprob[2 * cueList[CSct] + numfxdsolenoids] && lickctforreq[golicktube[cueList[CSct]]] >= temp && temp != -1) {
+      digitalWrite(CSsolenoid[2 * cueList[CSct] + numfxdsolenoids], HIGH);      // turn on solenoid
+      Serial.print(0);                       //   this indicates that the solenoid was actually given
+      Serial.print('\n');
+    }
+    else if (CSopentime[2 * cueList[CSct] + numfxdsolenoids] > 0 && lickctforreq[golicktube[cueList[CSct]]] = 0 && temp == -1) {
       digitalWrite(CSsolenoid[2 * cueList[CSct] + numfxdsolenoids], HIGH);      // turn on solenoid
       Serial.print(0);                       //   this indicates that the solenoid was actually given
       Serial.print('\n');
@@ -1092,7 +1097,7 @@ void getParams() {
   fixedratioflag[1]      = param[94];
   fixedintervalflag[0]   = param[95];
   fixedintervalflag[1]   = param[96];
-  
+
 
 
   for (int p = 0; p < numCS; p++) {
