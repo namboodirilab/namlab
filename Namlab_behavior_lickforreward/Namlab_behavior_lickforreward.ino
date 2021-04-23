@@ -187,9 +187,9 @@ unsigned long soundsignalpulse[numlicktube];
 unsigned long soundfreq[numlicktube];
 unsigned long sounddur[numlicktube];
 unsigned long soundspeaker[numlicktube];
-unsigned long fixedratioflag[numlicktube];
-unsigned long fixedintervalflag[numlicktube];
-unsigned long rewardprobforlick[numlicktube];
+unsigned long variableratioflag[numlicktube];
+unsigned long variableintervalflag[numlicktube];
+float rewardprobforlick[numlicktube];
 
 unsigned long laserlatency;      // Laser latency wrt cue (ms)
 unsigned long laserduration;     // Laser duration (ms)
@@ -558,11 +558,11 @@ void loop() {
   }
 
 
-//First lick tube for fixed variable check determines both of the lick tubes for now
-  if (fixedratioflag[0] == 0) {
+  //First lick tube for fixed variable check determines both of the lick tubes for now
+  if (variableratioflag[0] == 0) {
     SignalForMeetingLickReq_Fixed();
   }
-  else if (fixedratioflag[0] == 1) {
+  else if (variableratioflag[0] == 1) {
     SignalForMeetingLickReq_Variable();
   }
 
@@ -622,9 +622,9 @@ void loop() {
       Serial.print('\n');
       solenoidOff = ts + lickopentime[licktubethatmetlickreq];                          // set solenoid off time
 
-      u = random(0, 10000);
-      temp = (float)u / 10000;
-      if (fixedintervalflag[0] == 1) {
+      if (variableintervalflag[licktubethatmetlickreq] == 1) {
+        u = random(0, 10000);
+        temp = (float)u / 10000;
         temp1 = 3;
         temp1 = exp(-temp1);
         temp1 = 1 - temp1;
@@ -632,7 +632,7 @@ void loop() {
         temp = -log(1 - temp);
         nextvacuum = (unsigned long)ts + lickopentime[licktubethatmetlickreq] + delaytolick[licktubethatmetlickreq] * temp;       // variable vacuum onset
       }
-      else if (fixedintervalflag[1] == 0) {
+      else if (variableintervalflag[licktubethatmetlickreq] == 0) {
         nextvacuum = ts + lickopentime[licktubethatmetlickreq] + delaytolick[licktubethatmetlickreq];       // fixed vacuum onset
       }
     }
@@ -812,10 +812,10 @@ void getParams() {
   CSlight[0]             = param[90];
   CSlight[1]             = param[91];
   CSlight[2]             = param[92];
-  fixedratioflag[0]      = (boolean)param[93];
-  fixedratioflag[1]      = (boolean)param[94];
-  fixedintervalflag[0]   = (boolean)param[95];
-  fixedintervalflag[1]   = (boolean)param[96];
+  variableratioflag[0]      = (boolean)param[93];
+  variableratioflag[1]      = (boolean)param[94];
+  variableintervalflag[0]   = (boolean)param[95];
+  variableintervalflag[1]   = (boolean)param[96];
 
 
   for (int p = 0; p < numCS; p++) {
@@ -897,9 +897,9 @@ void getParams() {
       soundspeaker[p] = speaker2;
     }
   }
-  if (fixedratioflag[0] == 1) {
-    rewardprobforlick[0] = (float)(1 / reqlicknum[0]);
-    rewardprobforlick[1] = (float)(1 / reqlicknum[1]);
+  if (variableratioflag[0] == 1) {
+    rewardprobforlick[0] = 1. / reqlicknum[0];
+    rewardprobforlick[1] = 1. / reqlicknum[1];
   }
 }
 
@@ -940,7 +940,9 @@ void SignalForMeetingLickReq_Variable() {
       lights();
     }
   }
-  if (lickctforreq[1] >= reqlicknum[1] && temp <= rewardprobforlick[1] && licktubesactive) {
+  u = random(0, 10000);
+  temp = (float)u / 10000;
+  if (lickctforreq[1] >= 1 && temp <= rewardprobforlick[1] && licktubesactive) {
     nextfxdsolenoid = ts + delaytoreward[1];
     licktubethatmetlickreq = 1;
     licktubesactive = false;
