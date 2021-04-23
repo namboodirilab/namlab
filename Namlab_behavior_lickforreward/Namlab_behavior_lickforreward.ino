@@ -560,10 +560,17 @@ void loop() {
 
   //First lick tube for fixed variable check determines both of the lick tubes for now
   if (variableratioflag[0] == 0) {
-    SignalForMeetingLickReq_Fixed();
+    SignalForMeetingLickReq_Fixed(0);
   }
   else if (variableratioflag[0] == 1) {
-    SignalForMeetingLickReq_Variable();
+    SignalForMeetingLickReq_Variable(0);
+  }
+
+  if (variableratioflag[1] == 0) {
+    SignalForMeetingLickReq_Fixed(0);
+  }
+  else if (variableratioflag[1] == 1) {
+    SignalForMeetingLickReq_Variable(0);
   }
 
 
@@ -903,12 +910,12 @@ void getParams() {
   }
 }
 
-void SignalForMeetingLickReq_Variable() {
+void SignalForMeetingLickReq_Variable(int licktube) {
   u = random(0, 10000);
   temp = (float)u / 10000;
-  if (lickctforreq[0] >= 1 && temp <= rewardprobforlick[0] && licktubesactive) {  // Check if licktube
-    nextfxdsolenoid = ts + delaytoreward[0];
-    licktubethatmetlickreq = 0;
+  if (lickctforreq[licktube] >= 1 && temp <= rewardprobforlick[licktube] && licktubesactive) {  // Check if licktube
+    nextfxdsolenoid = ts + delaytoreward[licktube];
+    licktubethatmetlickreq = licktube;
     licktubesactive = false;
 
     if (signaltolickreq[licktubethatmetlickreq] == 1) {    // Turn on sound cue 1, same frequency and duration as CS1
@@ -940,48 +947,48 @@ void SignalForMeetingLickReq_Variable() {
       lights();
     }
   }
-  u = random(0, 10000);
-  temp = (float)u / 10000;
-  if (lickctforreq[1] >= 1 && temp <= rewardprobforlick[1] && licktubesactive) {
-    nextfxdsolenoid = ts + delaytoreward[1];
-    licktubethatmetlickreq = 1;
-    licktubesactive = false;
-
-    if (signaltolickreq[licktubethatmetlickreq] == 1) {    // Turn on sound cue
-      Serial.print(15 + licktubethatmetlickreq);         // code data as CS1, CS2 or CS3 timestamp
-      Serial.print(" ");
-      Serial.print(ts);                         // send timestamp of cue
-      Serial.print(" ");
-      Serial.print(0);
-      Serial.print('\n');
-      cues();
-    }
-    else if (signaltolickreq[licktubethatmetlickreq] == 2) {    // Turn on light2
-      Serial.print(21 + licktubethatmetlickreq);           // code data as light1 ot light2 timestamp
-      Serial.print(" ");
-      Serial.print(ts);                         // send timestamp of light cue
-      Serial.print(" ");
-      Serial.print(0);
-      Serial.print('\n');
-      lights();
-    }
-    else if (signaltolickreq[licktubethatmetlickreq] == 3) {     // Turn on both sound cue and light signal
-      Serial.print(25 + licktubethatmetlickreq);           // code data as light1 ot light2 timestamp
-      Serial.print(" ");
-      Serial.print(ts);                         // send timestamp of light cue
-      Serial.print(" ");
-      Serial.print(0);
-      Serial.print('\n');
-      cues();
-      lights();
-    }
-  }
+  //  u = random(0, 10000);
+  //  temp = (float)u / 10000;
+  //  if (lickctforreq[1] >= 1 && temp <= rewardprobforlick[1] && licktubesactive) {
+  //    nextfxdsolenoid = ts + delaytoreward[1];
+  //    licktubethatmetlickreq = 1;
+  //    licktubesactive = false;
+  //
+  //    if (signaltolickreq[licktubethatmetlickreq] == 1) {    // Turn on sound cue
+  //      Serial.print(15 + licktubethatmetlickreq);         // code data as CS1, CS2 or CS3 timestamp
+  //      Serial.print(" ");
+  //      Serial.print(ts);                         // send timestamp of cue
+  //      Serial.print(" ");
+  //      Serial.print(0);
+  //      Serial.print('\n');
+  //      cues();
+  //    }
+  //    else if (signaltolickreq[licktubethatmetlickreq] == 2) {    // Turn on light2
+  //      Serial.print(21 + licktubethatmetlickreq);           // code data as light1 ot light2 timestamp
+  //      Serial.print(" ");
+  //      Serial.print(ts);                         // send timestamp of light cue
+  //      Serial.print(" ");
+  //      Serial.print(0);
+  //      Serial.print('\n');
+  //      lights();
+  //    }
+  //    else if (signaltolickreq[licktubethatmetlickreq] == 3) {     // Turn on both sound cue and light signal
+  //      Serial.print(25 + licktubethatmetlickreq);           // code data as light1 ot light2 timestamp
+  //      Serial.print(" ");
+  //      Serial.print(ts);                         // send timestamp of light cue
+  //      Serial.print(" ");
+  //      Serial.print(0);
+  //      Serial.print('\n');
+  //      cues();
+  //      lights();
+  //    }
+  //  }
 }
 
-void SignalForMeetingLickReq_Fixed() {
-  if (lickctforreq[0] >= reqlicknum[0] && licktubesactive) {  // Check if licktube
-    nextfxdsolenoid = ts + delaytoreward[0];
-    licktubethatmetlickreq = 0;
+void SignalForMeetingLickReq_Fixed(int licktube) {
+  if (lickctforreq[licktube] >= reqlicknum[licktube] && licktubesactive) {  // Check if licktube
+    nextfxdsolenoid = ts + delaytoreward[licktube];
+    licktubethatmetlickreq = licktube;
     licktubesactive = false;
 
     if (signaltolickreq[licktubethatmetlickreq] == 1) {    // Turn on sound cue 1, same frequency and duration as CS1
@@ -1013,40 +1020,40 @@ void SignalForMeetingLickReq_Fixed() {
       lights();
     }
   }
-  if (lickctforreq[1] >= reqlicknum[1] && licktubesactive) {
-    nextfxdsolenoid = ts + delaytoreward[1];
-    licktubethatmetlickreq = 1;
-    licktubesactive = false;
-
-    if (signaltolickreq[licktubethatmetlickreq] == 1) {    // Turn on sound cue
-      Serial.print(15 + licktubethatmetlickreq);         // code data as CS1, CS2 or CS3 timestamp
-      Serial.print(" ");
-      Serial.print(ts);                         // send timestamp of cue
-      Serial.print(" ");
-      Serial.print(0);
-      Serial.print('\n');
-      cues();
-    }
-    else if (signaltolickreq[licktubethatmetlickreq] == 2) {    // Turn on light2
-      Serial.print(21 + licktubethatmetlickreq);           // code data as light1 ot light2 timestamp
-      Serial.print(" ");
-      Serial.print(ts);                         // send timestamp of light cue
-      Serial.print(" ");
-      Serial.print(0);
-      Serial.print('\n');
-      lights();
-    }
-    else if (signaltolickreq[licktubethatmetlickreq] == 3) {     // Turn on both sound cue and light signal
-      Serial.print(25 + licktubethatmetlickreq);           // code data as light1 ot light2 timestamp
-      Serial.print(" ");
-      Serial.print(ts);                         // send timestamp of light cue
-      Serial.print(" ");
-      Serial.print(0);
-      Serial.print('\n');
-      cues();
-      lights();
-    }
-  }
+  //  if (lickctforreq[1] >= reqlicknum[1] && licktubesactive) {
+  //    nextfxdsolenoid = ts + delaytoreward[1];
+  //    licktubethatmetlickreq = 1;
+  //    licktubesactive = false;
+  //
+  //    if (signaltolickreq[licktubethatmetlickreq] == 1) {    // Turn on sound cue
+  //      Serial.print(15 + licktubethatmetlickreq);         // code data as CS1, CS2 or CS3 timestamp
+  //      Serial.print(" ");
+  //      Serial.print(ts);                         // send timestamp of cue
+  //      Serial.print(" ");
+  //      Serial.print(0);
+  //      Serial.print('\n');
+  //      cues();
+  //    }
+  //    else if (signaltolickreq[licktubethatmetlickreq] == 2) {    // Turn on light2
+  //      Serial.print(21 + licktubethatmetlickreq);           // code data as light1 ot light2 timestamp
+  //      Serial.print(" ");
+  //      Serial.print(ts);                         // send timestamp of light cue
+  //      Serial.print(" ");
+  //      Serial.print(0);
+  //      Serial.print('\n');
+  //      lights();
+  //    }
+  //    else if (signaltolickreq[licktubethatmetlickreq] == 3) {     // Turn on both sound cue and light signal
+  //      Serial.print(25 + licktubethatmetlickreq);           // code data as light1 ot light2 timestamp
+  //      Serial.print(" ");
+  //      Serial.print(ts);                         // send timestamp of light cue
+  //      Serial.print(" ");
+  //      Serial.print(0);
+  //      Serial.print('\n');
+  //      cues();
+  //      lights();
+  //    }
+  //  }
 }
 
 
