@@ -159,7 +159,7 @@ unsigned long CS_t_fxd[2 * numCS];
 unsigned long CSpulse[numCS];
 unsigned long CSspeaker[numCS];
 unsigned long CSlight[numCS];
-unsigned long golickreq[numCS];
+signed long golickreq[numCS];
 unsigned long golicktube[numCS];
 unsigned long CSsignal[numCS];
 unsigned long meanITI;           // mean duration of ITI for the exponential distribution OR minimum ITI for uniform distribution
