@@ -233,6 +233,7 @@ unsigned long u;                 // uniform random number for inverse transform 
 unsigned long sessionendtime;    // the time at which session ends. Set to 5s after last fixed solenoid
 float temp;                      // temporary float variable for temporary operations
 float temp1;                     // temporary float variable for temporary operations
+int temp2;
 unsigned long tempu;
 
 int lickctforreq[3];            // number of licks on lick tubes 1, 2 and 3 during the cue-reward delay. If this is >= golickreq for the appropriate golicktube, animals get rewarded after the corresponding cue
@@ -616,6 +617,7 @@ void setup() {
   CSct = 0;                            // Number of CSs is initialized to 0
   rewardct[0] = 0;                        // Number of initial rewards for lick tube 1 is initialized to 0
   rewardct[1] = 0;                        // Number of initial rewards for lick tube 2 is initialized to 0
+  numfxdsolenoids = 0;                      // Number of fixed solenoids initialized to 0
   numbgdsolenoid = 0;                       // Number of background solenoids initialized to 0
   sessionendtime = 0;
   lickctforreq[0] = 0;                 // Number of licks1 during cue for first trial is initialized to 0
@@ -811,49 +813,83 @@ void loop() {
 
     u = random(0, 100);
     if (numfxdsolenoids == 1) {
-      temp = golickreq[cueList[CSct]];     // Go lick requirement only applies to the second reward per cue
+      temp2 = golickreq[cueList[CSct]];     // Go lick requirement only applies to the second reward per cue
     }
     else {
-      temp = 0;
+      temp2 = 0;
     }
-    //    if (temp >= 0) {
-    //      if (CSopentime[2 * cueList[CSct] + numfxdsolenoids] > 0 && u < CSprob[2 * cueList[CSct] + numfxdsolenoids] && lickctforreq[golicktube[cueList[CSct]]] >= temp) {
+    if (temp2 >= 0) {
+      if (CSopentime[2 * cueList[CSct] + numfxdsolenoids] > 0 && u < CSprob[2 * cueList[CSct] + numfxdsolenoids]) {
+        //        tone(CSspeaker[cueList[CSct]], CSfreq[cueList[CSct]]);               // turn on tone
+        //        delay(200);                               // Pulse with 200ms cycle
+        //        noTone(CSspeaker[cueList[CSct]]);
+        if (temp2 == 0) {
+          digitalWrite(CSsolenoid[2 * cueList[CSct] + numfxdsolenoids], HIGH);
+          Serial.print(0);                       //   this indicates that the solenoid was actually given
+          Serial.print('\n');
+        }
+        else {
+          if (lickctforreq[golicktube[cueList[CSct]]] >= 1) {
+            digitalWrite(CSsolenoid[2 * cueList[CSct] + numfxdsolenoids], HIGH);
+            Serial.print(0);                       //   this indicates that the solenoid was actually given
+            Serial.print('\n');
+          }
+          else {
+            Serial.print(1);                       //   this indicates that the solenoid was actually given
+            Serial.print('\n');
+          }
+        }
+      }
+      else {
+        Serial.print(1);                       //   this indicates that the solenoid was actually given
+        Serial.print('\n');
+      }
+    }
+    //
+    //            digitalWrite(CSsolenoid[2 * cueList[CSct] + numfxdsolenoids], HIGH);      // turn on solenoid
+    //            //            Serial.print(0);                       //   this indicates that the solenoid was actually given
+    //            //            Serial.print('\n');
+    //          }
+    //          else if (temp2 != 0) {
+    //            Serial.print(0);                       //   this indicates that the solenoid was actually given
+    //            Serial.print('\n');
+
+    else if (temp2 == -1) {
+      if (CSopentime[2 * cueList[CSct] + numfxdsolenoids] > 0 && lickctforreq[golicktube[cueList[CSct]]] == 0) {
+        digitalWrite(CSsolenoid[2 * cueList[CSct] + numfxdsolenoids], HIGH);      // turn on solenoid
+        Serial.print(0);                       //   this indicates that the solenoid was actually given
+        Serial.print('\n');
+      }
+      else {
+        Serial.print(1);                       //   this indicates that the solenoid was not given
+        Serial.print('\n');
+      }
+    }
+    //
+    //      if (CSopentime[2 * cueList[CSct] + numfxdsolenoids] > 0 && u < CSprob[2 * cueList[CSct] + numfxdsolenoids] && lickctforreq[golicktube[cueList[CSct]]] >= temp2 && temp2 != -1) {
+    //        digitalWrite(CSsolenoid[2 * cueList[CSct] + numfxdsolenoids], HIGH);      // turn on solenoid
+    //        Serial.print(0);                       //   this indicates that the solenoid was actually given
+    //        Serial.print('\n');
+    //      }
+    //    if (CSopentime[2 * cueList[CSct] + numfxdsolenoids] > 0 && u < CSprob[2 * cueList[CSct] + numfxdsolenoids]) {
+    //      tone(CSspeaker[cueList[CSct]], CSfreq[cueList[CSct]]);               // turn on tone
+    //      delay(200);                               // Pulse with 200ms cycle
+    //      noTone(CSspeaker[cueList[CSct]]);
+    //      if (lickctforreq[golicktube[cueList[CSct]]] >= temp) {
     //        digitalWrite(CSsolenoid[2 * cueList[CSct] + numfxdsolenoids], HIGH);      // turn on solenoid
     //        Serial.print(0);                       //   this indicates that the solenoid was actually given
     //        Serial.print('\n');
     //      }
     //    }
-    //    else if (temp == -1) {
-    //      if (CSopentime[2 * cueList[CSct] + numfxdsolenoids] > 0 && lickctforreq[golicktube[cueList[CSct]]] == 0) {
+    //      else if (CSopentime[2 * cueList[CSct] + numfxdsolenoids] > 0 && lickctforreq[golicktube[cueList[CSct]]] == 0 && temp2 == -1) {
     //        digitalWrite(CSsolenoid[2 * cueList[CSct] + numfxdsolenoids], HIGH);      // turn on solenoid
     //        Serial.print(0);                       //   this indicates that the solenoid was actually given
     //        Serial.print('\n');
     //      }
+    //    else {
+    //      Serial.print(1);                       //   this indicates that the solenoid was not given
+    //      Serial.print('\n');
     //    }
-    if (CSopentime[2 * cueList[CSct] + numfxdsolenoids] > 0 && u < CSprob[2 * cueList[CSct] + numfxdsolenoids] && lickctforreq[golicktube[cueList[CSct]]] == 1 && temp != -1) {
-      digitalWrite(CSsolenoid[2 * cueList[CSct] + numfxdsolenoids], HIGH);      // turn on solenoid
-      Serial.print(0);                       //   this indicates that the solenoid was actually given
-      Serial.print('\n');
-    }
-//    if (CSopentime[2 * cueList[CSct] + numfxdsolenoids] > 0 && u < CSprob[2 * cueList[CSct] + numfxdsolenoids]) {
-//      tone(CSspeaker[cueList[CSct]], CSfreq[cueList[CSct]]);               // turn on tone
-//      delay(200);                               // Pulse with 200ms cycle
-//      noTone(CSspeaker[cueList[CSct]]);
-//      if (lickctforreq[golicktube[cueList[CSct]]] >= temp) {
-//        digitalWrite(CSsolenoid[2 * cueList[CSct] + numfxdsolenoids], HIGH);      // turn on solenoid
-//        Serial.print(0);                       //   this indicates that the solenoid was actually given
-//        Serial.print('\n');
-//      }
-//    }
-    else if (CSopentime[2 * cueList[CSct] + numfxdsolenoids] > 0 && lickctforreq[golicktube[cueList[CSct]]] == 0 && temp == -1) {
-      digitalWrite(CSsolenoid[2 * cueList[CSct] + numfxdsolenoids], HIGH);      // turn on solenoid
-      Serial.print(0);                       //   this indicates that the solenoid was actually given
-      Serial.print('\n');
-    }
-    else {
-      Serial.print(1);                       //   this indicates that the solenoid was not given
-      Serial.print('\n');
-    }
     solenoidOff = ts + CSopentime[2 * cueList[CSct] + numfxdsolenoids];      // set solenoid off time
     numfxdsolenoids++;                                     // Increase fixed solenoids given till now for this cue
     if (numfxdsolenoids == 1) { //set time for next fixed solenoid
