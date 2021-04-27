@@ -161,8 +161,8 @@ unsigned long CS_t_fxd[2 * numCS];
 unsigned long CSpulse[numCS];
 unsigned long CSspeaker[numCS];
 unsigned long CSlight[numCS];
-unsigned long golickreq[numCS];
-unsigned long golicktube[numCS];
+signed long golickreq[numCS];
+int golicktube[numCS];
 unsigned long CSsignal[numCS];
 unsigned long meanITI;           // mean duration of ITI for the exponential distribution OR minimum ITI for uniform distribution
 unsigned long maxITI;            // maximum duration of ITI
@@ -180,6 +180,8 @@ unsigned long CSsolenoidcode[2 * numCS];
 const int numlicktube = 2;       // number of recording lick tubes for lick dependent experiments
 unsigned long reqlicknum[numlicktube];
 unsigned long licksolenoid[numlicktube];
+unsigned long variableratioflag[numlicktube];
+unsigned long variableintervalflag[numlicktube];
 unsigned long lickprob[numlicktube];
 unsigned long lickopentime[numlicktube];
 unsigned long delaytoreward[numlicktube];
@@ -1079,7 +1081,7 @@ void loop() {
 
 // Accept parameters from MATLAB
 void getParams() {
-  int pn = 93;                              // number of parameter inputs
+  int pn = 97;                              // number of parameter inputs
   unsigned long param[pn];                  // parameters
 
   for (int p = 0; p < pn; p++) {
@@ -1169,7 +1171,11 @@ void getParams() {
   CSlight[0]             = param[90];
   CSlight[1]             = param[91];
   CSlight[2]             = param[92];
-
+  variableratioflag[0]      = param[93];
+  variableratioflag[1]      = param[94];
+  variableintervalflag[0]   = param[95];
+  variableintervalflag[1]   = param[96];
+  
 
   for (int p = 0; p < numCS; p++) {
     CSfreq[p] = CSfreq[p] * 1000;         // convert frequency from kHz to Hz

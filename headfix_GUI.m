@@ -628,34 +628,34 @@ function csproperties_CreateFcn(hObject, eventdata, handles)
 %         'Sound(1), light(2) or both(3)', 1, 1, 1};
 
 %%%% DEFAULT FOR DECISION MAKING TASK
-temp = {'Number of trials', 33, 33, 33;
-        'Frequency(kHz)', 12, 3, 12;
-        'Predicted solenoid', '5+3', '6+3', '56+0';
-        'Probability of solenoid', '100+100', '100+100', '100+100';
-        'Solenoid open time (ms)', '3000+60', '3000+30', '3000+30';
-        'Cue duration (ms)', 2000, 2000, 2000;
-        'Delay to solenoid (ms)', '0+3000', '0+5000', '0+3000';
-        'Pulse tone (1) or not (0)', 0, 1, 0;
-        'Speaker number', 1, 2, 1;
-        'Light number', 1, 2, 2
-        'Go lick requirement', 1, 1, 1;
-        'Go lick tube (or solenoid)', 1, 2, 1;
-        'Sound(1), light(2) or both(3)', 1, 2, 3};
-
-%%%% DEFAULT FOR PAVLOVIAN CONDITIONING
-% temp = {'Number of trials', 50, 50, 0;
-%         'Frequency(kHz)', 12, 3, 7;
-%         'Predicted solenoid', '1+3', '2+3', '1+3';
-%         'Probability of solenoid', '0+100', '0+0', '0+100';
-%         'Solenoid open time (ms)', '30+30', '30+30', '0+30';
+% temp = {'Number of trials', 33, 33, 33;
+%         'Frequency(kHz)', 12, 3, 12;
+%         'Predicted solenoid', '5+3', '6+3', '56+0';
+%         'Probability of solenoid', '100+100', '100+100', '100+100';
+%         'Solenoid open time (ms)', '3000+60', '3000+30', '3000+30';
 %         'Cue duration (ms)', 2000, 2000, 2000;
-%         'Delay to solenoid (ms)', '1500+3000', '1500+3000', '0+3000';
-%         'Pulse tone (1) or not (0)', 0, 1, 1;
+%         'Delay to solenoid (ms)', '0+3000', '0+5000', '0+3000';
+%         'Pulse tone (1) or not (0)', 0, 1, 0;
 %         'Speaker number', 1, 2, 1;
-%         'Light number', 1, 2, 1;
-%         'Go lick requirement', 0, 0, 0;
-%         'Go lick tube (or solenoid)', 1, 2, 3;
-%         'Sound(1), light(2) or both(3)', 1, 1, 1};
+%         'Light number', 1, 2, 2
+%         'Go lick requirement', 1, 1, 1;
+%         'Go lick tube (or solenoid)', 1, 2, 1;
+%         'Sound(1), light(2) or both(3)', 1, 2, 3};
+
+%%% DEFAULT FOR PAVLOVIAN CONDITIONING
+temp = {'Number of trials', 50, 50, 0;
+        'Frequency(kHz)', 12, 3, 7;
+        'Predicted solenoid', '1+3', '2+3', '1+3';
+        'Probability of solenoid', '0+100', '0+0', '0+100';
+        'Solenoid open time (ms)', '30+30', '30+30', '0+30';
+        'Cue duration (ms)', 2000, 2000, 2000;
+        'Delay to solenoid (ms)', '1500+3000', '1500+3000', '0+3000';
+        'Pulse tone (1) or not (0)', 0, 1, 1;
+        'Speaker number', 1, 2, 1;
+        'Light number', 1, 2, 1;
+        'Go lick requirement', 0, 0, 0;
+        'Go lick tube (or solenoid)', 1, 2, 3;
+        'Sound(1), light(2) or both(3)', 1, 1, 1};
 set(hObject, 'Data', temp);
 
 % --- Executes during object creation, after setting all properties.
@@ -747,17 +747,19 @@ totPoisssolenoid = str2double(totPoisssolenoid);
 lickproperties  = get(handles.lickproperties, 'Data');
 assignin('base', 'lickproperties', lickproperties);
 reqlicknum      = cell2mat(lickproperties(1,2:end));
-licksolenoid    = cell2mat(lickproperties(2,2:end));
-lickprob        = cell2mat(lickproperties(3,2:end));
-lickopentime    = cell2mat(lickproperties(4,2:end));
-delaytoreward   = cell2mat(lickproperties(5,2:end));
-delaytolick     = cell2mat(lickproperties(6,2:end));
-minrewards      = cell2mat(lickproperties(7,2:end));
-signaltolickreq = cell2mat(lickproperties(8,2:end));
-soundsignalpulse   = cell2mat(lickproperties(9,2:end));
-soundfreq       = cell2mat(lickproperties(10,2:end));
-sounddur        = cell2mat(lickproperties(11,2:end));
-soundspeaker    = cell2mat(lickproperties(12,2:end));
+variableratioflag = cell2mat(lickproperties(2,2:end));
+licksolenoid    = cell2mat(lickproperties(3,2:end));
+lickprob        = cell2mat(lickproperties(4,2:end));
+lickopentime    = cell2mat(lickproperties(5,2:end));
+delaytoreward   = cell2mat(lickproperties(6,2:end));
+delaytolick     = cell2mat(lickproperties(7,2:end));
+variableintervalflag = cell2mat(lickproperties(8,2:end));
+minrewards      = cell2mat(lickproperties(9,2:end));
+signaltolickreq = cell2mat(lickproperties(10,2:end));
+soundsignalpulse   = cell2mat(lickproperties(11,2:end));
+soundfreq       = cell2mat(lickproperties(12,2:end));
+sounddur        = cell2mat(lickproperties(13,2:end));
+soundspeaker    = cell2mat(lickproperties(14,2:end));
 
 %Laser
 laserlatency = get(handles.laserlatency,'String');
@@ -779,7 +781,7 @@ inputs = [numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur, CS_t_fxd,...
           reqlicknum, licksolenoid, lickprob, lickopentime, delaytoreward, delaytolick,...
           minrewards, signaltolickreq, soundsignalpulse, soundfreq, sounddur, soundspeaker,...
           laserlatency, laserduration, randlaserflag, laserpulseperiod, laserpulseoffperiod,...
-          lasertrialbytrialflag, maxdelaycuetovacuum, CSlight]; % collect all inputs into array
+          lasertrialbytrialflag, maxdelaycuetovacuum, CSlight,variableratioflag, variableintervalflag]; % collect all inputs into array
 
 negIn  = inputs < 0;
 intIn  = inputs - fix(inputs);
@@ -846,14 +848,14 @@ set(handles.primelickretractsolenoid2,'Enable','on')
 set(handles.vacuumButton,'Enable','on')
 set(handles.testlaser,'Enable','on')
 
-params = sprintf('%u+', numtrials, CSfreq, CSsolenoid, CSprob, CSopentime,...
+params = sprintf('%d+', numtrials, CSfreq, CSsolenoid, CSprob, CSopentime,...
                  CSdur, CS_t_fxd, CSpulse, CSspeaker, golickreq, golicktube, CSsignal,...
                  minITI, maxITI, expitiflag, backgroundsolenoid, T_bgd, r_bgd,...
                  mindelaybgdtocue, mindelayfxdtobgd, experimentmode, trialbytrialbgdsolenoidflag,... 
                  totPoisssolenoid, reqlicknum, licksolenoid, lickprob, lickopentime, delaytoreward,...
                  delaytolick, minrewards, signaltolickreq, soundsignalpulse, soundfreq, sounddur, soundspeaker,...
                  laserlatency, laserduration, randlaserflag, laserpulseperiod,...
-                 laserpulseoffperiod, lasertrialbytrialflag, maxdelaycuetovacuum, CSlight);
+                 laserpulseoffperiod, lasertrialbytrialflag, maxdelaycuetovacuum, CSlight,variableratioflag,variableintervalflag);
 params = params(1:end-1);
 
 % Run arduino code
@@ -926,17 +928,19 @@ totPoisssolenoid = str2double(totPoisssolenoid);
 lickproperties  = get(handles.lickproperties, 'Data');
 assignin('base', 'lickproperties', lickproperties);
 reqlicknum      = cell2mat(lickproperties(1,2:end));
-licksolenoid    = cell2mat(lickproperties(2,2:end));
-lickprob        = cell2mat(lickproperties(3,2:end));
-lickopentime    = cell2mat(lickproperties(4,2:end));
-delaytoreward   = cell2mat(lickproperties(5,2:end));
-delaytolick     = cell2mat(lickproperties(6,2:end));
-minrewards      = cell2mat(lickproperties(7,2:end));
-signaltolickreq = cell2mat(lickproperties(8,2:end));
-soundsignalpulse   = cell2mat(lickproperties(9,2:end));
-soundfreq       = cell2mat(lickproperties(10,2:end));
-sounddur        = cell2mat(lickproperties(11,2:end));
-soundspeaker    = cell2mat(lickproperties(12,2:end));
+variableratioflag = cell2mat(lickproperties(2,2:end));
+licksolenoid    = cell2mat(lickproperties(3,2:end));
+lickprob        = cell2mat(lickproperties(4,2:end));
+lickopentime    = cell2mat(lickproperties(5,2:end));
+delaytoreward   = cell2mat(lickproperties(6,2:end));
+delaytolick     = cell2mat(lickproperties(7,2:end));
+variableintervalflag = cell2mat(lickproperties(8,2:end));
+minrewards      = cell2mat(lickproperties(9,2:end));
+signaltolickreq = cell2mat(lickproperties(10,2:end));
+soundsignalpulse   = cell2mat(lickproperties(11,2:end));
+soundfreq       = cell2mat(lickproperties(12,2:end));
+sounddur        = cell2mat(lickproperties(13,2:end));
+soundspeaker    = cell2mat(lickproperties(14,2:end));
 
 %Laser
 laserlatency = get(handles.laserlatency,'String');
@@ -958,7 +962,7 @@ inputs = [numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur, CS_t_fxd,...
           reqlicknum, licksolenoid, lickprob, lickopentime, delaytoreward,...                
           delaytolick, minrewards, signaltolickreq, soundsignalpulse, soundfreq, sounddur, soundspeaker,...
           laserlatency, laserduration, randlaserflag, laserpulseperiod, laserpulseoffperiod,...
-          lasertrialbytrialflag, maxdelaycuetovacuum, CSlight]; % collect all inputs into array
+          lasertrialbytrialflag, maxdelaycuetovacuum, CSlight,variableratioflag, variableintervalflag]; % collect all inputs into array
           
 negIn  = inputs < 0;
 intIn  = inputs - fix(inputs);
@@ -1014,7 +1018,7 @@ end
 
 fname = get(handles.fileName,'String');
 
-params = sprintf('%u+', numtrials, CSfreq, CSsolenoid, CSprob, CSopentime,...
+params = sprintf('%d+', numtrials, CSfreq, CSsolenoid, CSprob, CSopentime,...
                  CSdur, CS_t_fxd, CSpulse, CSspeaker, golickreq, golicktube, CSsignal,...
                  minITI, maxITI, expitiflag, backgroundsolenoid, T_bgd, r_bgd, ...
                  mindelaybgdtocue, mindelayfxdtobgd, experimentmode, ...
@@ -1022,7 +1026,7 @@ params = sprintf('%u+', numtrials, CSfreq, CSsolenoid, CSprob, CSopentime,...
                  licksolenoid, lickprob, lickopentime, delaytoreward, delaytolick,...
                  minrewards, signaltolickreq, soundsignalpulse, soundfreq, sounddur, soundspeaker,...
                  laserlatency, laserduration, randlaserflag, laserpulseperiod, laserpulseoffperiod,...
-                 lasertrialbytrialflag, maxdelaycuetovacuum, CSlight);
+                 lasertrialbytrialflag, maxdelaycuetovacuum, CSlight,variableratioflag,variableintervalflag);
              
 params = params(1:end-1);
 

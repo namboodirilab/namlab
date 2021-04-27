@@ -157,8 +157,8 @@ unsigned long CS_t_fxd[2 * numCS];
 unsigned long CSpulse[numCS];
 unsigned long CSspeaker[numCS];
 unsigned long CSlight[numCS];
-unsigned long golickreq[numCS];
-unsigned long golicktube[numCS];
+signed long golickreq[numCS];
+int golicktube[numCS];
 unsigned long CSsignal[numCS];
 unsigned long meanITI;           // mean duration of ITI for the exponential distribution OR minimum ITI for uniform distribution
 unsigned long maxITI;            // maximum duration of ITI
@@ -175,8 +175,8 @@ unsigned long totbgdsolenoid;         // total number of background solenoids if
 const int numlicktube = 2;       // number of recording lick tubes for lick dependent experiments
 unsigned long reqlicknum[numlicktube];
 unsigned long licksolenoid[numlicktube];
-unsigned long fixedratioflag[numlicktube];
-unsigned long fixedintervalflag[numlicktube];
+unsigned long variableratioflag[numlicktube];
+unsigned long variableintervalflag[numlicktube];
 unsigned long lickprob[numlicktube];
 unsigned long lickopentime[numlicktube];
 unsigned long delaytoreward[numlicktube];
@@ -854,10 +854,10 @@ void getParams() {
   CSlight[0]             = param[90];
   CSlight[1]             = param[91];
   CSlight[2]             = param[92];
-  fixedratioflag[0]      = param[93];
-  fixedratioflag[1]      = param[94];
-  fixedintervalflag[0]   = param[95];
-  fixedintervalflag[1]   = param[96];
+  variableratioflag[0]      = param[93];
+  variableratioflag[1]      = param[94];
+  variableintervalflag[0]   = param[95];
+  variableintervalflag[1]   = param[96];
 
   for (int p = 0; p < numCS; p++) {
     CSfreq[p] = CSfreq[p] * 1000;         // convert frequency from kHz to Hz
