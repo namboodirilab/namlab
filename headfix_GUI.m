@@ -783,6 +783,11 @@ inputs = [numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur, CS_t_fxd,...
 
 negIn  = inputs < 0;
 intIn  = inputs - fix(inputs);
+if negIn(40) == 1 | negIn(41) == 1 | negIn(42) == 1
+    negIn(40) = 0;
+    negIn(41) = 0;
+    negIn(42) = 0;
+end
 if any([negIn intIn])
     errordlg('Invalid inputs')
     error('Invalid inputs')
@@ -957,6 +962,11 @@ inputs = [numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur, CS_t_fxd,...
           
 negIn  = inputs < 0;
 intIn  = inputs - fix(inputs);
+if negIn(40) == 1 | negIn(41) == 1 | negIn(42) == 1
+    negIn(40) = 0;
+    negIn(41) = 0;
+    negIn(42) = 0;
+end
 if any([negIn intIn])
     errordlg('Invalid inputs')
     error('Invalid inputs')
