@@ -135,17 +135,17 @@ try
             drawnow
             continue
         end
+
+        l = l + 1;
+        eventlog(l,:) = read;                      % maps three things from read (code/time/nosolenoidflag)
+        time = read(2);                             % record timestamp
+        
+        nosolenoidflag = read(3);                     % if =1, no solenoid was actually given. Indicates solenoid omission
+        
         code = read(1);                             % read identifier for data
         if code == 0                                % signifies "end of session"
             break
         end
-        
-        l = l + 1;
-        eventlog(l,:) = read;                      % maps three things from read (code/time/nosolenoidflag)
-        
-        time = read(2);                             % record timestamp
-        
-        nosolenoidflag = read(3);                     % if =1, no solenoid was actually given. Indicates solenoid omission
 
         % Inputs from Arduino along with their "code" (defined below)
         %   1 = Lick1 onset
@@ -175,7 +175,7 @@ try
         %   31 = laser
         
         
-        if code == 1                                % Lick1 onset; BLACK
+        if code == 1                                % Lick1 onset; BLUE
             if experimentmode == 1 || experimentmode == 4                      % Store lick1 timestamp for later plotting after trial ends
                 lickct(1) = lickct(1) + 1;
                 set(handles.licks1Edit,'String',num2str(lickct(1)))  % change the gui input
@@ -186,7 +186,7 @@ try
                 set(handles.licks1Edit,'String',num2str(lickct(1)))
                 trial = floor(time/durationtrialpartitionnocues);
                 temptrialdur = trial*durationtrialpartitionnocues;                
-                plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'k','LineWidth',1);hold on
+                plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'color',[0.2 0.6 1],'LineWidth',1);hold on
             end
         elseif code == 3                            % Lick2 onset; GREY
             if experimentmode == 1 || experimentmode == 4                       % Store lick1 timestamp for later plotting after trial ends
@@ -332,10 +332,10 @@ try
                 temptrialdur = trial*durationtrialpartitionnocues;                
                 plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0.97 0.28 0.18],'LineWidth',2);hold on
             end 
-        elseif code == 18                            % Lick retraction solenoid 1 and 2
-            if experimentmode == 1 || experimentmode == 4       
+        elseif code == 18                            % Lick retraction solenoid1 and 2;
+            if experimentmode == 1 || experimentmode == 4
                 if nosolenoidflag == 0                      % Indicates trial with solenoid
-                    lickretractsolenoid1 = lickretractsolenoid1 + 1;          
+                    lickretractsolenoid1 = lickretractsolenoid1 + 1;
                     set(handles.lickretractsolenoid1Edit,'String',num2str(lickretractsolenoid1))
                     tempsolenoidsct(5) = tempsolenoidsct(5)+1;      % keep track of solenoid4 count
                     tempsolenoids(tempsolenoidsct(5), 5) = time;   % keep track of solenoid4 timestamp
@@ -345,17 +345,17 @@ try
                     tempsolenoids(tempsolenoidsct(6), 6) = time;   % keep track of solenoid4 timestamp
                 end 
              elseif experimentmode == 3
-                lickretractsolenoid1 = lickretractsolenoid1 + 1;
-                set(handles.lickretractsolenoid1Edit,'String',num2str(lickretractsolenoid1))
-                trial = floor(time/durationtrialpartitionnocues);
-                temptrialdur = trial*durationtrialpartitionnocues;                
-                plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0.3 0.75 0.93],'LineWidth',2);hold on
                 lickretractsolenoid2 = lickretractsolenoid2 + 1;
                 set(handles.lickretractsolenoid2Edit,'String',num2str(lickretractsolenoid2))
                 trial = floor(time/durationtrialpartitionnocues);
                 temptrialdur = trial*durationtrialpartitionnocues;                
                 plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0.97 0.28 0.18],'LineWidth',2);hold on
-            end             
+                lickretractsolenoid1 = lickretractsolenoid1 + 1;
+                set(handles.lickretractsolenoid1Edit,'String',num2str(lickretractsolenoid1))
+                trial = floor(time/durationtrialpartitionnocues);
+                temptrialdur = trial*durationtrialpartitionnocues;                
+                plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0.3 0.75 0.93],'LineWidth',2);hold on
+            end 
         elseif code == 14                            % Vaccum;            
             if experimentmode ==1 || experimentmode == 4
                 tempcuetovacuumdelay = NaN;
@@ -404,7 +404,7 @@ try
                 cs = cs1+cs2+cs3+light1+light2+light3-both1-both2-both3;
 
 
-                plot([templicks(:,1) templicks(:,1)],[-(cs-1) -cs],'k','LineWidth',1);hold on    % lick1            
+                plot([templicks(:,1) templicks(:,1)],[-(cs-1) -cs],'color',[0.2 0.6 1],'LineWidth',1);hold on    % lick1            
                 plot([templicks(:,2) templicks(:,2)],[-(cs-1) -cs],'Color',0.65*[1, 1, 1],'LineWidth',1);hold on   %lick2            
                 plot([templicks(:,3) templicks(:,3)],[-(cs-1) -cs],'Color',[0.3 0 0],'LineWidth',1);hold on    % lick3            
 
@@ -583,7 +583,6 @@ try
         elseif code == 23                            % CS3 light onset;
             light3 = light3 + 1;
             set(handles.light3Edit,'String',num2str(light3))
-            disp('hhhhh')
             templight3 = time;
             if cs1+cs2+cs3+light1+light2+light3-both1-both2-both3<sum(numtrials)
                 fprintf('Executing trial %d\n',cs1+cs2+cs3+light1+light2+light3-both1-both2-both3);
