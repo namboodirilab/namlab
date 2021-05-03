@@ -109,6 +109,12 @@
 //90) light number for CS1
 //91) light number for CS2
 //92) light number for CS3
+//93) variable ratio check for lick 1s. 1==variable, 0==fixed
+//94) variable ratio check for lick 2s. 1==variable, 0==fixed
+//95) variable interval flag for lick 1s. 1==variable, 0==fixed
+//96) variable interval flag for lick 2s. 1==variable, 0==fixed
+//97) light number for lick 1
+//98) light number for lick 2
 
 #include <math.h>
 #include <avr/wdt.h>
@@ -186,10 +192,11 @@ unsigned long signaltolickreq[numlicktube];
 unsigned long soundsignalpulse[numlicktube];
 unsigned long soundfreq[numlicktube];
 unsigned long sounddur[numlicktube];
-unsigned long soundspeaker[numlicktube];
+unsigned long lickspeaker[numlicktube];
 unsigned long variableratioflag[numlicktube];
 unsigned long variableintervalflag[numlicktube];
 float rewardprobforlick[numlicktube];
+unsigned long licklight[numlicktube];
 
 unsigned long laserlatency;      // Laser latency wrt cue (ms)
 unsigned long laserduration;     // Laser duration (ms)
@@ -322,71 +329,71 @@ void setup() {
     reading = Serial.read();
     if (reading == 50 || reading == 51 || reading == 52) {                       // Test CS1 or CS2 or CS3
       reading -= 50;
-      if (CSsignal[reading] == 1) {
+      if (signaltolickreq[reading] == 1) {
         if (CSpulse[reading] == 1) {
-          tone(CSspeaker[reading], CSfreq[reading]);               // turn on tone
+          tone(lickspeaker[reading], CSfreq[reading]);               // turn on tone
           delay(200);                               // Pulse with 200ms cycle
-          noTone(CSspeaker[reading]);
+          noTone(lickspeaker[reading]);
           delay(200);
-          tone(CSspeaker[reading], CSfreq[reading]);               // turn on tone
+          tone(lickspeaker[reading], CSfreq[reading]);               // turn on tone
           delay(200);                               // Pulse with 200ms cycle
-          noTone(CSspeaker[reading]);
+          noTone(lickspeaker[reading]);
           delay(200);
-          tone(CSspeaker[reading], CSfreq[reading]);               // turn on tone
+          tone(lickspeaker[reading], CSfreq[reading]);               // turn on tone
           delay(200);                               // Pulse with 200ms cycle
-          noTone(CSspeaker[reading]);
+          noTone(lickspeaker[reading]);
         }
         else if (CSpulse[reading] == 0) {
-          tone(CSspeaker[reading], CSfreq[reading]);               // turn on tone
+          tone(lickspeaker[reading], CSfreq[reading]);               // turn on tone
           delay(1000);
-          noTone(CSspeaker[reading]);
+          noTone(lickspeaker[reading]);
         }
       }
-      else if (CSsignal[reading] == 2) {
+      else if (signaltolickreq[reading] == 2) {
         if (CSpulse[reading] == 1) {
-          digitalWrite(CSlight[reading], HIGH);               // turn on light
+          digitalWrite(licklight[reading], HIGH);               // turn on light
           delay(200);                               // Pulse with 200ms cycle
-          digitalWrite(CSlight[reading], LOW);
+          digitalWrite(licklight[reading], LOW);
           delay(200);
-          digitalWrite(CSlight[reading], HIGH);               // turn on light
+          digitalWrite(licklight[reading], HIGH);               // turn on light
           delay(200);                               // Pulse with 200ms cycle
-          digitalWrite(CSlight[reading], LOW);
+          digitalWrite(licklight[reading], LOW);
           delay(200);
-          digitalWrite(CSlight[reading], HIGH);               // turn on light
+          digitalWrite(licklight[reading], HIGH);               // turn on light
           delay(200);                               // Pulse with 200ms cycle
-          digitalWrite(CSlight[reading], LOW);
+          digitalWrite(licklight[reading], LOW);
         }
         else if (CSpulse[reading] == 0) {
-          digitalWrite(CSlight[reading], HIGH);               // turn on light
+          digitalWrite(licklight[reading], HIGH);               // turn on light
           delay(1000);                               // delay 1s
-          digitalWrite(CSlight[reading], LOW);
+          digitalWrite(licklight[reading], LOW);
         }
       }
-      else if (CSsignal[reading] == 3) {
+      else if (signaltolickreq[reading] == 3) {
         if (CSpulse[reading] == 1) {
-          tone(CSspeaker[reading], CSfreq[reading]);               // turn on tone
-          digitalWrite(CSlight[reading], HIGH);               // turn on light
+          tone(lickspeaker[reading], CSfreq[reading]);               // turn on tone
+          digitalWrite(licklight[reading], HIGH);               // turn on light
           delay(200);                               // Pulse with 200ms cycle
-          noTone(CSspeaker[reading]);
-          digitalWrite(CSlight[reading], LOW);
+          noTone(lickspeaker[reading]);
+          digitalWrite(licklight[reading], LOW);
           delay(200);
-          tone(CSspeaker[reading], CSfreq[reading]);               // turn on tone
-          digitalWrite(CSlight[reading], HIGH);               // turn on light
+          tone(lickspeaker[reading], CSfreq[reading]);               // turn on tone
+          digitalWrite(licklight[reading], HIGH);               // turn on light
           delay(200);                               // Pulse with 200ms cycle
-          noTone(CSspeaker[reading]);
-          digitalWrite(CSlight[reading], LOW);
+          noTone(lickspeaker[reading]);
+          digitalWrite(licklight[reading], LOW);
           delay(200);
-          digitalWrite(CSlight[reading], HIGH);               // turn on light
+          digitalWrite(licklight[reading], HIGH);               // turn on light
           delay(200);                               // Pulse with 200ms cycle
-          noTone(CSspeaker[reading]);
-          digitalWrite(CSlight[reading], LOW);
+          noTone(lickspeaker[reading]);
+          digitalWrite(licklight[reading], LOW);
         }
         else if (CSpulse[reading] == 0) {
-          tone(CSspeaker[reading], CSfreq[reading]);               // turn on tone
-          digitalWrite(CSlight[reading], HIGH);               // turn on light
+          tone(lickspeaker[reading], CSfreq[reading]);               // turn on tone
+          digitalWrite(licklight[reading], HIGH);               // turn on light
           delay(1000);                               // delay 1s
-          noTone(CSspeaker[reading]);
-          digitalWrite(CSlight[reading], LOW);
+          noTone(lickspeaker[reading]);
+          digitalWrite(licklight[reading], LOW);
         }
       }
     }
@@ -558,17 +565,17 @@ void loop() {
   }
 
   if (ts >= cuePulseOff && cuePulseOff != 0) {     // turn off tone
-    noTone(soundspeaker[licktubethatmetlickreq]);
+    noTone(lickspeaker[licktubethatmetlickreq]);
     cuePulseOn = ts + 200;
     cuePulseOff = 0;
   }
   if (ts >= cuePulseOn && cuePulseOn != 0) {       // turn on tone
-    tone(soundspeaker[licktubethatmetlickreq], soundfreq[licktubethatmetlickreq]);
+    tone(lickspeaker[licktubethatmetlickreq], soundfreq[licktubethatmetlickreq]);
     cuePulseOff = ts + 200;
     cuePulseOn = 0;
   }
   if (ts >= cueOff && cueOff != 0) {              // Turn off cue
-    noTone(soundspeaker[licktubethatmetlickreq]);
+    noTone(lickspeaker[licktubethatmetlickreq]);
     cueOff = 0;
     cuePulseOn = 0;
     cuePulseOff = 0;
@@ -712,7 +719,7 @@ void loop() {
 
 // Accept parameters from MATLAB
 void getParams() {
-  int pn = 97;                              // number of parameter inputs
+  int pn = 99;                              // number of parameter inputs
   unsigned long param[pn];                  // parameters
 
   for (int p = 0; p < pn; p++) {
@@ -790,8 +797,8 @@ void getParams() {
   soundfreq[1]           = param[78];
   sounddur[0]            = param[79];
   sounddur[1]            = param[80];
-  soundspeaker[0]        = param[81];
-  soundspeaker[1]        = param[82];
+  lickspeaker[0]        = param[81];
+  lickspeaker[1]        = param[82];
   laserlatency           = param[83];
   laserduration          = param[84];
   randlaserflag          = (boolean)param[85];          // Random laser flag
@@ -806,22 +813,24 @@ void getParams() {
   variableratioflag[1]      = (boolean)param[94];
   variableintervalflag[0]   = (boolean)param[95];
   variableintervalflag[1]   = (boolean)param[96];
+  licklight[0]           = param[97];
+  licklight[1]           = param[98];
 
 
   for (int p = 0; p < numCS; p++) {
     CSfreq[p] = CSfreq[p] * 1000;         // convert frequency from kHz to Hz
     golicktube[p]--;                      // Make go lick tube into a zero index for indexing lickctforreq
-    if (CSspeaker[p] == 1) {
-      CSspeaker[p] = speaker1;
+    if (lickspeaker[p] == 1) {
+      lickspeaker[p] = speaker1;
     }
-    else if (CSspeaker[p] == 2) {
-      CSspeaker[p] = speaker2;
+    else if (lickspeaker[p] == 2) {
+      lickspeaker[p] = speaker2;
     }
-    if (CSlight[p] == 1) {
-      CSlight[p] = light1;
+    if (licklight[p] == 1) {
+      licklight[p] = light1;
     }
-    else if (CSlight[p] == 2) {
-      CSlight[p] = light2;
+    else if (licklight[p] == 2) {
+      licklight[p] = light2;
     }
   }
   for (int p = 0; p < 2 * numCS; p++) {
@@ -878,22 +887,16 @@ void getParams() {
       licksolenoid[p] = lickretractsolenoid2;
     }
   }
-  for (int p = 0; p < numlicktube; p++) {
-    soundfreq[p] = soundfreq[p] * 1000;         // convert frequency from kHz to Hz
-    if (soundspeaker[p] == 1) {
-      soundspeaker[p] = speaker1;
-    }
-    else if (soundspeaker[p] == 2) {
-      soundspeaker[p] = speaker2;
-    }
-  }
+  
   if (variableratioflag[0] == 1) {
     rewardprobforlick[0] = 1. / reqlicknum[0];
     rewardprobforlick[1] = 1. / reqlicknum[1];
   }
 }
 
-void LickReqMet(int licktube) {
+
+// Signaling lick tube for meeting lick requirement
+void LickReqMet(int licktube) {   
   licktubethatmetlickreq = licktube;
   nextfxdsolenoid = ts + delaytoreward[licktubethatmetlickreq];
   licktubesactive = false;
@@ -1070,7 +1073,7 @@ void cues() {
   //  Serial.print(0);
   //  Serial.print('\n');
   if (sounddur[licktubethatmetlickreq] > 0) {
-    tone(soundspeaker[licktubethatmetlickreq], soundfreq[licktubethatmetlickreq]);               // turn on tone
+    tone(lickspeaker[licktubethatmetlickreq], soundfreq[licktubethatmetlickreq]);               // turn on tone
   }
 
   if (soundsignalpulse[licktubethatmetlickreq] == 1) {
@@ -1100,7 +1103,7 @@ void lights() {
   //  Serial.print(" ");
   //  Serial.print(0);
   if (CSdur[cueList[CSct]] > 0) {
-    digitalWrite(CSlight[licktubethatmetlickreq], HIGH);
+    digitalWrite(licklight[licktubethatmetlickreq], HIGH);
   }
   lightOff = ts + lightdur;
 }

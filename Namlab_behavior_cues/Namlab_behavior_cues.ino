@@ -109,6 +109,12 @@
 //90) light number for CS1
 //91) light number for CS2
 //92) light number for CS3
+//93) variable ratio check for lick 1s. 1==variable, 0==fixed
+//94) variable ratio check for lick 2s. 1==variable, 0==fixed
+//95) variable interval flag for lick 1s. 1==variable, 0==fixed
+//96) variable interval flag for lick 2s. 1==variable, 0==fixed
+//97) light number for lick 1
+//98) light number for lick 2
 
 #include <math.h>
 #include <avr/wdt.h>
@@ -188,7 +194,9 @@ unsigned long signaltolickreq[numlicktube];
 unsigned long soundsignalpulse[numlicktube];
 unsigned long soundfreq[numlicktube];
 unsigned long sounddur[numlicktube];
-unsigned long soundspeaker[numlicktube];
+unsigned long lickspeaker[numlicktube];
+unsigned long licklight[numlicktube];
+float rewardprobforlick[numlicktube];
 
 unsigned long laserlatency;      // Laser latency wrt cue (ms)
 unsigned long laserduration;     // Laser duration (ms)
@@ -824,7 +832,7 @@ void loop() {
       Serial.print(0);                       //   this indicates that the solenoid was actually given
       Serial.print('\n');
     }
-    else if (CSopentime[2 * cueList[CSct] + numfxdsolenoids] > 0 && lickctforreq[golicktube[cueList[CSct]]] == 0 && temp2 == -1) {
+    else if (CSopentime[2 * cueList[CSct] + numfxdsolenoids] > 0 && lickctforreq[golicktube[cueList[CSct]]] == 0 && temp2 == -1) {  // -1 on golickreq indicates no-go cue, no licks on the lick tube gives a reward
       digitalWrite(CSsolenoid[2 * cueList[CSct] + numfxdsolenoids], HIGH);      // turn on solenoid
       Serial.print(0);                       //   this indicates that the solenoid was actually given
       Serial.print('\n');
@@ -1006,7 +1014,7 @@ void loop() {
 
 // Accept parameters from MATLAB
 void getParams() {
-  int pn = 97;                              // number of parameter inputs
+  int pn = 99;                              // number of parameter inputs
   unsigned long param[pn];                  // parameters
 
   for (int p = 0; p < pn; p++) {
@@ -1084,8 +1092,8 @@ void getParams() {
   soundfreq[1]           = param[78];
   sounddur[0]            = param[79];
   sounddur[1]            = param[80];
-  soundspeaker[0]        = param[81];
-  soundspeaker[1]        = param[82];
+  lickspeaker[0]        = param[81];
+  lickspeaker[1]        = param[82];
   laserlatency           = param[83];
   laserduration          = param[84];
   randlaserflag          = (boolean)param[85];          // Random laser flag
@@ -1100,6 +1108,8 @@ void getParams() {
   variableratioflag[1]      = param[94];
   variableintervalflag[0]   = param[95];
   variableintervalflag[1]   = param[96];
+  licklight[0]           = param[97];
+  licklight[1]           = param[98];
 
 
 
@@ -1277,7 +1287,7 @@ void cues() {
   //  Serial.print(0);
   //  Serial.print('\n');
   if (CSdur[cueList[CSct]] > 0) {
-    tone(CSspeaker[cueList[CSct]], CSfreq[cueList[CSct]]);               // turn on tone
+    tone(CSspeaker[cueList[CSct]], CSfreq[cueList[CSct]]);               // turn on tone only when the CSdur is bigger than 0
   }
 
   if (CSpulse[cueList[CSct]] == 1) {
@@ -1317,7 +1327,7 @@ void lights() {
   //  Serial.print(0);
   //  Serial.print('\n');
   if (CSdur[cueList[CSct]] > 0) {
-    digitalWrite(CSlight[cueList[CSct]], HIGH);
+    digitalWrite(CSlight[cueList[CSct]], HIGH);           // Turn on light when CSdur is bigger than 0
   }
 
   nextfxdsolenoid = ts + CS_t_fxd[2 * cueList[CSct]];

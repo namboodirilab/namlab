@@ -106,6 +106,15 @@
 //88) flag to turn laser on a trial-by-trial basis
 //89) maximum delay to vacuum after cue turns on. Change this if different cues have different delays to reward
 // to be such that it is longer than the longest delay to reward. Basically, this quantity measures duration of trial.
+//90) light number for CS1
+//91) light number for CS2
+//92) light number for CS3
+//93) variable ratio check for lick 1s. 1==variable, 0==fixed
+//94) variable ratio check for lick 2s. 1==variable, 0==fixed
+//95) variable interval flag for lick 1s. 1==variable, 0==fixed
+//96) variable interval flag for lick 2s. 1==variable, 0==fixed
+//97) light number for lick 1
+//98) light number for lick 2
 
 #include <math.h>
 #include <avr/wdt.h>
@@ -186,7 +195,11 @@ unsigned long signaltolickreq[numlicktube];
 unsigned long soundsignalpulse[numlicktube];
 unsigned long soundfreq[numlicktube];
 unsigned long sounddur[numlicktube];
-unsigned long soundspeaker[numlicktube];
+unsigned long lickspeaker[numlicktube];
+unsigned long variableratioflag[numlicktube];
+unsigned long variableintervalflag[numlicktube];
+float rewardprobforlick[numlicktube];
+unsigned long licklight[numlicktube];
 
 unsigned long laserlatency;      // Laser latency wrt cue (ms)
 unsigned long laserduration;     // Laser duration (ms)
@@ -764,7 +777,7 @@ void loop() {
 
 // Accept parameters from MATLAB
 void getParams() {
-  int pn = 97;                              // number of parameter inputs
+  int pn = 99;                              // number of parameter inputs
   unsigned long param[pn];                  // parameters
 
   for (int p = 0; p < pn; p++) {
@@ -854,10 +867,13 @@ void getParams() {
   CSlight[0]             = param[90];
   CSlight[1]             = param[91];
   CSlight[2]             = param[92];
-  variableratioflag[0]      = param[93];
-  variableratioflag[1]      = param[94];
-  variableintervalflag[0]   = param[95];
-  variableintervalflag[1]   = param[96];
+  variableratioflag[0]      = (boolean)param[93];
+  variableratioflag[1]      = (boolean)param[94];
+  variableintervalflag[0]   = (boolean)param[95];
+  variableintervalflag[1]   = (boolean)param[96];
+  licklight[0]           = param[97];
+  licklight[1]           = param[98];
+
 
   for (int p = 0; p < numCS; p++) {
     CSfreq[p] = CSfreq[p] * 1000;         // convert frequency from kHz to Hz
@@ -909,6 +925,12 @@ void getParams() {
     }
     else if (licksolenoid[p] == 4) {
       licksolenoid[p] = solenoid4;
+    }
+    else if (licksolenoid[p] == 5) {
+      licksolenoid[p] = lickretractsolenoid1;
+    }
+    else if (licksolenoid[p] == 6) {
+      licksolenoid[p] = lickretractsolenoid2;
     }
   }
 }

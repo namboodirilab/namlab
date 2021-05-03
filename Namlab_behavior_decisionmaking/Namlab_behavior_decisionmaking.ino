@@ -109,6 +109,12 @@
 //90) light number for CS1
 //91) light number for CS2
 //92) light number for CS3
+//93) variable ratio check for lick 1s. 1==variable, 0==fixed
+//94) variable ratio check for lick 2s. 1==variable, 0==fixed
+//95) variable interval flag for lick 1s. 1==variable, 0==fixed
+//96) variable interval flag for lick 2s. 1==variable, 0==fixed
+//97) light number for lick 1
+//98) light number for lick 2
 
 #include <math.h>
 #include <avr/wdt.h>
@@ -191,7 +197,11 @@ unsigned long signaltolickreq[numlicktube];
 unsigned long soundsignalpulse[numlicktube];
 unsigned long soundfreq[numlicktube];
 unsigned long sounddur[numlicktube];
-unsigned long soundspeaker[numlicktube];
+unsigned long lickspeaker[numlicktube];
+unsigned long variableratioflag[numlicktube];
+unsigned long variableintervalflag[numlicktube];
+float rewardprobforlick[numlicktube];
+unsigned long licklight[numlicktube];
 
 unsigned long laserlatency;      // Laser latency wrt cue (ms)
 unsigned long laserduration;     // Laser duration (ms)
@@ -1081,7 +1091,7 @@ void loop() {
 
 // Accept parameters from MATLAB
 void getParams() {
-  int pn = 97;                              // number of parameter inputs
+  int pn = 99;                              // number of parameter inputs
   unsigned long param[pn];                  // parameters
 
   for (int p = 0; p < pn; p++) {
@@ -1175,7 +1185,8 @@ void getParams() {
   variableratioflag[1]      = param[94];
   variableintervalflag[0]   = param[95];
   variableintervalflag[1]   = param[96];
-  
+  licklight[0]           = param[97];
+  licklight[1]           = param[98];
 
   for (int p = 0; p < numCS; p++) {
     CSfreq[p] = CSfreq[p] * 1000;         // convert frequency from kHz to Hz
