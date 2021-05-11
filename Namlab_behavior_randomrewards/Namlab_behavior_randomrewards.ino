@@ -184,8 +184,6 @@ unsigned long totbgdsolenoid;         // total number of background solenoids if
 const int numlicktube = 2;       // number of recording lick tubes for lick dependent experiments
 unsigned long reqlicknum[numlicktube];
 unsigned long licksolenoid[numlicktube];
-unsigned long variableratioflag[numlicktube];
-unsigned long variableintervalflag[numlicktube];
 unsigned long lickprob[numlicktube];
 unsigned long lickopentime[numlicktube];
 unsigned long delaytoreward[numlicktube];
@@ -855,8 +853,8 @@ void getParams() {
   soundfreq[1]           = param[78];
   sounddur[0]            = param[79];
   sounddur[1]            = param[80];
-  soundspeaker[0]        = param[81];
-  soundspeaker[1]        = param[82];
+  lickspeaker[0]        = param[81];
+  lickspeaker[1]        = param[82];
   laserlatency           = param[83];
   laserduration          = param[84];
   randlaserflag          = (boolean)param[85];          // Random laser flag

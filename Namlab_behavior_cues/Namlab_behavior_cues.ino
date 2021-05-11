@@ -714,7 +714,6 @@ void loop() {
       Serial.print('\n');
       cues();
       lights();
-      deliverlasertocues();
     }
     deliverlasertocues();              // check whether to and deliver laser if needed
     ITIflag = false;
