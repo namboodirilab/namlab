@@ -852,7 +852,6 @@ void loop() {
           Serial.print(" ");
           Serial.print(ts);                      //   send timestamp of solenoid onset
           Serial.print(" ");
-          digitalWrite(CSsolenoid[1], HIGH);
           Serial.print(1);                       //   this indicates that the solenoid was not given
           Serial.print('\n');
           nextfxdsolenoid = ts + CS_t_fxd[3] - CS_t_fxd[1];      // move to check the longer delay solenoid
@@ -878,7 +877,6 @@ void loop() {
           Serial.print(" ");
           Serial.print(ts);                      //   send timestamp of solenoid onset
           Serial.print(" ");
-          digitalWrite(CSsolenoid[1], HIGH);
           Serial.print(1);                       //   this indicates that the solenoid was actually given
           Serial.print('\n');
           nextfxdsolenoid = ts + CS_t_fxd[1] - CS_t_fxd[3];
@@ -886,32 +884,34 @@ void loop() {
         }
       }
     }
-    else if (CSopentime[2 * cueList[CSct] + numfxdsolenoids] > 0 && u < CSprob[2 * cueList[CSct]] + numfxdsolenoids && lickctforreq[cueList[CSct]] >= golickreq[cueList[CSct]]) {
-      Serial.print(CSsolenoidcode[2 * cueList[CSct] + numfxdsolenoids]);
-      Serial.print(" ");
-      Serial.print(ts);
-      Serial.print(" ");
-      digitalWrite(CSsolenoid[2 * cueList[CSct] + numfxdsolenoids], HIGH);      // turn on solenoid
-      Serial.print(0);                       //   this indicates that the solenoid was actually given
-      Serial.print('\n');
-      solenoidOff = ts + CSopentime[2 * cueList[CSct] + 1];      // set solenoid off time
-      nextvacuum = ts + CSopentime[2 * cueList[CSct] + 1] + maxdelaytovacuumfromcueonset - CS_t_fxd[2 * cueList[CSct] + 1];
-      nextfxdsolenoid = 0;
-    }
     else {
-      Serial.print(CSsolenoidcode[2 * cueList[CSct] + numfxdsolenoids]);
-      Serial.print(" ");
-      Serial.print(ts);
-      Serial.print(" ");
-      digitalWrite(CSsolenoid[2 * cueList[CSct] + numfxdsolenoids], HIGH);      // turn on solenoid
-      Serial.print(1);                       //   this indicates that the solenoid was actually given
-      Serial.print('\n');
-      nextvacuum = ts + CSopentime[2 * cueList[CSct] + 1] + maxdelaytovacuumfromcueonset - CS_t_fxd[2 * cueList[CSct] + 1];
-      nextfxdsolenoid = 0;
+      if (CSopentime[2 * cueList[CSct] + numfxdsolenoids] > 0 && u < CSprob[2 * cueList[CSct] + numfxdsolenoids] && lickctforreq[cueList[CSct]] >= golickreq[cueList[CSct]]) {
+        Serial.print(CSsolenoidcode[2 * cueList[CSct] + numfxdsolenoids]);
+        Serial.print(" ");
+        Serial.print(ts);
+        Serial.print(" ");
+        digitalWrite(CSsolenoid[2 * cueList[CSct] + numfxdsolenoids], HIGH);      // turn on solenoid
+        Serial.print(0);                       //   this indicates that the solenoid was actually given
+        Serial.print('\n');
+        solenoidOff = ts + CSopentime[2 * cueList[CSct] + 1];      // set solenoid off time
+        nextvacuum = ts + CSopentime[2 * cueList[CSct] + 1] + maxdelaytovacuumfromcueonset - CS_t_fxd[2 * cueList[CSct] + 1];
+        nextfxdsolenoid = 0;
+      }
+      else {
+        Serial.print(CSsolenoidcode[2 * cueList[CSct] + numfxdsolenoids]);
+        Serial.print(" ");
+        Serial.print(ts);
+        Serial.print(" ");
+        Serial.print(1);                       //   this indicates that the solenoid was actually given
+        Serial.print('\n');
+        nextvacuum = ts + CSopentime[2 * cueList[CSct] + 1] + maxdelaytovacuumfromcueonset - CS_t_fxd[2 * cueList[CSct] + 1];
+        nextfxdsolenoid = 0;
+      }
     }
   }
 
   if (!ITIflag && ts >= nextfxdsolenoid && nextfxdsolenoid != 0 && numfxdsolenoids == 2) {      // Give third solenoid, this indicates that the second solenoid requirement was not met and second solenoid wasn't given
+    u = random(0, 100);
     if (CSwithshortdelay2ndsolenoid == 1) {
       if (CSopentime[3] > 0 && u < CSprob[3] && licktubethatmetlickreq == 2) {
         Serial.print(CSsolenoidcode[3]);
@@ -929,7 +929,6 @@ void loop() {
         Serial.print(" ");
         Serial.print(ts);                      //   send timestamp of solenoid onset
         Serial.print(" ");
-        digitalWrite(CSsolenoid[1], HIGH);
         Serial.print(1);                       //   this indicates that the solenoid was not given
         Serial.print('\n');
         nextvacuum = ts + CSopentime[3] + maxdelaytovacuumfromcueonset - CS_t_fxd[3];
@@ -952,7 +951,6 @@ void loop() {
         Serial.print(" ");
         Serial.print(ts);                      //   send timestamp of solenoid onset
         Serial.print(" ");
-        digitalWrite(CSsolenoid[1], HIGH);
         Serial.print(1);                       //   this indicates that the solenoid was not given
         Serial.print('\n');
         nextvacuum = ts + CSopentime[1] + maxdelaytovacuumfromcueonset - CS_t_fxd[1];
