@@ -182,6 +182,7 @@ unsigned long experimentmode;    // if==1, run experiment with cues; if==2, give
 boolean trialbytrialbgdsolenoidflag;  // if ==1, run experiment by changing bgd solenoid rate on a trial-by-trial basis
 unsigned long totbgdsolenoid;         // total number of background solenoids if experimentmode==2, i.e. when only Poisson solenoids are delivered.
 unsigned long CSsolenoidcode[2 * numCS];
+int CSwithshortdelay2ndsolenoid;
 
 const int numlicktube = 2;       // number of recording lick tubes for lick dependent experiments
 unsigned long reqlicknum[numlicktube];
@@ -718,7 +719,7 @@ void loop() {
       cues();
       lights();
     }
-    DeliverLaserToCues();              // check whether to and deliver laser if needed
+    deliverlasertocues();              // check whether to and deliver laser if needed
     ITIflag = false;
   }
 
@@ -797,88 +798,44 @@ void loop() {
     lightOff = 0;
   }
 
-  if (!ITIflag && ts >= nextfxdsolenoid && nextfxdsolenoid != 0) { // give fixed solenoid
+  if (!ITIflag && ts >= nextfxdsolenoid && nextfxdsolenoid != 0 && numfxdsolenoids == 0) { // give fixed solenoid
+    Serial.print(CSsolenoidcode[2 * cueList[CSct]]);
+    Serial.print(" ");
+    Serial.print(ts);                      //   send timestamp of solenoid onset
+    Serial.print(" ");
 
-    if (numfxdsolenoids == 0) {
-      //      if (CSsolenoid[2 * cueList[CSct] + numfxdsolenoids] == solenoid1) {
-      //        Serial.print(8);                       //   code data as fixed solenoid1 onset timestamp
-      //        Serial.print(" ");
-      //        Serial.print(ts);                      //   send timestamp of solenoid onset
-      //        Serial.print(" ");
-      //      }
-      //      else if (CSsolenoid[2 * cueList[CSct] + numfxdsolenoids] == solenoid2) {
-      //        Serial.print(9);                       //   code data as fixed solenoid2 onset timestamp
-      //        Serial.print(" ");
-      //        Serial.print(ts);                      //   send timestamp of solenoid onset
-      //        Serial.print(" ");
-      //      }
-      //      else if (CSsolenoid[2 * cueList[CSct] + numfxdsolenoids] == solenoid3 ) {
-      //        Serial.print(10);                      //   code data as fixed solenoid3 onset timestamp
-      //        Serial.print(" ");
-      //        Serial.print(ts);                      //   send timestamp of solenoid onset
-      //        Serial.print(" ");
-      //      }
-      //      else if (CSsolenoid[2 * cueList[CSct] + numfxdsolenoids] == solenoid4) {
-      //        Serial.print(11);                      //   code data as fixed solenoid4 onset timestamp
-      //        Serial.print(" ");
-      //        Serial.print(ts);                      //   send timestamp of solenoid onset
-      //        Serial.print(" ");
-      //      }
-      //      else if (CSsolenoid[2 * cueList[CSct] + numfxdsolenoids] == lickretractsolenoid1) {
-      //        Serial.print(12);                      //   code data as lick retract solenoid1 onset timestamp
-      //        Serial.print(" ");
-      //        Serial.print(ts);                      //   send timestamp of solenoid onset
-      //        Serial.print(" ");
-      //      }
-      //      else if (CSsolenoid[2 * cueList[CSct] + numfxdsolenoids] == lickretractsolenoid2) {
-      //        Serial.print(13);                      //   code data as lick retract solenoid2 onset timestamp
-      //        Serial.print(" ");
-      //        Serial.print(ts);                      //   send timestamp of solenoid onset
-      //        Serial.print(" ");
-      //      }
-      //      else if (CSsolenoid[2 * cueList[CSct]] == lickretractsolenoid1and2) {
-      //        Serial.print(18);                      //   code data as lick retract solenoid1 onset timestam
-      //        Serial.print(" ");
-      //        Serial.print(ts);                      //   send timestamp of solenoid onset
-      //        Serial.print(" ");
-      //      }
-      Serial.print(CSsolenoidcode[2 * cueList[CSct] + numfxdsolenoids]);
-      Serial.print(" ");
-      Serial.print(ts);                      //   send timestamp of solenoid onset
-      Serial.print(" ");
-
-      u = random(0, 100);
-      if (CSsolenoid[2 * cueList[CSct]] == lickretractsolenoid1and2 && CSopentime[2 * cueList[CSct]] > 0 && u < CSprob[2 * cueList[CSct]]) {
-        digitalWrite(lickretractsolenoid1, HIGH);
-        digitalWrite(lickretractsolenoid2, HIGH);
-        Serial.print(0);
-        Serial.print('\n');
-        solenoidOff = ts + CSopentime[2 * cueList[CSct]];      // set solenoid off time
-        if (ts <= solenoidOff) {
-          if (lickctforreq[0] >= golickreq[0]) {
-            licktubethatmetlickreq = golicktube[0];
-          }
-          else if (lickctforreq[1] >= golickreq[1]) {
-            licktubethatmetlickreq = golicktube[1];
-          }
-        }
-      }
-      else if (CSopentime[2 * cueList[CSct] ] > 0 && u < CSprob[2 * cueList[CSct]]) {
-        digitalWrite(CSsolenoid[2 * cueList[CSct] ], HIGH);      // turn on solenoid
-        Serial.print(0);                       //   this indicates that the solenoid was actually given
-        Serial.print('\n');
-        solenoidOff = ts + CSopentime[2 * cueList[CSct]];      // set solenoid off time
-      }
-      else {
-        Serial.print(1);                       //   this indicates that the solenoid was not given
-        Serial.print('\n');
-      }
-      numfxdsolenoids++;                                     // Increase fixed solenoids given till now for this cue
+    u = random(0, 100);
+    if (CSsolenoid[2 * cueList[CSct]] == lickretractsolenoid1and2 && CSopentime[2 * cueList[CSct]] > 0 && u < CSprob[2 * cueList[CSct]]) {
+      digitalWrite(lickretractsolenoid1, HIGH);
+      digitalWrite(lickretractsolenoid2, HIGH);
+      Serial.print(0);
+      Serial.print('\n');
+      solenoidOff = ts + CSopentime[2 * cueList[CSct]];      // set solenoid off time
+      nextfxdsolenoid = ts + min(CS_t_fxd[1], CS_t_fxd[3]) - CS_t_fxd[2 * cueList[CSct]];
+      numfxdsolenoids++;                                     // Increase fixed solenoids checked till now for this cue
     }
-    else if (numfxdsolenoids == 1) {      // Give second solenoid
-      u = random(0, 100);
-      if (CSsolenoid[2 * cueList[CSct] + numfxdsolenoids] == lickretractsolenoid1or2) {
-        if (CSopentime[1] > 0 && u < CSprob[1] && lickctforreq[0] >= golickreq[0]) {
+    else if (CSopentime[2 * cueList[CSct] ] > 0 && u < CSprob[2 * cueList[CSct]]) {
+      digitalWrite(CSsolenoid[2 * cueList[CSct] ], HIGH);      // turn on solenoid
+      Serial.print(0);                       //   this indicates that the solenoid was actually given
+      Serial.print('\n');
+      solenoidOff = ts + CSopentime[2 * cueList[CSct]];      // set solenoid off time
+      nextfxdsolenoid = ts + CS_t_fxd[2 * cueList[CSct] + 1] - CS_t_fxd[2 * cueList[CSct]];
+      numfxdsolenoids++;                                     // Increase fixed solenoids checked till now for this cue
+    }
+    else {
+      Serial.print(1);                       //   this indicates that the solenoid was not given
+      Serial.print('\n');
+      nextvacuum = ts + CSopentime[2 * cueList[CSct] + 1] + maxdelaytovacuumfromcueonset - CS_t_fxd[2 * cueList[CSct] + 1];
+      nextfxdsolenoid = 0;
+    }
+  }
+
+  if (!ITIflag && ts >= nextfxdsolenoid && nextfxdsolenoid != 0 && numfxdsolenoids == 1) {      // Give second solenoid
+    u = random(0, 100);
+    if (CSsolenoid[2 * cueList[CSct] + numfxdsolenoids] == lickretractsolenoid1or2) {
+      if (min(CS_t_fxd[1], CS_t_fxd[3]) == CS_t_fxd[1]) {
+        CSwithshortdelay2ndsolenoid = 1;
+        if (CSopentime[1] > 0 && u < CSprob[1] && licktubethatmetlickreq == 1) {
           Serial.print(CSsolenoidcode[1]);
           Serial.print(" ");
           Serial.print(ts);                      //   send timestamp of solenoid onset
@@ -887,10 +844,24 @@ void loop() {
           Serial.print(0);                       //   this indicates that the solenoid was actually given
           Serial.print('\n');
           solenoidOff = ts + CSopentime[1];
-          licktubethatmetlickreq = 1;
-          nextfxdsolenoid = ts + CS_t_fxd[1] - CS_t_fxd[0];
+          nextfxdsolenoid = 0;
+          nextvacuum = ts + CSopentime[1] + maxdelaytovacuumfromcueonset - CS_t_fxd[1];
         }
-        else if (CSopentime[3] > 0 && u < CSprob[3] && lickctforreq[1] >= golickreq[1]) {
+        else {
+          Serial.print(CSsolenoidcode[1]);
+          Serial.print(" ");
+          Serial.print(ts);                      //   send timestamp of solenoid onset
+          Serial.print(" ");
+          digitalWrite(CSsolenoid[1], HIGH);
+          Serial.print(1);                       //   this indicates that the solenoid was not given
+          Serial.print('\n');
+          nextfxdsolenoid = ts + CS_t_fxd[3] - CS_t_fxd[1];      // move to check the longer delay solenoid
+          numfxdsolenoids++;                                     // Increase fixed solenoids checked till now for this cue
+        }
+      }
+      else if (min(CS_t_fxd[1], CS_t_fxd[3]) == CS_t_fxd[3]) {        //
+        CSwithshortdelay2ndsolenoid = 2;
+        if (CSopentime[3] > 0 && u < CSprob[3] && licktubethatmetlickreq == 2) {
           Serial.print(CSsolenoidcode[3]);
           Serial.print(" ");
           Serial.print(ts);                      //   send timestamp of solenoid onset
@@ -899,46 +870,95 @@ void loop() {
           Serial.print('0');                       //   this indicates that the solenoid was actually given
           Serial.print('\n');
           solenoidOff = ts + CSopentime[3];
-          licktubethatmetlickreq = 2;
-          nextfxdsolenoid = ts + CS_t_fxd[3] - CS_t_fxd[2];
+          nextfxdsolenoid = 0;
+          nextvacuum = ts + CSopentime[3] + maxdelaytovacuumfromcueonset - CS_t_fxd[3];
         }
         else {
-          Serial.print(19);
+          Serial.print(CSsolenoidcode[3]);
           Serial.print(" ");
-          Serial.print(ts);
+          Serial.print(ts);                      //   send timestamp of solenoid onset
           Serial.print(" ");
-          Serial.print(1);
+          digitalWrite(CSsolenoid[1], HIGH);
+          Serial.print(1);                       //   this indicates that the solenoid was actually given
           Serial.print('\n');
-          nextfxdsolenoid = ts + CS_t_fxd[2 * cueList[CSct] + numfxdsolenoids] - CS_t_fxd[2 * cueList[CSct]];
+          nextfxdsolenoid = ts + CS_t_fxd[1] - CS_t_fxd[3];
+          numfxdsolenoids++;                                     // Increase fixed solenoids checked till now for this cue
         }
       }
-      else if (CSopentime[2 * cueList[CSct] + numfxdsolenoids] > 0 && u < CSprob[2 * cueList[CSct]] + numfxdsolenoids) {
-        Serial.print(CSsolenoidcode[2 * cueList[CSct] + numfxdsolenoids]);
-        Serial.print(" ");
-        Serial.print(ts);
-        Serial.print(" ");
-        digitalWrite(CSsolenoid[2 * cueList[CSct] + numfxdsolenoids], HIGH);      // turn on solenoid
-        Serial.print(0);                       //   this indicates that the solenoid was actually given
-        Serial.print('\n');
-        solenoidOff = ts + CSopentime[2 * cueList[CSct]];      // set solenoid off time
-      }
-      numfxdsolenoids == 0;
     }
-    if (numfxdsolenoids == 1) { //set time for next fixed solenoid
-      if (licktubethatmetlickreq = 1) {
-        nextfxdsolenoid = ts + CS_t_fxd[1] - CS_t_fxd[0];
-      }
-      else if (licktubethatmetlickreq = 2) {
-        nextfxdsolenoid = ts + CS_t_fxd[3] - CS_t_fxd[2];
-      }
-      else {
-        nextfxdsolenoid = ts + CS_t_fxd[2 * cueList[CSct] + numfxdsolenoids] - CS_t_fxd[2 * cueList[CSct]];
-      }
+    else if (CSopentime[2 * cueList[CSct] + numfxdsolenoids] > 0 && u < CSprob[2 * cueList[CSct]] + numfxdsolenoids && lickctforreq[cueList[CSct]] >= golickreq[cueList[CSct]]) {
+      Serial.print(CSsolenoidcode[2 * cueList[CSct] + numfxdsolenoids]);
+      Serial.print(" ");
+      Serial.print(ts);
+      Serial.print(" ");
+      digitalWrite(CSsolenoid[2 * cueList[CSct] + numfxdsolenoids], HIGH);      // turn on solenoid
+      Serial.print(0);                       //   this indicates that the solenoid was actually given
+      Serial.print('\n');
+      solenoidOff = ts + CSopentime[2 * cueList[CSct] + 1];      // set solenoid off time
+      nextvacuum = ts + CSopentime[2 * cueList[CSct] + 1] + maxdelaytovacuumfromcueonset - CS_t_fxd[2 * cueList[CSct] + 1];
+      nextfxdsolenoid = 0;
     }
     else {
-      nextfxdsolenoid = 0;
+      Serial.print(CSsolenoidcode[2 * cueList[CSct] + numfxdsolenoids]);
+      Serial.print(" ");
+      Serial.print(ts);
+      Serial.print(" ");
+      digitalWrite(CSsolenoid[2 * cueList[CSct] + numfxdsolenoids], HIGH);      // turn on solenoid
+      Serial.print(1);                       //   this indicates that the solenoid was actually given
+      Serial.print('\n');
       nextvacuum = ts + CSopentime[2 * cueList[CSct] + 1] + maxdelaytovacuumfromcueonset - CS_t_fxd[2 * cueList[CSct] + 1];
+      nextfxdsolenoid = 0;
     }
+  }
+
+  if (!ITIflag && ts >= nextfxdsolenoid && nextfxdsolenoid != 0 && numfxdsolenoids == 2) {      // Give third solenoid, this indicates that the second solenoid requirement was not met and second solenoid wasn't given
+    if (CSwithshortdelay2ndsolenoid == 1) {
+      if (CSopentime[3] > 0 && u < CSprob[3] && licktubethatmetlickreq == 2) {
+        Serial.print(CSsolenoidcode[3]);
+        Serial.print(" ");
+        Serial.print(ts);                      //   send timestamp of solenoid onset
+        Serial.print(" ");
+        digitalWrite(CSsolenoid[3], HIGH);
+        Serial.print('0');                       //   this indicates that the solenoid was actually given
+        Serial.print('\n');
+        solenoidOff = ts + CSopentime[3];
+        nextvacuum = ts + CSopentime[3] + maxdelaytovacuumfromcueonset - CS_t_fxd[3];
+      }
+      else {
+        Serial.print(CSsolenoidcode[3]);
+        Serial.print(" ");
+        Serial.print(ts);                      //   send timestamp of solenoid onset
+        Serial.print(" ");
+        digitalWrite(CSsolenoid[1], HIGH);
+        Serial.print(1);                       //   this indicates that the solenoid was not given
+        Serial.print('\n');
+        nextvacuum = ts + CSopentime[3] + maxdelaytovacuumfromcueonset - CS_t_fxd[3];
+      }
+    }
+    else if (CSwithshortdelay2ndsolenoid = 2) {
+      if (CSopentime[1] > 0 && u < CSprob[1] && licktubethatmetlickreq == 1) {
+        Serial.print(CSsolenoidcode[1]);
+        Serial.print(" ");
+        Serial.print(ts);                      //   send timestamp of solenoid onset
+        Serial.print(" ");
+        digitalWrite(CSsolenoid[1], HIGH);
+        Serial.print(0);                       //   this indicates that the solenoid was actually given
+        Serial.print('\n');
+        solenoidOff = ts + CSopentime[1];
+        nextvacuum = ts + CSopentime[1] + maxdelaytovacuumfromcueonset - CS_t_fxd[1];
+      }
+      else {
+        Serial.print(CSsolenoidcode[1]);
+        Serial.print(" ");
+        Serial.print(ts);                      //   send timestamp of solenoid onset
+        Serial.print(" ");
+        digitalWrite(CSsolenoid[1], HIGH);
+        Serial.print(1);                       //   this indicates that the solenoid was not given
+        Serial.print('\n');
+        nextvacuum = ts + CSopentime[1] + maxdelaytovacuumfromcueonset - CS_t_fxd[1];
+      }
+    }
+    nextfxdsolenoid = 0;                      // End of fixed solenoid checking for this cue
   }
 
   if (ITIflag && ts >= nextbgdsolenoid && nextbgdsolenoid != 0) { // give background solenoid if you are in ITI
@@ -1022,7 +1042,6 @@ void loop() {
     Serial.print(0);
     Serial.print('\n');
   }
-
 
   if (ts >= solenoidOff && solenoidOff != 0) { // solenoid CESSATION
     digitalWrite(solenoid1, LOW);           // turn off solenoid
@@ -1303,6 +1322,11 @@ void licking() {
     Serial.print(0);
     Serial.print('\n');
     lickctforreq[0]++;
+
+    if (lickctforreq[0] >= golickreq[0] && licktubesactive) {  // Check if lick requirement met
+      licktubethatmetlickreq = 1;
+      licktubesactive = false;
+    }
   }
 
   if (lickwithdrawn) {                     // if lick withdrawn
@@ -1327,6 +1351,11 @@ void licking() {
     Serial.print(0);
     Serial.print('\n');
     lickctforreq[1]++;
+
+    if (lickctforreq[1] >= golickreq[1] && licktubesactive) {  // Check if lick requirement met
+      licktubethatmetlickreq = 2;
+      licktubesactive = false;
+    }
   }
 
   if (lickwithdrawn) {                     // if lick withdrawn
@@ -1351,6 +1380,11 @@ void licking() {
     Serial.print(0);
     Serial.print('\n');
     lickctforreq[2]++;
+
+    if (lickctforreq[2] >= golickreq[2] && licktubesactive) {  // Check if lick requirement met
+      licktubethatmetlickreq = 3;
+      licktubesactive = false;
+    }
   }
 
   if (lickwithdrawn) {                     // if lick withdrawn
@@ -1405,10 +1439,11 @@ void cues() {
   lickctforreq[0] = 0;                 // reset lick1 count to zero at cue onset
   lickctforreq[1] = 0;                 // reset lick2 count to zero at cue onset
   lickctforreq[2] = 0;                 // reset lick3 count to zero at cue onset
+  licktubesactive = true;              // reset licktubesactive to be true at cue onset
 
 }
 
-void DeliverLaserToCues() {
+void deliverlasertocues() {
   if (laserduration > 0 && lasertrialbytrialflag == 0 && randlaserflag == 0) {
     nextlaser = ts + laserlatency;
   }
@@ -1436,6 +1471,7 @@ void lights() {
   lickctforreq[0] = 0;
   lickctforreq[1] = 0;
   lickctforreq[2] = 0;
+  licktubesactive = true;              // reset licktubesactive to be true at cue onset
 }
 
 void software_Reboot()
