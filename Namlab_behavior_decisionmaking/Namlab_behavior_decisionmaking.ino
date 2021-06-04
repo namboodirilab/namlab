@@ -753,7 +753,7 @@ void loop() {
   }
 
   if (ts >= nextlaser && nextlaser != 0) {
-    Serial.print(24);                        // code data as laser timestamp
+    Serial.print(31);                        // code data as laser timestamp
     Serial.print(" ");
     Serial.print(ts);                        // send timestamp of laser
     Serial.print(" ");
@@ -1275,10 +1275,10 @@ void getParams() {
     backgroundsolenoid = solenoid2;
   }
   else if (backgroundsolenoid == 3) {
-    backgroundsolenoid == solenoid3;
+    backgroundsolenoid = solenoid3;
   }
   else if (backgroundsolenoid == 4) {
-    backgroundsolenoid == solenoid4;
+    backgroundsolenoid = solenoid4;
   }
 
   for (int p = 0; p < numlicktube; p++) {
