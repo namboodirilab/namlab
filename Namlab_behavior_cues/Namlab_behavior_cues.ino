@@ -1156,10 +1156,10 @@ void getParams() {
     backgroundsolenoid = solenoid2;
   }
   else if (backgroundsolenoid == 3) {
-    backgroundsolenoid == solenoid3;
+    backgroundsolenoid = solenoid3;
   }
   else if (backgroundsolenoid == 4) {
-    backgroundsolenoid == solenoid4;
+    backgroundsolenoid = solenoid4;
   }
 
   for (int p = 0; p < numlicktube; p++) {
