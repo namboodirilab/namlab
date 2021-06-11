@@ -330,27 +330,27 @@ void setup() {
     if (reading == 50 || reading == 51 || reading == 52) {                       // Test CS1 or CS2 or CS3
       reading -= 50;
       if (signaltolickreq[reading] == 1) {
-        if (CSpulse[reading] == 1) {
-          tone(lickspeaker[reading], CSfreq[reading]);               // turn on tone
+        if (soundsignalpulse[reading] == 1) {
+          tone(lickspeaker[reading], soundfreq[reading]);               // turn on tone
           delay(200);                               // Pulse with 200ms cycle
           noTone(lickspeaker[reading]);
           delay(200);
-          tone(lickspeaker[reading], CSfreq[reading]);               // turn on tone
+          tone(lickspeaker[reading], soundfreq[reading]);               // turn on tone
           delay(200);                               // Pulse with 200ms cycle
           noTone(lickspeaker[reading]);
           delay(200);
-          tone(lickspeaker[reading], CSfreq[reading]);               // turn on tone
+          tone(lickspeaker[reading], soundfreq[reading]);               // turn on tone
           delay(200);                               // Pulse with 200ms cycle
           noTone(lickspeaker[reading]);
         }
         else if (CSpulse[reading] == 0) {
-          tone(lickspeaker[reading], CSfreq[reading]);               // turn on tone
+          tone(lickspeaker[reading], soundfreq[reading]);               // turn on tone
           delay(1000);
           noTone(lickspeaker[reading]);
         }
       }
       else if (signaltolickreq[reading] == 2) {
-        if (CSpulse[reading] == 1) {
+        if (soundsignalpulse[reading] == 1) {
           digitalWrite(licklight[reading], HIGH);               // turn on light
           delay(200);                               // Pulse with 200ms cycle
           digitalWrite(licklight[reading], LOW);
@@ -363,21 +363,21 @@ void setup() {
           delay(200);                               // Pulse with 200ms cycle
           digitalWrite(licklight[reading], LOW);
         }
-        else if (CSpulse[reading] == 0) {
+        else if (soundsignalpulse[reading] == 0) {
           digitalWrite(licklight[reading], HIGH);               // turn on light
           delay(1000);                               // delay 1s
           digitalWrite(licklight[reading], LOW);
         }
       }
       else if (signaltolickreq[reading] == 3) {
-        if (CSpulse[reading] == 1) {
-          tone(lickspeaker[reading], CSfreq[reading]);               // turn on tone
+        if (soundsignalpulse[reading] == 1) {
+          tone(lickspeaker[reading], soundfreq[reading]);               // turn on tone
           digitalWrite(licklight[reading], HIGH);               // turn on light
           delay(200);                               // Pulse with 200ms cycle
           noTone(lickspeaker[reading]);
           digitalWrite(licklight[reading], LOW);
           delay(200);
-          tone(lickspeaker[reading], CSfreq[reading]);               // turn on tone
+          tone(lickspeaker[reading], soundfreq[reading]);               // turn on tone
           digitalWrite(licklight[reading], HIGH);               // turn on light
           delay(200);                               // Pulse with 200ms cycle
           noTone(lickspeaker[reading]);
@@ -388,8 +388,8 @@ void setup() {
           noTone(lickspeaker[reading]);
           digitalWrite(licklight[reading], LOW);
         }
-        else if (CSpulse[reading] == 0) {
-          tone(lickspeaker[reading], CSfreq[reading]);               // turn on tone
+        else if (soundsignalpulse[reading] == 0) {
+          tone(lickspeaker[reading], soundfreq[reading]);               // turn on tone
           digitalWrite(licklight[reading], HIGH);               // turn on light
           delay(1000);                               // delay 1s
           noTone(lickspeaker[reading]);
@@ -400,7 +400,7 @@ void setup() {
 
     if (reading == 65) {                 // MANUAL solenoid 1
       digitalWrite(solenoid1, HIGH);          // turn on solenoid 1
-      delay(CSopentime[1]);
+      delay(lickopentime[1]);
       digitalWrite(solenoid1, LOW);           // turn off solenoid 1
     }
 
@@ -414,7 +414,7 @@ void setup() {
 
     if (reading == 68) {                 // MANUAL solenoid 2
       digitalWrite(solenoid2, HIGH);          // turn on solenoid 2
-      delay(CSopentime[1]);
+      delay(lickopentime[1]);
       digitalWrite(solenoid2, LOW);           // turn off solenoid 2
     }
 
@@ -428,7 +428,7 @@ void setup() {
 
     if (reading == 71) {                 // MANUAL solenoid 3
       digitalWrite(solenoid3, HIGH);          // turn on solenoid 3
-      delay(CSopentime[1]);
+      delay(lickopentime[1]);
       digitalWrite(solenoid3, LOW);           // turn off solenoid 3
     }
 
@@ -442,7 +442,7 @@ void setup() {
 
     if (reading == 74) {                 // MANUAL solenoid 4
       digitalWrite(solenoid4, HIGH);          // turn on solenoid 4
-      delay(CSopentime[1]);
+      delay(lickopentime[1]);
       digitalWrite(solenoid4, LOW);           // turn off solenoid 4
     }
 
@@ -456,7 +456,7 @@ void setup() {
 
     if (reading == 77) {                 // MANUAL lickretractsolenoid11
       digitalWrite(lickretractsolenoid1, HIGH);          // turn on lickretractsolenoid1
-      delay(CSopentime[1]);
+      delay(lickopentime[1]);
       digitalWrite(lickretractsolenoid1, LOW);           // turn off lickretractsolenoid1
     }
 
@@ -470,7 +470,7 @@ void setup() {
 
     if (reading == 80) {                 // MANUAL lickretractsolenoid12
       digitalWrite(lickretractsolenoid2, HIGH);          // turn on lickretractsolenoid2
-      delay(CSopentime[1]);
+      delay(lickopentime[1]);
       digitalWrite(lickretractsolenoid2, LOW);           // turn off lickretractsolenoid2
     }
 
@@ -666,7 +666,7 @@ void loop() {
   }
   if (reading == 65) {                 // MANUAL solenoid 1
     digitalWrite(solenoid1, HIGH);          // turn on solenoid
-    solenoidOff = ts + CSopentime[1];              // set solenoid off time
+    solenoidOff = ts + lickopentime[1];              // set solenoid off time
     Serial.print(8);                   //   code data as solenoid1 onset timestamp
     Serial.print(" ");
     Serial.print(ts);                  //   send timestamp of solenoid onset
@@ -676,7 +676,7 @@ void loop() {
   }
   if (reading == 68) {                 // MANUAL solenoid 2
     digitalWrite(solenoid2, HIGH);          // turn on solenoid
-    solenoidOff = ts + CSopentime[1];              // set solenoid off time
+    solenoidOff = ts + lickopentime[1];              // set solenoid off time
     Serial.print(9);                   //   code data as solenoid2 onset timestamp
     Serial.print(" ");
     Serial.print(ts);                  //   send timestamp of solenoid onset
@@ -686,7 +686,7 @@ void loop() {
   }
   if (reading == 71) {                 // MANUAL solenoid 3
     digitalWrite(solenoid3, HIGH);          // turn on solenoid
-    solenoidOff = ts + CSopentime[1];              // set solenoid off time
+    solenoidOff = ts + lickopentime[1];              // set solenoid off time
     Serial.print(10);                   //   code data as solenoid3 onset timestamp
     Serial.print(" ");
     Serial.print(ts);                  //   send timestamp of solenoid onset
@@ -696,7 +696,7 @@ void loop() {
   }
   if (reading == 74) {                 // MANUAL solenoid 4
     digitalWrite(solenoid4, HIGH);          // turn on solenoid
-    solenoidOff = ts + CSopentime[1];              // set solenoid off time
+    solenoidOff = ts + lickopentime[1];              // set solenoid off time
     Serial.print(11);                   //   code data as solenoid4 onset timestamp
     Serial.print(" ");
     Serial.print(ts);                  //   send timestamp of solenoid onset
@@ -892,6 +892,8 @@ void getParams() {
     rewardprobforlick[0] = 1. / reqlicknum[0];
     rewardprobforlick[1] = 1. / reqlicknum[1];
   }
+  soundfreq[0] = soundfreq[0] * 1000;
+  soundfreq[1] = soundfreq[1] * 1000;
 }
 
 
@@ -1102,10 +1104,10 @@ void lights() {
   //  Serial.print(ts);
   //  Serial.print(" ");
   //  Serial.print(0);
-  if (CSdur[cueList[CSct]] > 0) {
+  if (sounddur[licktubethatmetlickreq] > 0) {
     digitalWrite(licklight[licktubethatmetlickreq], HIGH);
   }
-  lightOff = ts + lightdur;
+  lightOff = ts + sounddur;
 }
 
 void software_Reboot()
