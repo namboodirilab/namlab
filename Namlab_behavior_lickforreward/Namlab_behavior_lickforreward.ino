@@ -1107,7 +1107,7 @@ void lights() {
   if (sounddur[licktubethatmetlickreq] > 0) {
     digitalWrite(licklight[licktubethatmetlickreq], HIGH);
   }
-  lightOff = ts + sounddur;
+  lightOff = ts + int(sounddur[licktubethatmetlickreq]);
 }
 
 void software_Reboot()
