@@ -251,11 +251,13 @@ try
                     tempsolenoids(tempsolenoidsct(1), 1) = time;   % keep track of solenoid1 timestamp
                 end
             elseif experimentmode == 3
-                fxdus1 = fxdus1 + 1;
-                set(handles.fxdsolenoids1Edit,'String',num2str(fxdus1))
-                trial = floor(time/durationtrialpartitionnocues);
-                temptrialdur = trial*durationtrialpartitionnocues;                
-                plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'c','LineWidth',2);hold on
+                if nosolenoidflag == 0
+                    fxdus1 = fxdus1 + 1;
+                    set(handles.fxdsolenoids1Edit,'String',num2str(fxdus1))
+                    trial = floor(time/durationtrialpartitionnocues);
+                    temptrialdur = trial*durationtrialpartitionnocues;
+                    plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'c','LineWidth',2);hold on
+                end
             end
         elseif code == 9                            % Fixed solenoid 2; [0.64, 0.08, 0.18]
             if experimentmode == 1 || experimentmode == 4
@@ -266,11 +268,13 @@ try
                     tempsolenoids(tempsolenoidsct(2), 2) = time;   % keep track of solenoid2 timestamp
                 end
              elseif experimentmode == 3
-                fxdus2 = fxdus2 + 1;
-                set(handles.fxdsolenoids2Edit,'String',num2str(fxdus2))
-                trial = floor(time/durationtrialpartitionnocues);
-                temptrialdur = trial*durationtrialpartitionnocues;                
-                plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0.64 0.08 0.18],'LineWidth',2);hold on
+                 if nosolenoidflag == 0
+                     fxdus2 = fxdus2 + 1;
+                     set(handles.fxdsolenoids2Edit,'String',num2str(fxdus2))
+                     trial = floor(time/durationtrialpartitionnocues);
+                     temptrialdur = trial*durationtrialpartitionnocues;
+                     plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0.64 0.08 0.18],'LineWidth',2);hold on
+                 end
             end      
         elseif code == 10                            % Fixed solenoid 3; orange [1 0.5 0]
              if experimentmode == 1 || experimentmode == 4 
@@ -281,11 +285,13 @@ try
                     tempsolenoids(tempsolenoidsct(3), 3) = time;   % keep track of solenoid3 timestamp
                 end 
              elseif experimentmode == 3
-                fxdus3 = fxdus3 + 1;
-                set(handles.fxdsolenoids3Edit,'String',num2str(fxdus3))
-                trial = floor(time/durationtrialpartitionnocues);
-                temptrialdur = trial*durationtrialpartitionnocues;                
-                plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[1 0.5 0],'LineWidth',2);hold on
+                 if nosolenoidflag == 0
+                     fxdus3 = fxdus3 + 1;
+                     set(handles.fxdsolenoids3Edit,'String',num2str(fxdus3))
+                     trial = floor(time/durationtrialpartitionnocues);
+                     temptrialdur = trial*durationtrialpartitionnocues;
+                     plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[1 0.5 0],'LineWidth',2);hold on
+                 end
             end 
         elseif code == 11                            % Fixed solenoid 4; [0.72 0.27 1]
             if experimentmode == 1 || experimentmode == 4
@@ -296,11 +302,13 @@ try
                     tempsolenoids(tempsolenoidsct(4), 4) = time;   % keep track of solenoid4 timestamp
                 end 
              elseif experimentmode == 3
-                fxdus4 = fxdus4 + 1;
-                set(handles.fxdsolenoids4Edit,'String',num2str(fxdus4))
-                trial = floor(time/durationtrialpartitionnocues);
-                temptrialdur = trial*durationtrialpartitionnocues;                
-                plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0.72 0.27 1],'LineWidth',2);hold on
+                 if nosolenoidflag == 0
+                     fxdus4 = fxdus4 + 1;
+                     set(handles.fxdsolenoids4Edit,'String',num2str(fxdus4))
+                     trial = floor(time/durationtrialpartitionnocues);
+                     temptrialdur = trial*durationtrialpartitionnocues;
+                     plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0.72 0.27 1],'LineWidth',2);hold on
+                 end
             end 
         elseif code == 12                            % Lick retraction solenoid1; [0.3 0.75 0.93]
             if experimentmode == 1 || experimentmode == 4
@@ -311,11 +319,13 @@ try
                     tempsolenoids(tempsolenoidsct(5), 5) = time;   % keep track of solenoid4 timestamp
                 end 
              elseif experimentmode == 3
-                lickretractsolenoid1 = lickretractsolenoid1 + 1;
-                set(handles.lickretractsolenoid1Edit,'String',num2str(lickretractsolenoid1))
-                trial = floor(time/durationtrialpartitionnocues);
-                temptrialdur = trial*durationtrialpartitionnocues;                
-                plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0.3 0.75 0.93],'LineWidth',2);hold on
+                 if nosolenoidflag == 0
+                     lickretractsolenoid1 = lickretractsolenoid1 + 1;
+                     set(handles.lickretractsolenoid1Edit,'String',num2str(lickretractsolenoid1))
+                     trial = floor(time/durationtrialpartitionnocues);
+                     temptrialdur = trial*durationtrialpartitionnocues;
+                     plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0.3 0.75 0.93],'LineWidth',2);hold on
+                 end
             end 
         elseif code == 13                            % Lick retraction solenoid2; [0.97 0.28 0.18]
             if experimentmode == 1 || experimentmode == 4
@@ -326,11 +336,13 @@ try
                     tempsolenoids(tempsolenoidsct(6), 6) = time;   % keep track of solenoid4 timestamp
                 end 
              elseif experimentmode == 3
-                lickretractsolenoid2 = lickretractsolenoid2 + 1;
-                set(handles.lickretractsolenoid2Edit,'String',num2str(lickretractsolenoid2))
-                trial = floor(time/durationtrialpartitionnocues);
-                temptrialdur = trial*durationtrialpartitionnocues;                
-                plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0.97 0.28 0.18],'LineWidth',2);hold on
+                 if nosolenoidflag == 0
+                     lickretractsolenoid2 = lickretractsolenoid2 + 1;
+                     set(handles.lickretractsolenoid2Edit,'String',num2str(lickretractsolenoid2))
+                     trial = floor(time/durationtrialpartitionnocues);
+                     temptrialdur = trial*durationtrialpartitionnocues;
+                     plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0.97 0.28 0.18],'LineWidth',2);hold on
+                 end
             end 
         elseif code == 18                            % Lick retraction solenoid1 and 2;
             if experimentmode == 1 || experimentmode == 4
@@ -345,16 +357,18 @@ try
                     tempsolenoids(tempsolenoidsct(6), 6) = time;   % keep track of solenoid4 timestamp
                 end 
              elseif experimentmode == 3
-                lickretractsolenoid2 = lickretractsolenoid2 + 1;
-                set(handles.lickretractsolenoid2Edit,'String',num2str(lickretractsolenoid2))
-                trial = floor(time/durationtrialpartitionnocues);
-                temptrialdur = trial*durationtrialpartitionnocues;                
-                plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0.97 0.28 0.18],'LineWidth',2);hold on
-                lickretractsolenoid1 = lickretractsolenoid1 + 1;
-                set(handles.lickretractsolenoid1Edit,'String',num2str(lickretractsolenoid1))
-                trial = floor(time/durationtrialpartitionnocues);
-                temptrialdur = trial*durationtrialpartitionnocues;                
-                plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0.3 0.75 0.93],'LineWidth',2);hold on
+                 if nosolenoidflag == 0
+                     lickretractsolenoid2 = lickretractsolenoid2 + 1;
+                     set(handles.lickretractsolenoid2Edit,'String',num2str(lickretractsolenoid2))
+                     trial = floor(time/durationtrialpartitionnocues);
+                     temptrialdur = trial*durationtrialpartitionnocues;
+                     plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0.97 0.28 0.18],'LineWidth',2);hold on
+                     lickretractsolenoid1 = lickretractsolenoid1 + 1;
+                     set(handles.lickretractsolenoid1Edit,'String',num2str(lickretractsolenoid1))
+                     trial = floor(time/durationtrialpartitionnocues);
+                     temptrialdur = trial*durationtrialpartitionnocues;
+                     plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0.3 0.75 0.93],'LineWidth',2);hold on
+                 end
             end 
         elseif code == 14                            % Vaccum;            
             if experimentmode ==1 || experimentmode == 4
