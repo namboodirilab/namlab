@@ -324,6 +324,8 @@ void setup() {
   // = 81 for turning lick retract solenoid 2 on, (Q)
   // = 82 for turning lick retract solenoid 2 off, (R)
   // = 86 for turning vacuum on for 200 ms duration, (V)
+  // = 89 for clearing lick tube 1 rewards, (Y)
+  // = 90 for clearing lick tube 2 rewards, (Z)
 
   while (reading != 48) {              // Before "Start" is pressed in MATLAB GUI
     reading = Serial.read();
@@ -493,7 +495,6 @@ void setup() {
       delay(1000);
       digitalWrite(laser, LOW);         // turn off LASER
     }
-
   }
 
   solenoidOff = 0;
@@ -564,6 +565,13 @@ void loop() {
     endSession();
   }
 
+  if (reading == 89) {                // set lick tube 1 rewards to be zero (no further rewards licking on this licktube
+    minrewards[0] = 0;
+  }
+  if (reading == 90) {                // set lick tube 2 rewards to be zero (no further rewards licking on this licktube
+    minrewards[1] = 0;
+  }
+
   if (ts >= cuePulseOff && cuePulseOff != 0) {     // turn off tone
     noTone(lickspeaker[licktubethatmetlickreq]);
     cuePulseOn = ts + 200;
@@ -610,33 +618,32 @@ void loop() {
     Serial.print(ts);
     Serial.print(" ");
 
-    nextfxdsolenoid = 0;
     u = random(0, 100);
 
-    if (lickopentime[licktubethatmetlickreq] >= 0 && u < lickprob[licktubethatmetlickreq]) {          // set lick solenoid high
+    if (lickopentime[licktubethatmetlickreq] > 0 && u < lickprob[licktubethatmetlickreq] && minrewards[licktubethatmetlickreq] > 0) {          // set lick solenoid high
       digitalWrite(licksolenoid[licktubethatmetlickreq], HIGH);
       Serial.print(0);                                // indicates the reward is given
       Serial.print('\n');
-      solenoidOff = ts + lickopentime[licktubethatmetlickreq];                          // set solenoid off time
-
-      if (variableintervalflag[licktubethatmetlickreq] == 1) {
-        u = random(0, 10000);
-        temp = (float)u / 10000;
-        temp1 = 3;
-        temp1 = exp(-temp1);
-        temp1 = 1 - temp1;
-        temp = temp * temp1;
-        temp = -log(1 - temp);
-        nextvacuum = (unsigned long)ts + lickopentime[licktubethatmetlickreq] + delaytolick[licktubethatmetlickreq] * temp;       // variable vacuum onset
-      }
-      else if (variableintervalflag[licktubethatmetlickreq] == 0) {
-        nextvacuum = ts + lickopentime[licktubethatmetlickreq] + delaytolick[licktubethatmetlickreq];       // fixed vacuum onset
-      }
     }
     else {
       Serial.print(1);                                // indicates no reward given
       Serial.print('\n');
     }
+    if (variableintervalflag[licktubethatmetlickreq] == 1) {
+      u = random(0, 10000);
+      temp = (float)u / 10000;
+      temp1 = 3;
+      temp1 = exp(-temp1);
+      temp1 = 1 - temp1;
+      temp = temp * temp1;
+      temp = -log(1 - temp);
+      nextvacuum = (unsigned long)ts + lickopentime[licktubethatmetlickreq] + delaytolick[licktubethatmetlickreq] * temp;       // variable vacuum onset
+    }
+    else if (variableintervalflag[licktubethatmetlickreq] == 0) {
+      nextvacuum = ts + lickopentime[licktubethatmetlickreq] + delaytolick[licktubethatmetlickreq];       // fixed vacuum onset
+    }
+    solenoidOff = ts + lickopentime[licktubethatmetlickreq];                          // set solenoid off time
+    nextfxdsolenoid = 0;
   }
 
   if (ts >= solenoidOff && solenoidOff != 0) {
@@ -887,7 +894,7 @@ void getParams() {
       licksolenoid[p] = lickretractsolenoid2;
     }
   }
-  
+
   if (variableratioflag[0] == 1) {
     rewardprobforlick[0] = 1. / reqlicknum[0];
     rewardprobforlick[1] = 1. / reqlicknum[1];
@@ -898,7 +905,7 @@ void getParams() {
 
 
 // Signaling lick tube for meeting lick requirement
-void LickReqMet(int licktube) {   
+void LickReqMet(int licktube) {
   licktubethatmetlickreq = licktube;
   nextfxdsolenoid = ts + delaytoreward[licktubethatmetlickreq];
   licktubesactive = false;

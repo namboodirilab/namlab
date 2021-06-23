@@ -22,7 +22,7 @@ function varargout = headfix_GUI(varargin)
 
 % Edit the above text to modify the response to help headfix_GUI
 
-% Last Modified by GUIDE v2.5 05-Mar-2021 15:32:46
+% Last Modified by GUIDE v2.5 18-Jun-2021 15:16:57
 
 % cd 'F:\acads\Stuber lab\headfix'; %Change to directory
 
@@ -121,6 +121,8 @@ set(handles.primesolenoid3, 'Enable', 'off');
 set(handles.primesolenoid4, 'Enable', 'off');
 set(handles.primelickretractsolenoid1, 'Enable','off');
 set(handles.primelickretractsolenoid2, 'Enable','off');
+set(handles.clearlick1rewards, 'Enable','off');
+set(handles.clearlick2rewards, 'Enable','off');
 
 
 % UIWAIT makes headfix_GUI wait for user response (see UIRESUME)
@@ -357,14 +359,16 @@ set(handles.solenoid1Button, 'Enable', 'off');
 set(handles.solenoid2Button, 'Enable', 'off');
 set(handles.solenoid3Button, 'Enable', 'off');
 set(handles.solenoid4Button, 'Enable', 'off');
-set(handles.lickretractsolenoid1Button, 'Enable','off')
-set(handles.lickretractsolenoid2Button, 'Enable','off')
+set(handles.lickretractsolenoid1Button, 'Enable','off');
+set(handles.lickretractsolenoid2Button, 'Enable','off');
 set(handles.primesolenoid1, 'Enable', 'off');
 set(handles.primesolenoid2, 'Enable', 'off');
 set(handles.primesolenoid3, 'Enable', 'off');
 set(handles.primesolenoid4, 'Enable', 'off');
-set(handles.primelickretractsolenoid1, 'Enable','off')
-set(handles.primelickretractsolenoid2, 'Enable','off')
+set(handles.primelickretractsolenoid1, 'Enable','off');
+set(handles.primelickretractsolenoid2, 'Enable','off');
+set(handles.clearlick1rewards, 'Enable','off');
+set(handles.clearlick2rewards, 'Enable','off');
 
 
 
@@ -524,6 +528,27 @@ else
     fprintf(s, 'R');            % Send prime lickretractsolenoid signal to arduino; 82 in the Arduino is the ASCII code for R
 end
 
+
+% --- Executes on button press in clearlick1rewards.
+function clearlick1rewards_Callback(hObject, eventdata, handles)
+% hObject    handle to clearlick1rewards (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global s
+fprintf(s,'Y');              % Send clear lick 1 rewards signal to arduino; Y in the Arduino is the ASCII code for 89
+set(handles.clearlick1rewards,'Enable','off')
+
+
+% --- Executes on button press in clearlick2rewards.
+function clearlick2rewards_Callback(hObject, eventdata, handles)
+% hObject    handle to clearlick2rewards (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global s
+fprintf(s,'Z');              % Send clear lick 2 rewards signal to arduino; Y in the Arduino is the ASCII code for 90
+set(handles.clearlick2rewards,'Enable','off')
+
+
 % --- Executes on button press in testcs1.
 function testcs1_Callback(hObject, eventdata, handles)
 % hObject    handle to testcs1 (see GCBO)
@@ -570,7 +595,7 @@ function testserialport_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 global s running actvAx saveDir
 
-mainPath = 'C:\Users\mzhou9\Desktop\Behavioral_acquisition_and_analysis';	
+mainPath = 'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis';	
 addpath(mainPath)	
 saveDir = [mainPath '\serialtest\'];          % save serial testing data here
 
@@ -1022,6 +1047,11 @@ if experimentmode==2
     set(handles.vacuumButton,'Enable', 'off')
 end
 
+if experimentmode==3
+    set(handles.clearlick1rewards,'Enable','on');
+    set(handles.clearlick2rewards,'Enable','on');
+end
+
 fname = get(handles.fileName,'String');
 
 params = sprintf('%d+', numtrials, CSfreq, CSsolenoid, CSprob, CSopentime,...
@@ -1104,3 +1134,6 @@ set(handles.primesolenoid3, 'Enable', 'off');
 set(handles.primesolenoid4, 'Enable', 'off');
 set(handles.primelickretractsolenoid1, 'Enable','off')
 set(handles.primelickretractsolenoid2, 'Enable','off')
+set(handles.clearlick1rewards,'Enable','off');
+set(handles.clearlick2rewards,'Enable','off');
+
