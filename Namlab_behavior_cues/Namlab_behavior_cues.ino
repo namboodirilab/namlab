@@ -179,6 +179,7 @@ unsigned long mindelayfxdtobgd;  // minimum delay between fixed solenoid to the 
 unsigned long experimentmode;    // if==1, run experiment with cues; if==2, give only background solenoids; if==3, give lick dependent rewards
 boolean trialbytrialbgdsolenoidflag;  // if ==1, run experiment by changing bgd solenoid rate on a trial-by-trial basis
 unsigned long totbgdsolenoid;         // total number of background solenoids if experimentmode==2, i.e. when only Poisson solenoids are delivered.
+unsigned long CSsolenoidcode[2 * numCS];
 
 const int numlicktube = 2;       // number of recording lick tubes for lick dependent experiments
 unsigned long reqlicknum[numlicktube];
@@ -796,24 +797,7 @@ void loop() {
 
   if (!ITIflag && ts >= nextfxdsolenoid && nextfxdsolenoid != 0) { // give fixed solenoid
 
-    if (CSsolenoid[2 * cueList[CSct] + numfxdsolenoids] == solenoid1) {
-      Serial.print(8);                       //   code data as fixed solenoid1 onset timestamp
-    }
-    else if (CSsolenoid[2 * cueList[CSct] + numfxdsolenoids] == solenoid2) {
-      Serial.print(9);                       //   code data as fixed solenoid2 onset timestamp
-    }
-    else if (CSsolenoid[2 * cueList[CSct] + numfxdsolenoids] == solenoid3) {
-      Serial.print(10);                      //   code data as fixed solenoid3 onset timestamp
-    }
-    else if (CSsolenoid[2 * cueList[CSct] + numfxdsolenoids] == solenoid4) {
-      Serial.print(11);                      //   code data as fixed solenoid4 onset timestamp
-    }
-    else if (CSsolenoid[2 * cueList[CSct] + numfxdsolenoids] == lickretractsolenoid1) {
-      Serial.print(12);                      //   code data as fixed solenoid4 onset timestamp
-    }
-    else if (CSsolenoid[2 * cueList[CSct] + numfxdsolenoids] == lickretractsolenoid2) {
-      Serial.print(13);                      //   code data as fixed solenoid4 onset timestamp
-    }
+    Serial.print(CSsolenoidcode[2 * cueList[CSct] + numfxdsolenoids]);
     Serial.print(" ");
     Serial.print(ts);                      //   send timestamp of solenoid onset
     Serial.print(" ");
@@ -1131,21 +1115,35 @@ void getParams() {
   for (int p = 0; p < 2 * numCS; p++) {
     if (CSsolenoid[p] == 1) {
       CSsolenoid[p] = solenoid1;
+      CSsolenoidcode[p] = 8;
     }
     else if (CSsolenoid[p] == 2) {
       CSsolenoid[p] = solenoid2;
+      CSsolenoidcode[p] = 9;
     }
     else if (CSsolenoid[p] == 3) {
       CSsolenoid[p] = solenoid3;
+      CSsolenoidcode[p] = 10;
     }
     else if (CSsolenoid[p] == 4) {
       CSsolenoid[p] = solenoid4;
+      CSsolenoidcode[p] = 11;
     }
     else if (CSsolenoid[p] == 5) {
       CSsolenoid[p] = lickretractsolenoid1;
+      CSsolenoidcode[p] = 12;
     }
     else if (CSsolenoid[p] == 6) {
       CSsolenoid[p] = lickretractsolenoid2;
+      CSsolenoidcode[p] = 13;
+    }
+    else if (CSsolenoid[p] == 56) {
+      CSsolenoid[p] = lickretractsolenoid1and2;
+      CSsolenoidcode[p] = 18;
+    }
+    else if (CSsolenoid[p] == 55) {
+      CSsolenoid[p] = lickretractsolenoid1or2;
+      CSsolenoidcode[p] = 19;
     }
   }
 
