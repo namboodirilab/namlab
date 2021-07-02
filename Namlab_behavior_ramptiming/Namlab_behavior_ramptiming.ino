@@ -182,6 +182,9 @@ unsigned long totbgdsolenoid;         // total number of background solenoids if
 unsigned long CSsolenoidcode[2 * numCS];
 boolean rewardactive;
 unsigned long maxdelaytosolenoid;
+unsigned long cueonset;
+float actualopentime;
+unsigned long timeforfirstlick;
 
 const int numlicktube = 2;       // number of recording lick tubes for lick dependent experiments
 unsigned long reqlicknum[numlicktube];
@@ -690,7 +693,6 @@ void loop() {
   frametimestamp();                    // store timestamps of frames
 
   if (ts >= nextcue && ITIflag) {
-    rewardactive = true;
     cueonset = ts;
     if (CSsignal[cueList[CSct]] == 1) {           // Check which CS signal to give (sound/light/both)
       Serial.print(15 + cueList[CSct]);         // code data as CS1, CS2 or CS3 timestamp
@@ -801,18 +803,20 @@ void loop() {
   }
 
 
-  if (!ITIflag && ts <= maxdelaytosolenoid && rewardactive == true) { // give fixed solenoid
+  if (!ITIflag && ts >= nextfxdsolenoid && nextfxdsolenoid != 0) { // give fixed solenoid
 
-    Serial.print(CSsolenoidcode[2 * cueList[CSct] + numfxdsolenoids]);
+    Serial.print(CSsolenoidcode[2 * cueList[CSct] + 1]);
     Serial.print(" ");
     Serial.print(ts);                      //   send timestamp of solenoid onset
     Serial.print(" ");
 
     u = random(0, 100);
-    actualopentime = timeforfirstlick / (CS_t_fxd[2 * cueList[CSct] + 1]) * CSopentime[2 * cueList[CSct] + 1];
+    actualopentime = (float)timeforfirstlick / (CS_t_fxd[2 * cueList[CSct] + 1]);
+    actualopentime = actualopentime*actualopentime;
+    actualopentime = actualopentime * CSopentime[2 * cueList[CSct] + 1];
 
-    if (actualopentime > 0 && u < CSprob[2 * cueList[CSct] + 1]) {
-      digitalWrite(CSsolenoid[2 * cueList[CSct] + numfxdsolenoids], HIGH);      // turn on solenoid
+    if (actualopentime > 0 && u < CSprob[2 * cueList[CSct] + 1] && ts <= maxdelaytosolenoid) {
+      digitalWrite(CSsolenoid[2 * cueList[CSct] + 1], HIGH);      // turn on solenoid
       Serial.print(0);                       //   this indicates that the solenoid was actually given
       Serial.print('\n');
     }
@@ -820,7 +824,14 @@ void loop() {
       Serial.print(1);                       //   this indicates that the solenoid was not given
       Serial.print('\n');
     }
+    Serial.print(cueList[CSct]+1);                       // send which cue this solenoid turns on for
+    Serial.print(" ");
+    Serial.print(actualopentime);                      // send actual opentime for solenoid 
+    Serial.print(" ");
+    Serial.print(timeforfirstlick);                       // send first lick time
+    Serial.print('\n');
     solenoidOff = ts + actualopentime;      // set solenoid off time
+    nextfxdsolenoid = 0;
     nextvacuum = ts + actualopentime + maxdelaytovacuumfromcueonset;
   }
 
@@ -909,6 +920,12 @@ void loop() {
 
 
   if (ts >= solenoidOff && solenoidOff != 0) { // solenoid CESSATION
+    Serial.print(32);                   //   code data as solenoid off timestamp
+    Serial.print(" ");
+    Serial.print(ts);                  //   send timestamp of vacuum onset
+    Serial.print(" ");
+    Serial.print(0);
+    Serial.print('\n');
     digitalWrite(solenoid1, LOW);           // turn off solenoid
     digitalWrite(solenoid2, LOW);           // turn off solenoid
     digitalWrite(solenoid3, LOW);           // turn off solenoid
@@ -958,11 +975,9 @@ void loop() {
       }
 
       CSct++;                            // count total number of CSs
-      lickctforreq[0] = 0;                 // reset lick1 count to zero at end of trial
-      lickctforreq[1] = 0;                 // reset lick2 count to zero at end of trial
-      lickctforreq[2] = 0;                 // reset lick3 count to zero at end of trial
-      rewardactive = false;
-      timeforfirstlick = -1;
+      //      lickctforreq[0] = 0;                 // reset lick1 count to zero at end of trial
+      //      lickctforreq[1] = 0;                 // reset lick2 count to zero at end of trial
+      //      lickctforreq[2] = 0;                 // reset lick3 count to zero at end of trial
 
       u = random(0, 10000);
       temp = (float)u / 10000;
@@ -1127,14 +1142,14 @@ void getParams() {
       CSsolenoid[p] = lickretractsolenoid2;
       CSsolenoidcode[p] = 13;
     }
-    else if (CSsolenoid[p] == 56) {
-      CSsolenoid[p] = lickretractsolenoid1and2;
-      CSsolenoidcode[p] = 18;
-    }
-    else if (CSsolenoid[p] == 55) {
-      CSsolenoid[p] = lickretractsolenoid1or2;
-      CSsolenoidcode[p] = 19;
-    }
+    //    else if (CSsolenoid[p] == 56) {
+    //      CSsolenoid[p] = lickretractsolenoid1and2;
+    //      CSsolenoidcode[p] = 18;
+    //    }
+    //    else if (CSsolenoid[p] == 55) {
+    //      CSsolenoid[p] = lickretractsolenoid1or2;
+    //      CSsolenoidcode[p] = 19;
+    //    }
   }
 
   if (backgroundsolenoid == 1) {
@@ -1237,8 +1252,9 @@ void licking() {
     Serial.print(0);
     Serial.print('\n');
     lickctforreq[2]++;
-    if (rewardactive == true && lickctforreq[2] == 1) {
+    if (lickctforreq[2] == 1) {
       timeforfirstlick = ts - cueonset;
+      nextfxdsolenoid = ts;
     }
   }
 
