@@ -184,6 +184,7 @@ boolean rewardactive;
 unsigned long maxdelaytosolenoid;
 unsigned long cueonset;
 float actualopentime;
+float ramptimingexp;
 unsigned long timeforfirstlick;
 
 const int numlicktube = 2;       // number of recording lick tubes for lick dependent experiments
@@ -812,7 +813,7 @@ void loop() {
 
     u = random(0, 100);
     actualopentime = (float)timeforfirstlick / (CS_t_fxd[2 * cueList[CSct] + 1]);
-    actualopentime = actualopentime*actualopentime;
+    actualopentime = pow(actualopentime, ramptimingexp);
     actualopentime = actualopentime * CSopentime[2 * cueList[CSct] + 1];
 
     if (actualopentime > 0 && u < CSprob[2 * cueList[CSct] + 1] && ts <= maxdelaytosolenoid) {
@@ -824,9 +825,15 @@ void loop() {
       Serial.print(1);                       //   this indicates that the solenoid was not given
       Serial.print('\n');
     }
-    Serial.print(cueList[CSct]+1);                       // send which cue this solenoid turns on for
+    Serial.print(cueList[CSct] + 1);                     // send which cue this solenoid turns on for
     Serial.print(" ");
-    Serial.print(actualopentime);                      // send actual opentime for solenoid 
+    Serial.print(actualopentime);                      // send actual opentime for solenoid
+    Serial.print(" ");
+    Serial.print(timeforfirstlick);                       // send first lick time
+    Serial.print('\n');
+    Serial.print(cueList[CSct] + 1);                     // send which cue this solenoid turns on for
+    Serial.print(" ");
+    Serial.print(ramptimingexp);                      // send actual opentime for solenoid
     Serial.print(" ");
     Serial.print(timeforfirstlick);                       // send first lick time
     Serial.print('\n');
@@ -1003,7 +1010,7 @@ void loop() {
 
 // Accept parameters from MATLAB
 void getParams() {
-  int pn = 99;                              // number of parameter inputs
+  int pn = 100;                              // number of parameter inputs
   unsigned long param[pn];                  // parameters
 
   for (int p = 0; p < pn; p++) {
@@ -1099,6 +1106,7 @@ void getParams() {
   variableintervalflag[1]   = param[96];
   licklight[0]           = param[97];
   licklight[1]           = param[98];
+  ramptimingexp          = param[99];
 
 
   for (int p = 0; p < numCS; p++) {

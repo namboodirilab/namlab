@@ -22,7 +22,7 @@ function varargout = headfix_GUI(varargin)
 
 % Edit the above text to modify the response to help headfix_GUI
 
-% Last Modified by GUIDE v2.5 29-Jun-2021 21:03:27
+% Last Modified by GUIDE v2.5 07-Jul-2021 10:53:34
 
 % cd 'F:\acads\Stuber lab\headfix'; %Change to directory
 
@@ -105,6 +105,7 @@ set(handles.checkboxexpiti, 'Enable', 'off');
 set(handles.maxdelaycuetovacuum, 'Enable', 'off');
 set(handles.minITI, 'Enable', 'off');
 set(handles.maxITI, 'Enable', 'off');
+set(handles.ramptimingexp, 'Enable','off');
 set(handles.testcs1, 'Enable', 'off');
 set(handles.testcs2, 'Enable', 'off');
 set(handles.testcs3, 'Enable', 'off');
@@ -243,6 +244,7 @@ if selectedmode == 1 || selectedmode == 4 || selectedmode ==6;
     set(handles.maxdelaycuetovacuum, 'Enable', 'on');
     set(handles.minITI, 'Enable', 'on');
     set(handles.maxITI, 'Enable', 'on');
+    set(handles.ramptimingexp,'Enable','on');
     set(handles.backgroundsolenoid, 'Enable', 'on');
     set(handles.T_bgd, 'Enable', 'on');
     set(handles.r_bgd, 'Enable', 'on');
@@ -351,6 +353,7 @@ set(handles.checkboxexpiti, 'Enable', 'off');
 set(handles.maxdelaycuetovacuum, 'Enable', 'off');
 set(handles.minITI, 'Enable', 'off');
 set(handles.maxITI, 'Enable', 'off');
+set(handles.ramptimingexp,'Enable','off');
 
 set(handles.testcs1, 'Enable', 'off');
 set(handles.testcs2, 'Enable', 'off');
@@ -753,6 +756,8 @@ maxITI = str2double(maxITI);
 expitiflag = get(handles.checkboxexpiti,'Value');
 maxdelaycuetovacuum = get(handles.maxdelaycuetovacuum,'String');
 maxdelaycuetovacuum = str2double(maxdelaycuetovacuum);
+ramptimingexp = get(handles.ramptimingexp,'String');
+ramptimingexp = str2double(ramptimingexp);
 
 %Bgd solenoids
 
@@ -803,6 +808,12 @@ laserpulseoffperiod = str2double(laserpulseoffperiod);
 lasertrialbytrialflag = get(handles.lasertrialbytrial,'Value');
 
 % Validate inputs
+if ramptimingexp < 1
+    ramptimingexp_input = floor(ramptimingexp);
+else 
+    ramptimingexp_input = ramptimingexp;
+end
+
 inputs = [numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur, CS_t_fxd,...
           CSpulse, CSspeaker, golickreq, golicktube, CSsignal, minITI, maxITI, expitiflag,...
           backgroundsolenoid, T_bgd, r_bgd, mindelaybgdtocue, mindelayfxdtobgd,...
@@ -811,7 +822,7 @@ inputs = [numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur, CS_t_fxd,...
           minrewards, signaltolickreq, soundsignalpulse, soundfreq, sounddur, lickspeaker,...
           laserlatency, laserduration, randlaserflag, laserpulseperiod, laserpulseoffperiod,...
           lasertrialbytrialflag, maxdelaycuetovacuum, CSlight,variableratioflag, variableintervalflag,...
-          licklight]; % collect all inputs into array
+          licklight, ramptimingexp_input]; % collect all inputs into array
 
 negIn  = inputs < 0;
 intIn  = inputs - fix(inputs);
@@ -837,6 +848,7 @@ set(handles.uploadButton,'Enable','off')
 set(handles.minITI,'Enable','off')
 set(handles.maxITI,'Enable','off')
 set(handles.maxdelaycuetovacuum,'Enable','off')
+set(handles.ramptimingexp,'Enable','off');
 
 set(handles.backgroundsolenoid,'Enable','off')
 set(handles.T_bgd,'Enable','off')
@@ -878,7 +890,7 @@ set(handles.primelickretractsolenoid2,'Enable','on')
 set(handles.vacuumButton,'Enable','on')
 set(handles.testlaser,'Enable','on')
 
-params = sprintf('%d+', numtrials, CSfreq, CSsolenoid, CSprob, CSopentime,...
+params = sprintf('%G+', numtrials, CSfreq, CSsolenoid, CSprob, CSopentime,...
                  CSdur, CS_t_fxd, CSpulse, CSspeaker, golickreq, golicktube, CSsignal,...
                  minITI, maxITI, expitiflag, backgroundsolenoid, T_bgd, r_bgd,...
                  mindelaybgdtocue, mindelayfxdtobgd, experimentmode, trialbytrialbgdsolenoidflag,... 
@@ -886,7 +898,7 @@ params = sprintf('%d+', numtrials, CSfreq, CSsolenoid, CSprob, CSopentime,...
                  delaytolick, minrewards, signaltolickreq, soundsignalpulse, soundfreq, sounddur, lickspeaker,...
                  laserlatency, laserduration, randlaserflag, laserpulseperiod,...
                  laserpulseoffperiod, lasertrialbytrialflag, maxdelaycuetovacuum, CSlight,...
-                 variableratioflag,variableintervalflag,licklight);
+                 variableratioflag,variableintervalflag,licklight, ramptimingexp);
 params = params(1:end-1);
 
 % Run arduino code
@@ -937,6 +949,8 @@ maxITI = str2double(maxITI);
 expitiflag = get(handles.checkboxexpiti,'Value');
 maxdelaycuetovacuum = get(handles.maxdelaycuetovacuum,'String');
 maxdelaycuetovacuum = str2double(maxdelaycuetovacuum);
+ramptimingexp = get(handles.ramptimingexp, 'String');
+ramptimingexp = str2double(ramptimingexp);
 
 %Bgd solenoids
 
@@ -987,6 +1001,11 @@ laserpulseoffperiod = str2double(laserpulseoffperiod);
 lasertrialbytrialflag = get(handles.lasertrialbytrial,'Value');
 
 % Validate inputs
+if ramptimingexp < 1
+    ramptimingexp_input = floor(ramptimingexp);
+else 
+    ramptimingexp_input = ramptimingexp;
+end
 inputs = [numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur, CS_t_fxd,...
           CSpulse, CSspeaker, golickreq, golicktube, CSsignal, minITI, maxITI, expitiflag,...
           backgroundsolenoid, T_bgd, r_bgd, mindelaybgdtocue, mindelayfxdtobgd,...
@@ -995,7 +1014,7 @@ inputs = [numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur, CS_t_fxd,...
           delaytolick, minrewards, signaltolickreq, soundsignalpulse, soundfreq, sounddur, lickspeaker,...
           laserlatency, laserduration, randlaserflag, laserpulseperiod, laserpulseoffperiod,...
           lasertrialbytrialflag, maxdelaycuetovacuum, CSlight,variableratioflag,...
-          variableintervalflag,licklight]; % collect all inputs into array
+          variableintervalflag,licklight, ramptimingexp_input]; % collect all inputs into array
           
 negIn  = inputs < 0;
 intIn  = inputs - fix(inputs);
@@ -1056,7 +1075,7 @@ end
 
 fname = get(handles.fileName,'String');
 
-params = sprintf('%d+', numtrials, CSfreq, CSsolenoid, CSprob, CSopentime,...
+params = sprintf('%G+', numtrials, CSfreq, CSsolenoid, CSprob, CSopentime,...
                  CSdur, CS_t_fxd, CSpulse, CSspeaker, golickreq, golicktube, CSsignal,...
                  minITI, maxITI, expitiflag, backgroundsolenoid, T_bgd, r_bgd, ...
                  mindelaybgdtocue, mindelayfxdtobgd, experimentmode, ...
@@ -1065,7 +1084,7 @@ params = sprintf('%d+', numtrials, CSfreq, CSsolenoid, CSprob, CSopentime,...
                  minrewards, signaltolickreq, soundsignalpulse, soundfreq, sounddur, lickspeaker,...
                  laserlatency, laserduration, randlaserflag, laserpulseperiod, laserpulseoffperiod,...
                  lasertrialbytrialflag, maxdelaycuetovacuum, CSlight,variableratioflag,...
-                 variableintervalflag,licklight);
+                 variableintervalflag,licklight, ramptimingexp);
              
 params = params(1:end-1);
 
@@ -1138,3 +1157,4 @@ set(handles.primelickretractsolenoid1, 'Enable','off')
 set(handles.primelickretractsolenoid2, 'Enable','off')
 set(handles.clearlick1rewards,'Enable','off');
 set(handles.clearlick2rewards,'Enable','off');
+
