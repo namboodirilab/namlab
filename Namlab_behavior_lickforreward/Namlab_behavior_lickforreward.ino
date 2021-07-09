@@ -179,6 +179,13 @@ unsigned long mindelayfxdtobgd;  // minimum delay between fixed solenoid to the 
 unsigned long experimentmode;    // if==1, run experiment with cues; if==2, give only background solenoids; if==3, give lick dependent rewards
 boolean trialbytrialbgdsolenoidflag;  // if ==1, run experiment by changing bgd solenoid rate on a trial-by-trial basis
 unsigned long totbgdsolenoid;         // total number of background solenoids if experimentmode==2, i.e. when only Poisson solenoids are delivered.
+unsigned long CSsolenoidcode[2 * numCS];
+boolean rewardactive;
+unsigned long maxdelaytosolenoid;
+unsigned long cueonset;
+float actualopentime;
+float ramptimingexp;
+unsigned long timeforfirstlick;
 
 const int numlicktube = 2;       // number of recording lick tubes for lick dependent experiments
 unsigned long reqlicknum[numlicktube];
@@ -236,6 +243,9 @@ unsigned long nextttloutoff;     // timestamp to turn off the TTL out pin for st
 unsigned long laserPulseOn;      // timestamp to turn on the laser on while pulsing
 unsigned long laserPulseOff;     // timestamp to turn the laser off while pulsing
 unsigned long laserOff;          // timestamp to turn the laser off
+boolean CS1lasercheck;           // check for CS1 with laser or not
+boolean CS2lasercheck;           // check for CS2 with laser or not
+boolean CS3lasercheck;           // check for CS3 with laser or not
 
 unsigned long u;                 // uniform random number for inverse transform sampling to create an exponential distribution
 unsigned long sessionendtime;    // the time at which session ends. Set to 5s after last fixed solenoid
@@ -402,7 +412,7 @@ void setup() {
 
     if (reading == 65) {                 // MANUAL solenoid 1
       digitalWrite(solenoid1, HIGH);          // turn on solenoid 1
-      delay(lickopentime[1]);
+      delay(40);
       digitalWrite(solenoid1, LOW);           // turn off solenoid 1
     }
 
@@ -416,7 +426,7 @@ void setup() {
 
     if (reading == 68) {                 // MANUAL solenoid 2
       digitalWrite(solenoid2, HIGH);          // turn on solenoid 2
-      delay(lickopentime[1]);
+      delay(40);
       digitalWrite(solenoid2, LOW);           // turn off solenoid 2
     }
 
@@ -430,7 +440,7 @@ void setup() {
 
     if (reading == 71) {                 // MANUAL solenoid 3
       digitalWrite(solenoid3, HIGH);          // turn on solenoid 3
-      delay(lickopentime[1]);
+      delay(40);
       digitalWrite(solenoid3, LOW);           // turn off solenoid 3
     }
 
@@ -444,7 +454,7 @@ void setup() {
 
     if (reading == 74) {                 // MANUAL solenoid 4
       digitalWrite(solenoid4, HIGH);          // turn on solenoid 4
-      delay(lickopentime[1]);
+      delay(40);
       digitalWrite(solenoid4, LOW);           // turn off solenoid 4
     }
 
@@ -458,7 +468,7 @@ void setup() {
 
     if (reading == 77) {                 // MANUAL lickretractsolenoid11
       digitalWrite(lickretractsolenoid1, HIGH);          // turn on lickretractsolenoid1
-      delay(lickopentime[1]);
+      delay(40);
       digitalWrite(lickretractsolenoid1, LOW);           // turn off lickretractsolenoid1
     }
 
@@ -472,7 +482,7 @@ void setup() {
 
     if (reading == 80) {                 // MANUAL lickretractsolenoid12
       digitalWrite(lickretractsolenoid2, HIGH);          // turn on lickretractsolenoid2
-      delay(lickopentime[1]);
+      delay(40);
       digitalWrite(lickretractsolenoid2, LOW);           // turn off lickretractsolenoid2
     }
 
@@ -726,7 +736,7 @@ void loop() {
 
 // Accept parameters from MATLAB
 void getParams() {
-  int pn = 99;                              // number of parameter inputs
+  int pn = 103;                              // number of parameter inputs
   unsigned long param[pn];                  // parameters
 
   for (int p = 0; p < pn; p++) {
@@ -822,7 +832,10 @@ void getParams() {
   variableintervalflag[1]   = (boolean)param[96];
   licklight[0]           = param[97];
   licklight[1]           = param[98];
-
+  ramptimingexp          = param[99];
+  CS1lasercheck          = param[100];
+  CS2lasercheck          = param[101];
+  CS3lasercheck          = param[102];
 
   for (int p = 0; p < numCS; p++) {
     CSfreq[p] = CSfreq[p] * 1000;         // convert frequency from kHz to Hz

@@ -22,7 +22,7 @@ function varargout = headfix_GUI(varargin)
 
 % Edit the above text to modify the response to help headfix_GUI
 
-% Last Modified by GUIDE v2.5 07-Jul-2021 10:53:34
+% Last Modified by GUIDE v2.5 07-Jul-2021 16:54:13
 
 % cd 'F:\acads\Stuber lab\headfix'; %Change to directory
 
@@ -67,7 +67,7 @@ guidata(hObject, handles);
 
 global actvAx saveDir
 
-mainPath = 'C:\Users\namboodirilab\OneDrive - University of California, San Francisco\Behavioral_acquisition_and_analysis';
+mainPath = 'C:\Users\mzhou9\OneDrive - University of California, San Francisco\Behavioral_acquisition_and_analysis';
 addpath(mainPath)
 saveDir = [mainPath '\data\'];          % where to save data
 
@@ -101,6 +101,9 @@ set(handles.laserlatency, 'Enable', 'off');
 set(handles.laserduration, 'Enable', 'off');
 set(handles.laserpulseperiod, 'Enable', 'off');
 set(handles.laserpulseoffperiod, 'Enable', 'off');
+set(handles.CS1lasercheck, 'Enable', 'off');
+set(handles.CS2lasercheck, 'Enable', 'off');
+set(handles.CS3lasercheck, 'Enable', 'off');
 set(handles.checkboxexpiti, 'Enable', 'off');
 set(handles.maxdelaycuetovacuum, 'Enable', 'off');
 set(handles.minITI, 'Enable', 'off');
@@ -240,6 +243,9 @@ if selectedmode == 1 || selectedmode == 4 || selectedmode ==6;
     set(handles.laserduration, 'Enable', 'on');
     set(handles.laserpulseperiod, 'Enable', 'on');
     set(handles.laserpulseoffperiod, 'Enable', 'on');
+    set(handles.CS1lasercheck, 'Enable', 'on');
+    set(handles.CS2lasercheck, 'Enable', 'on');
+    set(handles.CS3lasercheck, 'Enable', 'on');
     set(handles.checkboxexpiti, 'Enable', 'on');
     set(handles.maxdelaycuetovacuum, 'Enable', 'on');
     set(handles.minITI, 'Enable', 'on');
@@ -291,17 +297,17 @@ basecmd = strcat('"C:\Program Files (x86)\Arduino\hardware\tools\avr/bin/avrdude
 selectedmode = get(handles.experimentmode,'Value');
 
 if selectedmode == 1
-    [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_cues.ino.hex',':i'));
+    [status,cmdout] = dos(strcat(basecmd,'C:\Users\mzhou9\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_cues.ino.hex',':i'));
 elseif selectedmode == 2
-    [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_randomrewards.ino.hex',':i'));
+    [status,cmdout] = dos(strcat(basecmd,'C:\Users\mzhou9\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_randomrewards.ino.hex',':i'));
 elseif selectedmode == 3
-    [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_lickforreward.ino.hex',':i'));
+    [status,cmdout] = dos(strcat(basecmd,'C:\Users\mzhou9\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_lickforreward.ino.hex',':i'));
 elseif selectedmode == 4
-    [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_decisionmaking.ino.hex',':i'));
+    [status,cmdout] = dos(strcat(basecmd,'C:\Users\mzhou9\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_decisionmaking.ino.hex',':i'));
 elseif selectedmode == 5
-    [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis\uploads\Serial_port_testing.ino.hex',':i'));
+    [status,cmdout] = dos(strcat(basecmd,'C:\Users\mzhou9\Desktop\Behavioral_acquisition_and_analysis\uploads\Serial_port_testing.ino.hex',':i'));
 elseif selectedmode == 6
-    [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_ramptiming.ino.hex',':i'));    
+    [status,cmdout] = dos(strcat(basecmd,'C:\Users\mzhou9\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_ramptiming.ino.hex',':i'));    
 end
 
 
@@ -349,6 +355,9 @@ set(handles.laserlatency, 'Enable', 'off');
 set(handles.laserduration, 'Enable', 'off');
 set(handles.laserpulseperiod, 'Enable', 'off');
 set(handles.laserpulseoffperiod, 'Enable', 'off');
+set(handles.CS1lasercheck, 'Enable', 'off');
+set(handles.CS2lasercheck, 'Enable', 'off');
+set(handles.CS3lasercheck, 'Enable', 'off');
 set(handles.checkboxexpiti, 'Enable', 'off');
 set(handles.maxdelaycuetovacuum, 'Enable', 'off');
 set(handles.minITI, 'Enable', 'off');
@@ -600,7 +609,7 @@ function testserialport_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 global s running actvAx saveDir
 
-mainPath = 'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis';	
+mainPath = 'C:\Users\mzhou9\Desktop\Behavioral_acquisition_and_analysis';	
 addpath(mainPath)	
 saveDir = [mainPath '\serialtest\'];          % save serial testing data here
 
@@ -806,6 +815,9 @@ laserpulseperiod = str2double(laserpulseperiod);
 laserpulseoffperiod = get(handles.laserpulseoffperiod,'String');
 laserpulseoffperiod = str2double(laserpulseoffperiod);
 lasertrialbytrialflag = get(handles.lasertrialbytrial,'Value');
+CS1lasercheck = get(handles.CS1lasercheck, 'Value');
+CS2lasercheck = get(handles.CS2lasercheck, 'Value');
+CS3lasercheck = get(handles.CS3lasercheck, 'Value');
 
 % Validate inputs
 if ramptimingexp < 1
@@ -822,7 +834,7 @@ inputs = [numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur, CS_t_fxd,...
           minrewards, signaltolickreq, soundsignalpulse, soundfreq, sounddur, lickspeaker,...
           laserlatency, laserduration, randlaserflag, laserpulseperiod, laserpulseoffperiod,...
           lasertrialbytrialflag, maxdelaycuetovacuum, CSlight,variableratioflag, variableintervalflag,...
-          licklight, ramptimingexp_input]; % collect all inputs into array
+          licklight, ramptimingexp_input, CS1lasercheck, CS2lasercheck, CS3lasercheck]; % collect all inputs into array
 
 negIn  = inputs < 0;
 intIn  = inputs - fix(inputs);
@@ -865,6 +877,9 @@ set(handles.checkboxrandlaser,'Enable','off')
 set(handles.laserpulseperiod,'Enable','off')
 set(handles.laserpulseoffperiod,'Enable','off')
 set(handles.lasertrialbytrial,'Enable','off')
+set(handles.CS1lasercheck,'Enable','off');
+set(handles.CS2lasercheck,'Enable','off');
+set(handles.CS3lasercheck,'Enable','off');
 
 set(handles.testcs1,'Enable','on')
 set(handles.testcs2,'Enable','on')
@@ -898,7 +913,8 @@ params = sprintf('%G+', numtrials, CSfreq, CSsolenoid, CSprob, CSopentime,...
                  delaytolick, minrewards, signaltolickreq, soundsignalpulse, soundfreq, sounddur, lickspeaker,...
                  laserlatency, laserduration, randlaserflag, laserpulseperiod,...
                  laserpulseoffperiod, lasertrialbytrialflag, maxdelaycuetovacuum, CSlight,...
-                 variableratioflag,variableintervalflag,licklight, ramptimingexp);
+                 variableratioflag,variableintervalflag,licklight, ramptimingexp,...
+                 CS1lasercheck, CS2lasercheck, CS3lasercheck);
 params = params(1:end-1);
 
 % Run arduino code
@@ -999,6 +1015,9 @@ laserpulseperiod = str2double(laserpulseperiod);
 laserpulseoffperiod = get(handles.laserpulseoffperiod,'String');
 laserpulseoffperiod = str2double(laserpulseoffperiod);
 lasertrialbytrialflag = get(handles.lasertrialbytrial,'Value');
+CS1lasercheck = get(handles.CS1lasercheck, 'Value');
+CS2lasercheck = get(handles.CS2lasercheck, 'Value');
+CS3lasercheck = get(handles.CS3lasercheck, 'Value');
 
 % Validate inputs
 if ramptimingexp < 1
@@ -1014,7 +1033,8 @@ inputs = [numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur, CS_t_fxd,...
           delaytolick, minrewards, signaltolickreq, soundsignalpulse, soundfreq, sounddur, lickspeaker,...
           laserlatency, laserduration, randlaserflag, laserpulseperiod, laserpulseoffperiod,...
           lasertrialbytrialflag, maxdelaycuetovacuum, CSlight,variableratioflag,...
-          variableintervalflag,licklight, ramptimingexp_input]; % collect all inputs into array
+          variableintervalflag,licklight, ramptimingexp_input, CS1lasercheck,...
+          CS2lasercheck, CS3lasercheck]; % collect all inputs into array
           
 negIn  = inputs < 0;
 intIn  = inputs - fix(inputs);
@@ -1084,7 +1104,8 @@ params = sprintf('%G+', numtrials, CSfreq, CSsolenoid, CSprob, CSopentime,...
                  minrewards, signaltolickreq, soundsignalpulse, soundfreq, sounddur, lickspeaker,...
                  laserlatency, laserduration, randlaserflag, laserpulseperiod, laserpulseoffperiod,...
                  lasertrialbytrialflag, maxdelaycuetovacuum, CSlight,variableratioflag,...
-                 variableintervalflag,licklight, ramptimingexp);
+                 variableintervalflag,licklight, ramptimingexp, CS1lasercheck,...
+                 CS2lasercheck, CS3lasercheck);
              
 params = params(1:end-1);
 

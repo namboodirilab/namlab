@@ -221,7 +221,6 @@ unsigned long baselinedur    = 7000;  // Duration prior to CS to turn on imaging
 unsigned long vacuumopentime = 200;   // Duration to keep vacuum on
 unsigned long lightdur       = 500;   // Duration to keep light (signal for lick requirement being met) on
 
-
 int totalnumtrials = 0;
 unsigned long rewardct[numlicktube];                   // number of rewards given for each lick tube in lick dependent experiment
 int licktubethatmetlickreq;      // Lick tube that met the lick requirement
@@ -243,6 +242,9 @@ unsigned long nextttloutoff;     // timestamp to turn off the TTL out pin for st
 unsigned long laserPulseOn;      // timestamp to turn on the laser on while pulsing
 unsigned long laserPulseOff;     // timestamp to turn the laser off while pulsing
 unsigned long laserOff;          // timestamp to turn the laser off
+boolean CS1lasercheck;           // check for CS1 with laser or not
+boolean CS2lasercheck;           // check for CS2 with laser or not
+boolean CS3lasercheck;           // check for CS3 with laser or not
 
 unsigned long u;                 // uniform random number for inverse transform sampling to create an exponential distribution
 unsigned long sessionendtime;    // the time at which session ends. Set to 5s after last fixed solenoid
@@ -831,12 +833,6 @@ void loop() {
     Serial.print(" ");
     Serial.print(timeforfirstlick);                       // send first lick time
     Serial.print('\n');
-    Serial.print(cueList[CSct] + 1);                     // send which cue this solenoid turns on for
-    Serial.print(" ");
-    Serial.print(ramptimingexp);                      // send actual opentime for solenoid
-    Serial.print(" ");
-    Serial.print(timeforfirstlick);                       // send first lick time
-    Serial.print('\n');
     solenoidOff = ts + actualopentime;      // set solenoid off time
     nextfxdsolenoid = 0;
     nextvacuum = ts + actualopentime + maxdelaytovacuumfromcueonset;
@@ -1010,7 +1006,7 @@ void loop() {
 
 // Accept parameters from MATLAB
 void getParams() {
-  int pn = 100;                              // number of parameter inputs
+  int pn = 103;                              // number of parameter inputs
   unsigned long param[pn];                  // parameters
 
   for (int p = 0; p < pn; p++) {
@@ -1107,7 +1103,9 @@ void getParams() {
   licklight[0]           = param[97];
   licklight[1]           = param[98];
   ramptimingexp          = param[99];
-
+  CS1lasercheck          = param[100];
+  CS2lasercheck          = param[101];
+  CS3lasercheck          = param[102];
 
   for (int p = 0; p < numCS; p++) {
     CSfreq[p] = CSfreq[p] * 1000;         // convert frequency from kHz to Hz
@@ -1192,6 +1190,9 @@ void getParams() {
     else if (licksolenoid[p] == 6) {
       licksolenoid[p] = lickretractsolenoid2;
     }
+  }
+  if (ramptimingexp == 0){
+    ramptimingexp = 0.5;        // define exponent for ramp timing task, parameter cannot pass float numbers so hard-code to be 0.5 if input = 0;
   }
 }
 
