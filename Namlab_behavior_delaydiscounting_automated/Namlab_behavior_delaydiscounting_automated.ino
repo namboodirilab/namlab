@@ -179,6 +179,13 @@ unsigned long mindelayfxdtobgd;  // minimum delay between fixed solenoid to the 
 unsigned long experimentmode;    // if==1, run experiment with cues; if==2, give only background solenoids; if==3, give lick dependent rewards
 boolean trialbytrialbgdsolenoidflag;  // if ==1, run experiment by changing bgd solenoid rate on a trial-by-trial basis
 unsigned long totbgdsolenoid;         // total number of background solenoids if experimentmode==2, i.e. when only Poisson solenoids are delivered.
+unsigned long CSsolenoidcode[2 * numCS];
+boolean rewardactive;
+unsigned long maxdelaytosolenoid;
+unsigned long cueonset;
+float actualopentime;
+float ramptimingexp;
+unsigned long timeforfirstlick;
 
 const int numlicktube = 2;       // number of recording lick tubes for lick dependent experiments
 unsigned long reqlicknum[numlicktube];
@@ -200,7 +207,7 @@ unsigned long licklight[numlicktube];
 unsigned long fixedsidecheck[numlicktube];
 unsigned long varyingreward[7];
 unsigned long numtrialonvaryingside;
-int varyingisde;
+int varyingside;
 
 unsigned long laserlatency;      // Laser latency wrt cue (ms)
 unsigned long laserduration;     // Laser duration (ms)
@@ -240,6 +247,9 @@ unsigned long nextttloutoff;     // timestamp to turn off the TTL out pin for st
 unsigned long laserPulseOn;      // timestamp to turn on the laser on while pulsing
 unsigned long laserPulseOff;     // timestamp to turn the laser off while pulsing
 unsigned long laserOff;          // timestamp to turn the laser off
+boolean CS1lasercheck;           // check for CS1 with laser or not
+boolean CS2lasercheck;           // check for CS2 with laser or not
+boolean CS3lasercheck;           // check for CS3 with laser or not
 
 unsigned long u;                 // uniform random number for inverse transform sampling to create an exponential distribution
 unsigned long sessionendtime;    // the time at which session ends. Set to 5s after last fixed solenoid
@@ -562,7 +572,7 @@ void loop() {
   licking();                           // record licking
   frametimestamp();                    // store timestamps of frames
 
-  if (rewardct[0] >= minrewards[0]*7 && rewardct[1] >= minrewards[1]*7 && sessionendtime == 0) {
+  if (rewardct[0] >= minrewards[0] * 7 && rewardct[1] >= minrewards[1] * 7 && sessionendtime == 0) {
     sessionendtime = ts + 5000;
   }
 
@@ -627,28 +637,28 @@ void loop() {
     if (numtrialonvaryingside <= minrewards[varyingside]) {
       lickopentime[varyingside] = 0;
     }
-    else if (numtrialonvaryingside > minrewards[varyingside] && numtrialonvaryingside <= minrewards[varyingside]*2) {
+    else if (numtrialonvaryingside > minrewards[varyingside] && numtrialonvaryingside <= minrewards[varyingside] * 2) {
       lickopentime[varyingside] = 60;
     }
-    else if (numtrialonvaryingside > minrewards[varyingside]*2 && numtrialonvaryingside <= minrewards[varyingside]*3) {
+    else if (numtrialonvaryingside > minrewards[varyingside] * 2 && numtrialonvaryingside <= minrewards[varyingside] * 3) {
       lickopentime[varyingside] = 10;
     }
-    else if (numtrialonvaryingside > minrewards[varyingside]*3 && numtrialonvaryingside <= minrewards[varyingside]*4) {
+    else if (numtrialonvaryingside > minrewards[varyingside] * 3 && numtrialonvaryingside <= minrewards[varyingside] * 4) {
       lickopentime[varyingside] = 50;
     }
-    else if (numtrialonvaryingside > minrewards[varyingside]*4 && numtrialonvaryingside <= minrewards[varyingside]*5) {
+    else if (numtrialonvaryingside > minrewards[varyingside] * 4 && numtrialonvaryingside <= minrewards[varyingside] * 5) {
       lickopentime[varyingside] = 20;
     }
-    else if (numtrialonvaryingside > minrewards[varyingside]*5 && numtrialonvaryingside <= minrewards[varyingside]*6) {
+    else if (numtrialonvaryingside > minrewards[varyingside] * 5 && numtrialonvaryingside <= minrewards[varyingside] * 6) {
       lickopentime[varyingside] = 40;
     }
-    else if (numtrialonvaryingside > minrewards[varyingside]*6) {
+    else if (numtrialonvaryingside > minrewards[varyingside] * 6) {
       lickopentime[varyingside] = 30;
     }
     if (licktubethatmetlickreq == varyingside) {
       numtrialonvaryingside++;
     }
-            
+
     if (lickopentime[licktubethatmetlickreq] >= 0 && u < lickprob[licktubethatmetlickreq] && minrewards[licktubethatmetlickreq] > 0) {          // set lick solenoid high
       digitalWrite(licksolenoid[licktubethatmetlickreq], HIGH);
       Serial.print(0);                                // indicates the reward is given
@@ -856,8 +866,8 @@ void getParams() {
   CS2lasercheck          = param[101];
   CS3lasercheck          = param[102];
   fixedsidecheck[0]      = param[103];
-  fixedsidecheck[1]      = param[104]; 
- 
+  fixedsidecheck[1]      = param[104];
+
 
 
   for (int p = 0; p < numCS; p++) {

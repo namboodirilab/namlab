@@ -87,7 +87,7 @@ templight3 = NaN(1,1);
 
 % setup plot
 axes(actvAx)                            % make the activity axes the current one
-if experimentmode == 1 || experimentmode == 4 || experimentmode == 6 
+if experimentmode == 1 || experimentmode == 4 || experimentmode == 6 || experimentmode == 7
     plot(xWindow,[0 0],'k','LineWidth',2);hold on                   % start figure for plots
     set(actvAx,'ytick',[], ...
                'ylim',[-sum(numtrials) yOffset+1], ...
@@ -177,7 +177,7 @@ try
         
         
         if code == 1                                % Lick1 onset; BLUE
-            if experimentmode == 1 || experimentmode == 4 || experimentmode == 6                     % Store lick1 timestamp for later plotting after trial ends
+            if experimentmode == 1 || experimentmode == 4 || experimentmode == 6 || experimentmode == 7                    % Store lick1 timestamp for later plotting after trial ends
                 lickct(1) = lickct(1) + 1;
                 set(handles.licks1Edit,'String',num2str(lickct(1)))  % change the gui input
                 templicksct(1) = templicksct(1)+1;         % keep track of temp licktube number
@@ -190,7 +190,7 @@ try
                 plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'color',[0.2 0.6 1],'LineWidth',1);hold on
             end
         elseif code == 3                            % Lick2 onset; GREY
-            if experimentmode == 1 || experimentmode == 4 || experimentmode == 6                       % Store lick1 timestamp for later plotting after trial ends
+            if experimentmode == 1 || experimentmode == 4 || experimentmode == 6 || experimentmode == 7                      % Store lick1 timestamp for later plotting after trial ends
                 lickct(2) = lickct(2) + 1;
                 set(handles.licks2Edit,'String',num2str(lickct(2)))
                 templicksct(2) = templicksct(2)+1;
@@ -203,7 +203,7 @@ try
                 plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',0.65*[1, 1, 1],'LineWidth',1);hold on
             end
         elseif code == 5                                % Lick3 onset; BROWN
-            if experimentmode == 1 || experimentmode == 4 || experimentmode == 6                      % Store lick3 timestamp for later plotting after trial ends
+            if experimentmode == 1 || experimentmode == 4 || experimentmode == 6 || experimentmode == 7                     % Store lick3 timestamp for later plotting after trial ends
                 lickct(3) = lickct(3) + 1;
                 set(handles.licks3Edit,'String',num2str(lickct(3)))  % change the gui input
                 templicksct(3) = templicksct(3)+1;         % keep track of temp licktube number
@@ -217,7 +217,7 @@ try
             end
         elseif code == 7                            
             % Background solenoid; cyan (solenoid1) [0.64, 0.08, 0.18] (solenoid2)
-            if experimentmode == 1 || experimentmode == 4 || experimentmode == 6 
+            if experimentmode == 1 || experimentmode == 4 || experimentmode == 6 || experimentmode == 7
                 bgdus = bgdus + 1;
                 set(handles.bgdsolenoidsEdit,'String',num2str(bgdus))    % change the gui background solenoid info
                 for i = 1:4
@@ -244,7 +244,7 @@ try
                 end                
             end
         elseif code == 8                            % Fixed solenoid 1; cyan, 'c'
-            if experimentmode == 1 || experimentmode == 4 || experimentmode == 6 
+            if experimentmode == 1 || experimentmode == 4 || experimentmode == 6 || experimentmode == 7
                 if nosolenoidflag == 0                      % Indicates trial with solenoid
                     fxdus1 = fxdus1 + 1;            
                     set(handles.fxdsolenoids1Edit,'String',num2str(fxdus1))
@@ -261,7 +261,7 @@ try
                 end
             end
         elseif code == 9                            % Fixed solenoid 2; [0.64, 0.08, 0.18]
-            if experimentmode == 1 || experimentmode == 4 || experimentmode == 6 
+            if experimentmode == 1 || experimentmode == 4 || experimentmode == 6 || experimentmode == 7
                 if nosolenoidflag == 0                      % Indicates trial with solenoid
                     fxdus2 = fxdus2 + 1;            
                     set(handles.fxdsolenoids2Edit,'String',num2str(fxdus2))
@@ -278,7 +278,7 @@ try
                  end
             end      
         elseif code == 10                            % Fixed solenoid 3; orange [1 0.5 0]
-             if experimentmode == 1 || experimentmode == 4 || experimentmode == 6 
+             if experimentmode == 1 || experimentmode == 4 || experimentmode == 6 || experimentmode == 7
                 if nosolenoidflag == 0                      % Indicates trial with solenoid
                     fxdus3 = fxdus3 + 1;            
                     set(handles.fxdsolenoids3Edit,'String',num2str(fxdus3))
@@ -295,7 +295,7 @@ try
                  end
             end 
         elseif code == 11                            % Fixed solenoid 4; [0.72 0.27 1]
-            if experimentmode == 1 || experimentmode == 4 || experimentmode == 6 
+            if experimentmode == 1 || experimentmode == 4 || experimentmode == 6 || experimentmode == 7
                 if nosolenoidflag == 0                      % Indicates trial with solenoid
                     fxdus4 = fxdus4 + 1;            
                     set(handles.fxdsolenoids4Edit,'String',num2str(fxdus4))
@@ -312,7 +312,7 @@ try
                  end
             end 
         elseif code == 12                            % Lick retraction solenoid1; [0.3 0.75 0.93]
-            if experimentmode == 1 || experimentmode == 4 || experimentmode == 6 
+            if experimentmode == 1 || experimentmode == 4 || experimentmode == 6 || experimentmode == 7
                 if nosolenoidflag == 0                      % Indicates trial with solenoid
                     lickretractsolenoid1 = lickretractsolenoid1 + 1;            
                     set(handles.lickretractsolenoid1Edit,'String',num2str(lickretractsolenoid1))
@@ -329,7 +329,7 @@ try
                  end
             end 
         elseif code == 13                            % Lick retraction solenoid2; [0.97 0.28 0.18]
-            if experimentmode == 1 || experimentmode == 4 || experimentmode == 6 
+            if experimentmode == 1 || experimentmode == 4 || experimentmode == 6 || experimentmode == 7
                 if nosolenoidflag == 0                      % Indicates trial with solenoid
                     lickretractsolenoid2 = lickretractsolenoid2 + 1;            
                     set(handles.lickretractsolenoid2Edit,'String',num2str(lickretractsolenoid2))
@@ -346,7 +346,7 @@ try
                  end
             end 
         elseif code == 18                            % Lick retraction solenoid1 and 2;
-            if experimentmode == 1 || experimentmode == 4 || experimentmode == 6 
+            if experimentmode == 1 || experimentmode == 4 || experimentmode == 6 || experimentmode == 7
                 if nosolenoidflag == 0                      % Indicates trial with solenoid
                     lickretractsolenoid1 = lickretractsolenoid1 + 1;
                     set(handles.lickretractsolenoid1Edit,'String',num2str(lickretractsolenoid1))
@@ -372,7 +372,7 @@ try
                  end
             end 
         elseif code == 14                            % Vaccum;            
-            if experimentmode ==1 || experimentmode == 4 || experimentmode == 6 
+            if experimentmode ==1 || experimentmode == 4 || experimentmode == 6 || experimentmode == 7
                 tempcuetovacuumdelay = NaN;
                 if ~isnan(tempcue1)                      % indicates there is cue1
                     tempcuetovacuumdelay = time - tempcue1;      
@@ -680,6 +680,8 @@ try
         str = 'serialporttest_';
     elseif experimentmode == 6
         str = 'ramptiming_';
+    elseif experimentmode == 7
+        str = 'delaydiscounting_';
     end
     
 %     if randlaserflag==0 && laserlatency==0 && laserduration==CS_t_fxd(1)
@@ -741,6 +743,8 @@ catch exception
         str = 'serialporttest_';
     elseif experimentmode == 6
         str = 'ramptiming_';
+    elseif experimentmode == 7
+        str = 'delaydiscounting_';
     end
     
 %     if randlaserflag==0 && laserlatency==0 && laserduration==CS_t_fxd(1)

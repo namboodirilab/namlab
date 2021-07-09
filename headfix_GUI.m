@@ -67,7 +67,7 @@ guidata(hObject, handles);
 
 global actvAx saveDir
 
-mainPath = 'C:\Users\mzhou9\OneDrive - University of California, San Francisco\Behavioral_acquisition_and_analysis';
+mainPath = 'C:\Users\namboodirilab\OneDrive - University of California, San Francisco\Behavioral_acquisition_and_analysis';
 addpath(mainPath)
 saveDir = [mainPath '\data\'];          % where to save data
 
@@ -264,7 +264,7 @@ elseif selectedmode == 2
     set(handles.mindelaybgdtocue, 'Enable', 'on'); 
     set(handles.mindelayfxdtobgd, 'Enable', 'on');
     set(handles.totPoisssolenoid, 'Enable', 'on');
-elseif selectedmode == 3
+elseif selectedmode == 3 || selectedmode == 7
     set(handles.sendButton,'Enable','on') 
     set(handles.lickproperties, 'Enable', 'on');
 elseif selectedmode == 5
@@ -297,17 +297,19 @@ basecmd = strcat('"C:\Program Files (x86)\Arduino\hardware\tools\avr/bin/avrdude
 selectedmode = get(handles.experimentmode,'Value');
 
 if selectedmode == 1
-    [status,cmdout] = dos(strcat(basecmd,'C:\Users\mzhou9\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_cues.ino.hex',':i'));
+    [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_cues.ino.hex',':i'));
 elseif selectedmode == 2
-    [status,cmdout] = dos(strcat(basecmd,'C:\Users\mzhou9\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_randomrewards.ino.hex',':i'));
+    [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_randomrewards.ino.hex',':i'));
 elseif selectedmode == 3
-    [status,cmdout] = dos(strcat(basecmd,'C:\Users\mzhou9\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_lickforreward.ino.hex',':i'));
+    [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_lickforreward.ino.hex',':i'));
 elseif selectedmode == 4
-    [status,cmdout] = dos(strcat(basecmd,'C:\Users\mzhou9\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_decisionmaking.ino.hex',':i'));
+    [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_decisionmaking.ino.hex',':i'));
 elseif selectedmode == 5
-    [status,cmdout] = dos(strcat(basecmd,'C:\Users\mzhou9\Desktop\Behavioral_acquisition_and_analysis\uploads\Serial_port_testing.ino.hex',':i'));
+    [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis\uploads\Serial_port_testing.ino.hex',':i'));
 elseif selectedmode == 6
-    [status,cmdout] = dos(strcat(basecmd,'C:\Users\mzhou9\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_ramptiming.ino.hex',':i'));    
+    [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_ramptiming.ino.hex',':i'));    
+elseif selectedmode == 6
+    [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_delaydiscounting_automated.ino.hex',':i'));    
 end
 
 
@@ -609,7 +611,7 @@ function testserialport_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 global s running actvAx saveDir
 
-mainPath = 'C:\Users\mzhou9\Desktop\Behavioral_acquisition_and_analysis';	
+mainPath = 'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis';	
 addpath(mainPath)	
 saveDir = [mainPath '\serialtest\'];          % save serial testing data here
 
@@ -716,7 +718,8 @@ temp = {'Number of licks required',  5, 5;
         'Sound Frequency (kHz)' 12 3;
         'Sound Duration (ms)' 0 1000;
         'Speaker number' 1 2;
-        'Light number' 1 2};
+        'Light number' 1 2;
+        'Fixed side check',          0, 0};
 set(hObject, 'Data', temp);
 
 
@@ -803,6 +806,7 @@ soundfreq       = cell2mat(lickproperties(12,2:end));
 sounddur        = cell2mat(lickproperties(13,2:end));
 lickspeaker     = cell2mat(lickproperties(14,2:end));
 licklight       = cell2mat(lickproperties(15,2:end));
+fixedsidecheck  = cell2mat(lickproperties(16,2:end));
 
 %Laser
 laserlatency = get(handles.laserlatency,'String');
@@ -834,7 +838,8 @@ inputs = [numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur, CS_t_fxd,...
           minrewards, signaltolickreq, soundsignalpulse, soundfreq, sounddur, lickspeaker,...
           laserlatency, laserduration, randlaserflag, laserpulseperiod, laserpulseoffperiod,...
           lasertrialbytrialflag, maxdelaycuetovacuum, CSlight,variableratioflag, variableintervalflag,...
-          licklight, ramptimingexp_input, CS1lasercheck, CS2lasercheck, CS3lasercheck]; % collect all inputs into array
+          licklight, ramptimingexp_input, CS1lasercheck, CS2lasercheck, CS3lasercheck,...
+          fixedsidecheck]; % collect all inputs into array
 
 negIn  = inputs < 0;
 intIn  = inputs - fix(inputs);
@@ -914,7 +919,7 @@ params = sprintf('%G+', numtrials, CSfreq, CSsolenoid, CSprob, CSopentime,...
                  laserlatency, laserduration, randlaserflag, laserpulseperiod,...
                  laserpulseoffperiod, lasertrialbytrialflag, maxdelaycuetovacuum, CSlight,...
                  variableratioflag,variableintervalflag,licklight, ramptimingexp,...
-                 CS1lasercheck, CS2lasercheck, CS3lasercheck);
+                 CS1lasercheck, CS2lasercheck, CS3lasercheck,fixedsidecheck);
 params = params(1:end-1);
 
 % Run arduino code
@@ -1003,6 +1008,7 @@ soundfreq       = cell2mat(lickproperties(12,2:end));
 sounddur        = cell2mat(lickproperties(13,2:end));
 lickspeaker     = cell2mat(lickproperties(14,2:end));
 licklight       = cell2mat(lickproperties(15,2:end));
+fixedsidecheck  = cell2mat(lickproperties(16,2:end));
 
 %Laser
 laserlatency = get(handles.laserlatency,'String');
@@ -1034,7 +1040,7 @@ inputs = [numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur, CS_t_fxd,...
           laserlatency, laserduration, randlaserflag, laserpulseperiod, laserpulseoffperiod,...
           lasertrialbytrialflag, maxdelaycuetovacuum, CSlight,variableratioflag,...
           variableintervalflag,licklight, ramptimingexp_input, CS1lasercheck,...
-          CS2lasercheck, CS3lasercheck]; % collect all inputs into array
+          CS2lasercheck, CS3lasercheck,fixedsidecheck]; % collect all inputs into array
           
 negIn  = inputs < 0;
 intIn  = inputs - fix(inputs);
@@ -1088,7 +1094,7 @@ if experimentmode==2
     set(handles.vacuumButton,'Enable', 'off')
 end
 
-if experimentmode==3
+if experimentmode==3 || experimentmode==7
     set(handles.clearlick1rewards,'Enable','on');
     set(handles.clearlick2rewards,'Enable','on');
 end
@@ -1105,7 +1111,7 @@ params = sprintf('%G+', numtrials, CSfreq, CSsolenoid, CSprob, CSopentime,...
                  laserlatency, laserduration, randlaserflag, laserpulseperiod, laserpulseoffperiod,...
                  lasertrialbytrialflag, maxdelaycuetovacuum, CSlight,variableratioflag,...
                  variableintervalflag,licklight, ramptimingexp, CS1lasercheck,...
-                 CS2lasercheck, CS3lasercheck);
+                 CS2lasercheck, CS3lasercheck,fixedsidecheck);
              
 params = params(1:end-1);
 
