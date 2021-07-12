@@ -204,10 +204,11 @@ unsigned long variableratioflag[numlicktube];
 unsigned long variableintervalflag[numlicktube];
 float rewardprobforlick[numlicktube];
 unsigned long licklight[numlicktube];
-unsigned long fixedsidecheck[numlicktube];    // check which side is the fixed side for delay discounting automated version 
+unsigned long fixedsidecheck[numlicktube];    // check which side is the fixed side for delay discounting automated version
 unsigned long varyingreward[7];               // the varying reward on the non-fixed side ranges from [0 - 60];
 unsigned long numtrialonvaryingside;          // count the number of trials has completed on the varying side;
-int varyingside;                              // indexing the varying side lick tube 
+unsigned long numtrialonfixedside;            // count the number of trials completed on the fixed side;
+int varyingside;                              // indexing the varying side lick tube
 
 unsigned long laserlatency;      // Laser latency wrt cue (ms)
 unsigned long laserduration;     // Laser duration (ms)
@@ -522,6 +523,7 @@ void setup() {
   lickctforreq[0] = 0;                 // Number of licks1 during cue for first trial is initialized to 0
   lickctforreq[1] = 0;                 // Number of licks2 during cue for first trial is initialized to 0
   numtrialonvaryingside = 0;
+  numtrialonfixedside = 0;
 
   // UNCOMMENT THESE LINES FOR TRIGGERING IMAGE COLLECTION AT BEGINNING
   digitalWrite(ttloutpin, HIGH);
@@ -609,6 +611,59 @@ void loop() {
   }
 
   if (ts >= nextfxdsolenoid && nextfxdsolenoid != 0) {
+    if (numtrialonvaryingside + numtrialonfixedside <= minrewards[varyingside]) {
+      lickopentime[varyingside] = 0;
+    }
+    else if (numtrialonvaryingside + numtrialonfixedside > minrewards[varyingside] && numtrialonvaryingside <= minrewards[varyingside] * 2) {
+      if (numtrialonvaryingside + numtrialonfixedside == minrewards[varyingside] + 1) {
+        digitalWrite(light1, HIGH);
+        delay(5000);
+        digitalWrite(light1, LOW);
+      }
+      lickopentime[varyingside] = 60;
+    }
+    else if (numtrialonvaryingside  + numtrialonfixedside > minrewards[varyingside] * 2 && numtrialonvaryingside <= minrewards[varyingside] * 3) {
+      if (numtrialonvaryingside + numtrialonfixedside == minrewards[varyingside] * 2 + 1) {
+        digitalWrite(light1, HIGH);
+        delay(5000);
+        digitalWrite(light1, LOW);
+      }
+      lickopentime[varyingside] = 10;
+    }
+    else if (numtrialonvaryingside + numtrialonfixedside > minrewards[varyingside] * 3 && numtrialonvaryingside <= minrewards[varyingside] * 4) {
+      if (numtrialonvaryingside + numtrialonfixedside == minrewards[varyingside] * 3 + 1) {
+        digitalWrite(light1, HIGH);
+        delay(5000);
+        digitalWrite(light1, LOW);
+      }
+      lickopentime[varyingside] = 50;
+    }
+    else if (numtrialonvaryingside + numtrialonfixedside > minrewards[varyingside] * 4 && numtrialonvaryingside <= minrewards[varyingside] * 5) {
+      if (numtrialonvaryingside + numtrialonfixedside == minrewards[varyingside] * 4 + 1) {
+        digitalWrite(light1, HIGH);
+        delay(5000);
+        digitalWrite(light1, LOW);
+      }
+      lickopentime[varyingside] = 20;
+    }
+    else if (numtrialonvaryingside + numtrialonfixedside > minrewards[varyingside] * 5 && numtrialonvaryingside <= minrewards[varyingside] * 6) {
+      if (numtrialonvaryingside + numtrialonfixedside == minrewards[varyingside] * 5 + 1) {
+        digitalWrite(light1, HIGH);
+        delay(5000);
+        digitalWrite(light1, LOW);
+      }
+      lickopentime[varyingside] = 40;
+    }
+    else if (numtrialonvaryingside + numtrialonfixedside > minrewards[varyingside] * 6) {
+      lickopentime[varyingside] = 30;
+    }
+    if (licktubethatmetlickreq == varyingside) {
+      numtrialonvaryingside++;
+    }
+    else {
+      numtrialonfixedside++;
+    }
+
     if (licksolenoid[licktubethatmetlickreq] == solenoid1) {            // setup which solenoid to give for lick onset
       Serial.print(8);                                // code data
     }
@@ -632,31 +687,6 @@ void loop() {
     Serial.print(" ");
 
     u = random(0, 100);
-    if (numtrialonvaryingside <= minrewards[varyingside]) {
-      lickopentime[varyingside] = 0;
-    }
-    else if (numtrialonvaryingside > minrewards[varyingside] && numtrialonvaryingside <= minrewards[varyingside] * 2) {
-      lickopentime[varyingside] = 60;
-    }
-    else if (numtrialonvaryingside > minrewards[varyingside] * 2 && numtrialonvaryingside <= minrewards[varyingside] * 3) {
-      lickopentime[varyingside] = 10;
-    }
-    else if (numtrialonvaryingside > minrewards[varyingside] * 3 && numtrialonvaryingside <= minrewards[varyingside] * 4) {
-      lickopentime[varyingside] = 50;
-    }
-    else if (numtrialonvaryingside > minrewards[varyingside] * 4 && numtrialonvaryingside <= minrewards[varyingside] * 5) {
-      lickopentime[varyingside] = 20;
-    }
-    else if (numtrialonvaryingside > minrewards[varyingside] * 5 && numtrialonvaryingside <= minrewards[varyingside] * 6) {
-      lickopentime[varyingside] = 40;
-    }
-    else if (numtrialonvaryingside > minrewards[varyingside] * 6) {
-      lickopentime[varyingside] = 30;
-    }
-    if (licktubethatmetlickreq == varyingside) {
-      numtrialonvaryingside++;
-    }
-
     if (lickopentime[licktubethatmetlickreq] >= 0 && u < lickprob[licktubethatmetlickreq] && minrewards[licktubethatmetlickreq] > 0) {          // set lick solenoid high
       digitalWrite(licksolenoid[licktubethatmetlickreq], HIGH);
       Serial.print(0);                                // indicates the reward is given
@@ -666,6 +696,13 @@ void loop() {
       Serial.print(1);                                // indicates no reward given
       Serial.print('\n');
     }
+    Serial.print(licktubethatmetlickreq + 33);
+    Serial.print(" ");
+    Serial.print(lickopentime[licktubethatmetlickreq]);
+    Serial.print(" ");
+    Serial.print(numtrialonvaryingside + numtrialonfixedside);
+    Serial.print('\n');
+
     if (variableintervalflag[licktubethatmetlickreq] == 1) {
       u = random(0, 10000);
       temp = (float)u / 10000;

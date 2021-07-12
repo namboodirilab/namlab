@@ -826,7 +826,8 @@ void loop() {
       Serial.print(1);                       //   this indicates that the solenoid was not given
       Serial.print('\n');
     }
-    Serial.print(cueList[CSct] + 1);                     // send which cue this solenoid turns on for
+
+    Serial.print(cueList[CSct] + 33);                  // send reward indicator
     Serial.print(" ");
     Serial.print(actualopentime);                      // send actual opentime for solenoid
     Serial.print(" ");

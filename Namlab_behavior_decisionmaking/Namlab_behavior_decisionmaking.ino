@@ -246,6 +246,7 @@ unsigned long nextttlouton;      // timestamp to turn on the TTL out pin for sta
 unsigned long nextttloutoff;     // timestamp to turn off the TTL out pin for starting imaging
 unsigned long laserPulseOn;      // timestamp to turn on the laser on while pulsing
 unsigned long laserPulseOff;     // timestamp to turn the laser off while pulsing
+unsigned long laserOff;          // timestamp to turn the laser off
 unsigned long CSlasercheck[numCS];  // flag for checking laser for each cue
 
 unsigned long u;                 // uniform random number for inverse transform sampling to create an exponential distribution

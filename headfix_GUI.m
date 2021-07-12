@@ -308,7 +308,7 @@ elseif selectedmode == 5
     [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis\uploads\Serial_port_testing.ino.hex',':i'));
 elseif selectedmode == 6
     [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_ramptiming.ino.hex',':i'));    
-elseif selectedmode == 6
+elseif selectedmode == 7
     [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_delaydiscounting_automated.ino.hex',':i'));    
 end
 
