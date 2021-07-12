@@ -572,7 +572,7 @@ void loop() {
   licking();                           // record licking
   frametimestamp();                    // store timestamps of frames
 
-  if (rewardct[0] >= minrewards[0] * 7 && rewardct[1] >= minrewards[1] * 7 && sessionendtime == 0) {
+  if ((numtrialonvaryingside + numtrialonfixedside) >= minrewards[varyingside] * 7 && sessionendtime == 0) {
     sessionendtime = ts + 5000;
   }
 
@@ -611,43 +611,43 @@ void loop() {
   }
 
   if (ts >= nextfxdsolenoid && nextfxdsolenoid != 0) {
-    if (numtrialonvaryingside + numtrialonfixedside <= minrewards[varyingside]) {
+    if ((numtrialonvaryingside + numtrialonfixedside) <= minrewards[varyingside]) {
       lickopentime[varyingside] = 0;
     }
-    else if (numtrialonvaryingside + numtrialonfixedside > minrewards[varyingside] && numtrialonvaryingside <= minrewards[varyingside] * 2) {
-      if (numtrialonvaryingside + numtrialonfixedside == minrewards[varyingside] + 1) {
+    else if ((numtrialonvaryingside + numtrialonfixedside) > minrewards[varyingside] && numtrialonvaryingside <= minrewards[varyingside] * 2) {
+      if ((numtrialonvaryingside + numtrialonfixedside) == (minrewards[varyingside] + 1)) {
         digitalWrite(light1, HIGH);
         delay(5000);
         digitalWrite(light1, LOW);
       }
       lickopentime[varyingside] = 60;
     }
-    else if (numtrialonvaryingside  + numtrialonfixedside > minrewards[varyingside] * 2 && numtrialonvaryingside <= minrewards[varyingside] * 3) {
-      if (numtrialonvaryingside + numtrialonfixedside == minrewards[varyingside] * 2 + 1) {
+    else if ((numtrialonvaryingside  + numtrialonfixedside) > minrewards[varyingside] * 2 && numtrialonvaryingside <= minrewards[varyingside] * 3) {
+      if ((numtrialonvaryingside + numtrialonfixedside) == (minrewards[varyingside] * 2 + 1)) {
         digitalWrite(light1, HIGH);
         delay(5000);
         digitalWrite(light1, LOW);
       }
       lickopentime[varyingside] = 10;
     }
-    else if (numtrialonvaryingside + numtrialonfixedside > minrewards[varyingside] * 3 && numtrialonvaryingside <= minrewards[varyingside] * 4) {
-      if (numtrialonvaryingside + numtrialonfixedside == minrewards[varyingside] * 3 + 1) {
+    else if ((numtrialonvaryingside + numtrialonfixedside) > minrewards[varyingside] * 3 && numtrialonvaryingside <= minrewards[varyingside] * 4) {
+      if ((numtrialonvaryingside + numtrialonfixedside) == (minrewards[varyingside] * 3 + 1)) {
         digitalWrite(light1, HIGH);
         delay(5000);
         digitalWrite(light1, LOW);
       }
       lickopentime[varyingside] = 50;
     }
-    else if (numtrialonvaryingside + numtrialonfixedside > minrewards[varyingside] * 4 && numtrialonvaryingside <= minrewards[varyingside] * 5) {
-      if (numtrialonvaryingside + numtrialonfixedside == minrewards[varyingside] * 4 + 1) {
+    else if ((numtrialonvaryingside + numtrialonfixedside) > minrewards[varyingside] * 4 && numtrialonvaryingside <= minrewards[varyingside] * 5) {
+      if ((numtrialonvaryingside + numtrialonfixedside) == (minrewards[varyingside] * 4 + 1)) {
         digitalWrite(light1, HIGH);
         delay(5000);
         digitalWrite(light1, LOW);
       }
       lickopentime[varyingside] = 20;
     }
-    else if (numtrialonvaryingside + numtrialonfixedside > minrewards[varyingside] * 5 && numtrialonvaryingside <= minrewards[varyingside] * 6) {
-      if (numtrialonvaryingside + numtrialonfixedside == minrewards[varyingside] * 5 + 1) {
+    else if ((numtrialonvaryingside + numtrialonfixedside) > minrewards[varyingside] * 5 && numtrialonvaryingside <= minrewards[varyingside] * 6) {
+      if ((numtrialonvaryingside + numtrialonfixedside) == (minrewards[varyingside] * 5 + 1)) {
         digitalWrite(light1, HIGH);
         delay(5000);
         digitalWrite(light1, LOW);
@@ -696,12 +696,6 @@ void loop() {
       Serial.print(1);                                // indicates no reward given
       Serial.print('\n');
     }
-    Serial.print(licktubethatmetlickreq + 33);
-    Serial.print(" ");
-    Serial.print(lickopentime[licktubethatmetlickreq]);
-    Serial.print(" ");
-    Serial.print(numtrialonvaryingside + numtrialonfixedside);
-    Serial.print('\n');
 
     if (variableintervalflag[licktubethatmetlickreq] == 1) {
       u = random(0, 10000);
