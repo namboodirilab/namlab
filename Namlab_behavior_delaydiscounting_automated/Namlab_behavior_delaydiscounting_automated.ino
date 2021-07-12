@@ -194,7 +194,7 @@ unsigned long lickprob[numlicktube];
 unsigned long lickopentime[numlicktube];
 unsigned long delaytoreward[numlicktube];
 unsigned long delaytolick[numlicktube];
-unsigned long minrewards[numlicktube];
+unsigned long minrewards[numlicktube];        // number of rewards for each reward magnitude, the total reward num would be 7*this number
 unsigned long signaltolickreq[numlicktube];
 unsigned long soundsignalpulse[numlicktube];
 unsigned long soundfreq[numlicktube];
@@ -204,10 +204,10 @@ unsigned long variableratioflag[numlicktube];
 unsigned long variableintervalflag[numlicktube];
 float rewardprobforlick[numlicktube];
 unsigned long licklight[numlicktube];
-unsigned long fixedsidecheck[numlicktube];
-unsigned long varyingreward[7];
-unsigned long numtrialonvaryingside;
-int varyingside;
+unsigned long fixedsidecheck[numlicktube];    // check which side is the fixed side for delay discounting automated version 
+unsigned long varyingreward[7];               // the varying reward on the non-fixed side ranges from [0 - 60];
+unsigned long numtrialonvaryingside;          // count the number of trials has completed on the varying side;
+int varyingside;                              // indexing the varying side lick tube 
 
 unsigned long laserlatency;      // Laser latency wrt cue (ms)
 unsigned long laserduration;     // Laser duration (ms)
@@ -247,9 +247,7 @@ unsigned long nextttloutoff;     // timestamp to turn off the TTL out pin for st
 unsigned long laserPulseOn;      // timestamp to turn on the laser on while pulsing
 unsigned long laserPulseOff;     // timestamp to turn the laser off while pulsing
 unsigned long laserOff;          // timestamp to turn the laser off
-boolean CS1lasercheck;           // check for CS1 with laser or not
-boolean CS2lasercheck;           // check for CS2 with laser or not
-boolean CS3lasercheck;           // check for CS3 with laser or not
+unsigned long CSlasercheck[numCS];  // flag for checking laser for each cue
 
 unsigned long u;                 // uniform random number for inverse transform sampling to create an exponential distribution
 unsigned long sessionendtime;    // the time at which session ends. Set to 5s after last fixed solenoid
@@ -862,9 +860,9 @@ void getParams() {
   licklight[0]           = param[97];
   licklight[1]           = param[98];
   ramptimingexp          = param[99];
-  CS1lasercheck          = param[100];
-  CS2lasercheck          = param[101];
-  CS3lasercheck          = param[102];
+  CSlasercheck[0]          = param[100];
+  CSlasercheck[1]          = param[101];
+  CSlasercheck[2]          = param[102];
   fixedsidecheck[0]      = param[103];
   fixedsidecheck[1]      = param[104];
 
