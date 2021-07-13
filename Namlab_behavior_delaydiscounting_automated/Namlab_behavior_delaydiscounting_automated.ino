@@ -209,6 +209,7 @@ unsigned long varyingreward[7];               // the varying reward on the non-f
 unsigned long numtrialonvaryingside;          // count the number of trials has completed on the varying side;
 unsigned long numtrialonfixedside;            // count the number of trials completed on the fixed side;
 int varyingside;                              // indexing the varying side lick tube
+boolean contingencychanged;                   // indicator for contingency changing in delay discounting task
 
 unsigned long laserlatency;      // Laser latency wrt cue (ms)
 unsigned long laserduration;     // Laser duration (ms)
@@ -524,6 +525,7 @@ void setup() {
   lickctforreq[1] = 0;                 // Number of licks2 during cue for first trial is initialized to 0
   numtrialonvaryingside = 0;
   numtrialonfixedside = 0;
+  contingencychanged = false;
 
   // UNCOMMENT THESE LINES FOR TRIGGERING IMAGE COLLECTION AT BEGINNING
   digitalWrite(ttloutpin, HIGH);
@@ -614,47 +616,76 @@ void loop() {
     if ((numtrialonvaryingside + numtrialonfixedside) <= minrewards[varyingside]) {
       lickopentime[varyingside] = 0;
     }
-    else if ((numtrialonvaryingside + numtrialonfixedside) > minrewards[varyingside] && numtrialonvaryingside <= minrewards[varyingside] * 2) {
+    else if ((numtrialonvaryingside + numtrialonfixedside) > minrewards[varyingside] && (numtrialonvaryingside + numtrialonfixedside) <= minrewards[varyingside] * 2) {
       if ((numtrialonvaryingside + numtrialonfixedside) == (minrewards[varyingside] + 1)) {
+        contingencychanged = true;
+      }
+      if (contingencychanged) {
         digitalWrite(light1, HIGH);
         delay(5000);
         digitalWrite(light1, LOW);
+        contingencychanged = false;
       }
       lickopentime[varyingside] = 60;
     }
-    else if ((numtrialonvaryingside  + numtrialonfixedside) > minrewards[varyingside] * 2 && numtrialonvaryingside <= minrewards[varyingside] * 3) {
+    else if ((numtrialonvaryingside  + numtrialonfixedside) > minrewards[varyingside] * 2 && (numtrialonvaryingside + numtrialonfixedside) <= minrewards[varyingside] * 3) {
       if ((numtrialonvaryingside + numtrialonfixedside) == (minrewards[varyingside] * 2 + 1)) {
+        contingencychanged = true;
+      }
+      if (contingencychanged) {
         digitalWrite(light1, HIGH);
         delay(5000);
         digitalWrite(light1, LOW);
+        contingencychanged = false;
       }
       lickopentime[varyingside] = 10;
     }
-    else if ((numtrialonvaryingside + numtrialonfixedside) > minrewards[varyingside] * 3 && numtrialonvaryingside <= minrewards[varyingside] * 4) {
+    else if ((numtrialonvaryingside + numtrialonfixedside) > minrewards[varyingside] * 3 && (numtrialonvaryingside + numtrialonfixedside) <= minrewards[varyingside] * 4) {
       if ((numtrialonvaryingside + numtrialonfixedside) == (minrewards[varyingside] * 3 + 1)) {
+        contingencychanged = true;
+      }
+      if (contingencychanged) {
         digitalWrite(light1, HIGH);
         delay(5000);
         digitalWrite(light1, LOW);
+        contingencychanged = false;
       }
       lickopentime[varyingside] = 50;
     }
-    else if ((numtrialonvaryingside + numtrialonfixedside) > minrewards[varyingside] * 4 && numtrialonvaryingside <= minrewards[varyingside] * 5) {
+    else if ((numtrialonvaryingside + numtrialonfixedside) > minrewards[varyingside] * 4 && (numtrialonvaryingside + numtrialonfixedside) <= minrewards[varyingside] * 5) {
       if ((numtrialonvaryingside + numtrialonfixedside) == (minrewards[varyingside] * 4 + 1)) {
+        contingencychanged = true;
+      }
+      if (contingencychanged) {
         digitalWrite(light1, HIGH);
         delay(5000);
         digitalWrite(light1, LOW);
+        contingencychanged = false;
       }
       lickopentime[varyingside] = 20;
     }
-    else if ((numtrialonvaryingside + numtrialonfixedside) > minrewards[varyingside] * 5 && numtrialonvaryingside <= minrewards[varyingside] * 6) {
+    else if ((numtrialonvaryingside + numtrialonfixedside) > minrewards[varyingside] * 5 && (numtrialonvaryingside + numtrialonfixedside) <= minrewards[varyingside] * 6) {
       if ((numtrialonvaryingside + numtrialonfixedside) == (minrewards[varyingside] * 5 + 1)) {
+        contingencychanged = true;
+      }
+      if (contingencychanged) {
         digitalWrite(light1, HIGH);
         delay(5000);
         digitalWrite(light1, LOW);
+        contingencychanged = false;
       }
       lickopentime[varyingside] = 40;
     }
-    else if (numtrialonvaryingside + numtrialonfixedside > minrewards[varyingside] * 6) {
+    else if ((numtrialonvaryingside + numtrialonfixedside) > minrewards[varyingside] * 6) {
+      if ((numtrialonvaryingside + numtrialonfixedside) == (minrewards[varyingside] * 6 + 1)) {
+        contingencychanged = true;
+      }
+      if (contingencychanged) {
+        digitalWrite(light1, HIGH);
+        delay(5000);
+        digitalWrite(light1, LOW);
+        contingencychanged = false;
+      }
       lickopentime[varyingside] = 30;
     }
     if (licktubethatmetlickreq == varyingside) {
@@ -696,6 +727,12 @@ void loop() {
       Serial.print(1);                                // indicates no reward given
       Serial.print('\n');
     }
+    Serial.print(licktubethatmetlickreq + 33);
+    Serial.print(" ");
+    Serial.print(lickopentime[licktubethatmetlickreq]);
+    Serial.print(" ");
+    Serial.print(numtrialonvaryingside + numtrialonfixedside);
+    Serial.print('\n');
 
     if (variableintervalflag[licktubethatmetlickreq] == 1) {
       u = random(0, 10000);
