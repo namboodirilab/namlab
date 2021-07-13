@@ -184,7 +184,7 @@ boolean rewardactive;
 unsigned long maxdelaytosolenoid;
 unsigned long cueonset;
 float actualopentime;           // actual open time for solenoid in ramp timing task
-float ramptimingexp;            // exponent factor for ramptiming task reward openning time function; 
+float ramptimingexp;            // exponent factor for ramptiming task reward openning time function;
 unsigned long timeforfirstlick;
 
 const int numlicktube = 2;       // number of recording lick tubes for lick dependent experiments
@@ -814,7 +814,7 @@ void loop() {
 
     u = random(0, 100);
     actualopentime = (float)timeforfirstlick / (CS_t_fxd[2 * cueList[CSct] + 1]);
-    actualopentime = pow(actualopentime, ramptimingexp);
+    actualopentime = actualopentime * actualopentime;
     actualopentime = actualopentime * CSopentime[2 * cueList[CSct] + 1];
 
     if (actualopentime > 0 && u < CSprob[2 * cueList[CSct] + 1] && ts <= maxdelaytosolenoid) {
