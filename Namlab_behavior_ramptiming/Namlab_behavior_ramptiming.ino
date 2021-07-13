@@ -1315,6 +1315,9 @@ void cues() {
   lickctforreq[1] = 0;                 // reset lick2 count to zero at cue onset
   lickctforreq[2] = 0;                 // reset lick3 count to zero at cue onset
 
+  nextfxdsolenoid = 0;
+  timeforfirstlick = 0;
+
 }
 
 void deliverlasertocues() {
