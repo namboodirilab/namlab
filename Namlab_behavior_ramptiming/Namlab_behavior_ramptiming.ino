@@ -639,6 +639,7 @@ void setup() {
   lickctforreq[0] = 0;                 // Number of licks1 during cue for first trial is initialized to 0
   lickctforreq[1] = 0;                 // Number of licks2 during cue for first trial is initialized to 0
   lickctforreq[2] = 0;                 // Number of licks3 during cue for first trial is initialized to 0
+  timeforfirstlick = 0;
 
   // UNCOMMENT THESE LINES FOR TRIGGERING IMAGE COLLECTION AT BEGINNING
   digitalWrite(ttloutpin, HIGH);
@@ -806,17 +807,20 @@ void loop() {
 
 
   if (!ITIflag && ts >= nextfxdsolenoid && nextfxdsolenoid != 0) { // give fixed solenoid
+    if (lickctforreq[2] == 0){
+      timeforfirstlick = 0;
+    }
 
+    actualopentime = (float)timeforfirstlick / (CS_t_fxd[2 * cueList[CSct] + 1]);
+    actualopentime = actualopentime * actualopentime;
+    actualopentime = actualopentime * CSopentime[2 * cueList[CSct] + 1];
+    
     Serial.print(CSsolenoidcode[2 * cueList[CSct] + 1]);
     Serial.print(" ");
     Serial.print(ts);                      //   send timestamp of solenoid onset
     Serial.print(" ");
 
     u = random(0, 100);
-    actualopentime = (float)timeforfirstlick / (CS_t_fxd[2 * cueList[CSct] + 1]);
-    actualopentime = actualopentime * actualopentime;
-    actualopentime = actualopentime * CSopentime[2 * cueList[CSct] + 1];
-
     if (actualopentime > 0 && u < CSprob[2 * cueList[CSct] + 1] && ts <= maxdelaytosolenoid) {
       digitalWrite(CSsolenoid[2 * cueList[CSct] + 1], HIGH);      // turn on solenoid
       Serial.print(0);                       //   this indicates that the solenoid was actually given
