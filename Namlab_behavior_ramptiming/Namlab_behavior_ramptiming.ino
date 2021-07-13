@@ -807,14 +807,10 @@ void loop() {
 
 
   if (!ITIflag && ts >= nextfxdsolenoid && nextfxdsolenoid != 0) { // give fixed solenoid
-    if (lickctforreq[2] == 0){
-      timeforfirstlick = 0;
-    }
-
     actualopentime = (float)timeforfirstlick / (CS_t_fxd[2 * cueList[CSct] + 1]);
     actualopentime = actualopentime * actualopentime;
     actualopentime = actualopentime * CSopentime[2 * cueList[CSct] + 1];
-    
+
     Serial.print(CSsolenoidcode[2 * cueList[CSct] + 1]);
     Serial.print(" ");
     Serial.print(ts);                      //   send timestamp of solenoid onset
@@ -1321,6 +1317,7 @@ void cues() {
 
   nextfxdsolenoid = 0;
   timeforfirstlick = 0;
+  nextvacuum = ts + CS_t_fxd[2 * cueList[CSct] + 1] + maxdelaytovacuumfromcueonset;
 
 }
 
