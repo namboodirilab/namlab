@@ -808,7 +808,7 @@ void loop() {
 
   if (!ITIflag && ts >= nextfxdsolenoid && nextfxdsolenoid != 0) { // give fixed solenoid
     actualopentime = (float)timeforfirstlick / (CS_t_fxd[2 * cueList[CSct] + 1]);
-    actualopentime = actualopentime * actualopentime;
+    actualopentime = pow(actualopentime, ramptimingexp);
     actualopentime = actualopentime * CSopentime[2 * cueList[CSct] + 1];
 
     Serial.print(CSsolenoidcode[2 * cueList[CSct] + 1]);

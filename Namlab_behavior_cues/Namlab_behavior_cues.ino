@@ -499,7 +499,7 @@ void setup() {
 
     if (reading == 56) {                 // TEST LASER
       digitalWrite(laser, HIGH);         // turn on LASER
-      delay(1000);
+      delay(5000);
       digitalWrite(laser, LOW);         // turn off LASER
     }
 

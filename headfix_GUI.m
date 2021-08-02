@@ -611,7 +611,7 @@ function testserialport_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 global s running actvAx saveDir
 
-mainPath = 'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis';	
+mainPath = 'C:\Users\namboodirilab\OneDrive - University of California, San Francisco\Behavioral_acquisition_and_analysis';	
 addpath(mainPath)	
 saveDir = [mainPath '\serialtest\'];          % save serial testing data here
 
@@ -684,18 +684,33 @@ function csproperties_CreateFcn(hObject, eventdata, handles)
 %         'Sound(1), light(2) or both(3)', 1, 2, 3};
 
 %%% DEFAULT FOR PAVLOVIAN CONDITIONING
-temp = {'Number of trials', 50, 50, 0;
-        'Frequency(kHz)', 12, 3, 7;
-        'Predicted solenoid', '1+3', '2+3', '1+3';
-        'Probability of solenoid', '0+100', '0+0', '0+100';
-        'Solenoid open time (ms)', '30+30', '30+30', '0+30';
-        'Cue duration (ms)', 2000, 2000, 2000;
-        'Delay to solenoid (ms)', '1500+3000', '1500+3000', '0+3000';
-        'Pulse tone (1) or not (0)', 0, 1, 1;
-        'Speaker number', 1, 2, 1;
+% temp = {'Number of trials', 50, 50, 0;
+%         'Frequency(kHz)', 12, 3, 7;
+%         'Predicted solenoid', '1+3', '2+3', '1+3';
+%         'Probability of solenoid', '0+100', '0+0', '0+100';
+%         'Solenoid open time (ms)', '30+30', '30+30', '0+30';
+%         'Cue duration (ms)', 2000, 2000, 2000;
+%         'Delay to solenoid (ms)', '1500+3000', '1500+3000', '0+3000';
+%         'Pulse tone (1) or not (0)', 0, 1, 1;
+%         'Speaker number', 1, 2, 1;
+%         'Light number', 1, 2, 1;
+%         'Go lick requirement', 0, 0, 0;
+%         'Go lick tube (or solenoid)', 1, 2, 3;
+%         'Sound(1), light(2) or both(3)', 1, 1, 1};
+    
+%%% DEFAULT FOR LASER PAVLOVIAN
+temp = {'Number of trials', 25, 25, 50;
+        'Frequency(kHz)', 12, 3, 5;
+        'Predicted solenoid', '5+3', '5+3', '1+3';
+        'Probability of solenoid', '0+100', '0+100', '0+0';
+        'Solenoid open time (ms)', '3000+40', '3000+40', '0+30';
+        'Cue duration (ms)', 1000, 1000, 1000;
+        'Delay to solenoid (ms)', '0+3000', '0+3000', '0+3000';
+        'Pulse tone (1) or not (0)', 0, 0, 1;
+        'Speaker number', 1, 2, 2;
         'Light number', 1, 2, 1;
         'Go lick requirement', 0, 0, 0;
-        'Go lick tube (or solenoid)', 1, 2, 3;
+        'Go lick tube (or solenoid)', 1, 1, 3;
         'Sound(1), light(2) or both(3)', 1, 1, 1};
 set(hObject, 'Data', temp);
 

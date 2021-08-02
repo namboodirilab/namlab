@@ -61,5 +61,5 @@ port     = portList{selected};                      % selected port
     varname = strcat('tempts',port);
     assignin('base', varname, tempts);
     fname = 'Serialtest';
-    file = [saveDir fname '_' port date '.mat'];
+    file = [saveDir fname '_' port '_' date '.mat'];
     save(file, 'tempts')
