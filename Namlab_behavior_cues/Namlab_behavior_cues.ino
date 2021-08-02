@@ -188,7 +188,7 @@ float ramptimingexp;
 unsigned long timeforfirstlick;
 
 const int numlicktube = 2;       // number of recording lick tubes for lick dependent experiments
-unsigned long reqlicknum[numlicktube];    
+unsigned long reqlicknum[numlicktube];
 unsigned long licksolenoid[numlicktube];
 unsigned long variableratioflag[numlicktube];
 unsigned long variableintervalflag[numlicktube];
@@ -792,6 +792,8 @@ void loop() {
     cueOff = 0;
     cuePulseOff = 0;
     cuePulseOn = 0;
+    // Sync with fiber photometry
+    digitalWrite(ttloutstoppin, LOW);
   }
   // Turn off laser
   if (ts >= laserOff && laserOff != 0) {   // LASER CESSATION
@@ -1317,6 +1319,8 @@ void cues() {
   lickctforreq[0] = 0;                 // reset lick1 count to zero at cue onset
   lickctforreq[1] = 0;                 // reset lick2 count to zero at cue onset
   lickctforreq[2] = 0;                 // reset lick3 count to zero at cue onset
+  // Sync with fiber photometry
+  digitalWrite(ttloutstoppin, HIGH);
 
 }
 
@@ -1361,9 +1365,15 @@ void software_Reboot()
 
 // End session //////////////
 void endSession() {
-  digitalWrite(ttloutstoppin, HIGH);
-  delay(100);
-  digitalWrite(ttloutstoppin, LOW);
+
+  // TURN OFF 2P IMAGING
+  //  digitalWrite(ttloutstoppin, HIGH);
+  //  delay(100);
+  //  digitalWrite(ttloutstoppin, LOW);
+
+  //TURN OFF PHOTOMETRY
+  digitalWrite(ttloutpin, LOW);
+
   Serial.print(0);                       //   code data as end of session
   Serial.print(" ");
   Serial.print(ts);                      //   send timestamp
