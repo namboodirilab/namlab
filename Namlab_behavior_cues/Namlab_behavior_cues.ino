@@ -641,11 +641,14 @@ void setup() {
   lickctforreq[1] = 0;                 // Number of licks2 during cue for first trial is initialized to 0
   lickctforreq[2] = 0;                 // Number of licks3 during cue for first trial is initialized to 0
 
-  // UNCOMMENT THESE LINES FOR TRIGGERING IMAGE COLLECTION AT BEGINNING
-  digitalWrite(ttloutpin, HIGH);
-  delay(100);
-  digitalWrite(ttloutpin, LOW);
+  // UNCOMMENT THESE LINES FOR TRIGGERING 2P IMAGE COLLECTION AT BEGINNING
+  //  digitalWrite(ttloutpin, HIGH);
+  //  delay(100);
+  //  digitalWrite(ttloutpin, LOW);
   // TILL HERE
+
+  // UNCOMMENT THESE LINES FOR TRIGGERING PHOTOMETRY IMAGE COLLECTION AT BEGINNING
+  digitalWrite(ttloutpin, HIGH);
 
   // start session
   start = millis();                    // start time
