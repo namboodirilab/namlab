@@ -22,7 +22,7 @@ function varargout = headfix_GUI(varargin)
 
 % Edit the above text to modify the response to help headfix_GUI
 
-% Last Modified by GUIDE v2.5 07-Jul-2021 16:54:13
+% Last Modified by GUIDE v2.5 06-Aug-2021 11:56:42
 
 % cd 'F:\acads\Stuber lab\headfix'; %Change to directory
 
@@ -233,7 +233,7 @@ set(handles.openButton,'Enable','off')              % disable 'link' button
 set(handles.refreshButton,'Enable','off')           % disable 'refresh' button
 
 selectedmode = get(handles.experimentmode, 'Value');
-if selectedmode == 1 || selectedmode == 4 || selectedmode ==6;
+if selectedmode == 1 || selectedmode == 4 || selectedmode ==6 || selectedmode ==8;
     set(handles.sendButton,'Enable','on') 
     set(handles.csproperties, 'Enable', 'on');
     set(handles.checkboxtrialbytrial, 'Enable', 'on');
@@ -310,6 +310,8 @@ elseif selectedmode == 6
     [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_ramptiming.ino.hex',':i'));    
 elseif selectedmode == 7
     [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_delaydiscounting_automated.ino.hex',':i'));    
+elseif selectedmode == 8
+    [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis\uploads\test_timing_latency.ino.hex',':i'));    
 end
 
 
@@ -1199,4 +1201,3 @@ set(handles.primelickretractsolenoid1, 'Enable','off')
 set(handles.primelickretractsolenoid2, 'Enable','off')
 set(handles.clearlick1rewards,'Enable','off');
 set(handles.clearlick2rewards,'Enable','off');
-
