@@ -5,33 +5,37 @@ unsigned long start;
 unsigned long tsct;
 unsigned long nextevent;
 boolean tsctflag;
+const int numvec = 500;
+unsigned long tsvec[numvec];
 
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(57600);
   reading = 0;
-  interval = 3000;
+  interval = 3;
   tsct = 0;
   tsctflag = true;
   nextevent = 0;
-//  while (reading != 84) {
-//    reading = Serial.read();
-//  }
-  start = micros();
+  for (int p = 0; p < numvec; p++) {
+    tsvec[p] = p*interval;
+  }
+  while (reading != 84) {
+    reading = Serial.read();
+  }
+  start = millis();
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-  //  reading = Serial.read();
-  ts = micros() - start;
-  if (tsct <= 500 && ts >= nextevent) {
+  //   put your main code here, to run repeatedly:
+  reading = Serial.read();
+  ts = millis() - start;
+  if (tsct <= 500 && ts >= tsvec[tsct]) {
     Serial.print(25);
     Serial.print(" ");
     Serial.print(ts);
     Serial.print(" ");
     Serial.print(0);
     Serial.print('\n');
-    nextevent = ts + interval;
     tsct = tsct + 1;
   }
   if (tsctflag == true && tsct > 500) {
