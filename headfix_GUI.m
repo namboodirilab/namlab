@@ -233,7 +233,7 @@ set(handles.openButton,'Enable','off')              % disable 'link' button
 set(handles.refreshButton,'Enable','off')           % disable 'refresh' button
 
 selectedmode = get(handles.experimentmode, 'Value');
-if selectedmode == 1 || selectedmode == 4 || selectedmode ==6 || selectedmode ==8;
+if selectedmode == 1 || selectedmode == 4 || selectedmode ==6;
     set(handles.sendButton,'Enable','on') 
     set(handles.csproperties, 'Enable', 'on');
     set(handles.checkboxtrialbytrial, 'Enable', 'on');
@@ -310,8 +310,6 @@ elseif selectedmode == 6
     [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_ramptiming.ino.hex',':i'));    
 elseif selectedmode == 7
     [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_delaydiscounting_automated.ino.hex',':i'));    
-elseif selectedmode == 8
-    [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis\uploads\test_timing_latency.ino.hex',':i'));    
 end
 
 
