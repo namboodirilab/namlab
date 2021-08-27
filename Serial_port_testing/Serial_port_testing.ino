@@ -12,7 +12,7 @@ void setup() {
   // put your setup code here, to run once:
   Serial.begin(57600);
   reading = 0;
-  interval = 3;
+  interval = 3000;
   tsct = 0;
   tsctflag = true;
   nextevent = 0;
@@ -22,13 +22,13 @@ void setup() {
   while (reading != 84) {
     reading = Serial.read();
   }
-  start = millis();
+  start = micros();
 }
 
 void loop() {
   //   put your main code here, to run repeatedly:
   reading = Serial.read();
-  ts = millis() - start;
+  ts = micros() - start;
   if (tsct <= 500 && ts >= tsvec[tsct]) {
     Serial.print(25);
     Serial.print(" ");
