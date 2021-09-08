@@ -185,6 +185,7 @@ unsigned long maxdelaytosolenoid;
 unsigned long cueonset;
 float actualopentime;           // actual open time for solenoid in ramp timing task
 float ramptimingexp;            // exponent factor for ramptiming task reward openning time function;
+float rampmaxdelay;
 unsigned long timeforfirstlick;
 
 const int numlicktube = 2;       // number of recording lick tubes for lick dependent experiments
@@ -725,7 +726,7 @@ void loop() {
       cues();
       lights();
     }
-    maxdelaytosolenoid = ts + CS_t_fxd[2 * cueList[CSct] + 1];
+    maxdelaytosolenoid = ts + rampmaxdelay;
     deliverlasertocues();              // check whether to and deliver laser if needed
     ITIflag = false;
   }
@@ -807,10 +808,14 @@ void loop() {
 
 
   if (!ITIflag && ts >= nextfxdsolenoid && nextfxdsolenoid != 0) { // give fixed solenoid
-    actualopentime = (float)timeforfirstlick / (CS_t_fxd[2 * cueList[CSct] + 1]);
-    actualopentime = pow(actualopentime, ramptimingexp);
-    actualopentime = actualopentime * CSopentime[2 * cueList[CSct] + 1];
-
+    if (timeforfirstlick <= CS_t_fxd[2 * cueList[CSct] + 1]) {
+      actualopentime = (float)timeforfirstlick / (CS_t_fxd[2 * cueList[CSct] + 1]);
+      actualopentime = pow(actualopentime, ramptimingexp);
+      actualopentime = actualopentime * CSopentime[2 * cueList[CSct] + 1];
+    }
+    else if (timeforfirstlick <= rampmaxdelay && timeforfirstlick > CS_t_fxd[2*cueList[CSct]+1]) {
+      actualopentime = CSopentime[2 * cueList[CSct] + 1];
+    }
     Serial.print(CSsolenoidcode[2 * cueList[CSct] + 1]);
     Serial.print(" ");
     Serial.print(ts);                      //   send timestamp of solenoid onset
@@ -829,6 +834,12 @@ void loop() {
     solenoidOff = ts + actualopentime;      // set solenoid off time
     nextfxdsolenoid = 0;
     nextvacuum = ts + actualopentime + maxdelaytovacuumfromcueonset;
+//    Serial.print(timeforfirstlick);
+//    Serial.print(" ");
+//    Serial.print(actualopentime);
+//    Serial.print(" ");
+//    Serial.print(maxdelaytosolenoid);
+//    Serial.print('\n');
   }
 
 
@@ -999,7 +1010,7 @@ void loop() {
 
 // Accept parameters from MATLAB
 void getParams() {
-  int pn = 105;                              // number of parameter inputs
+  int pn = 106;                              // number of parameter inputs
   unsigned long param[pn];                  // parameters
 
   for (int p = 0; p < pn; p++) {
@@ -1101,6 +1112,7 @@ void getParams() {
   CSlasercheck[2]          = param[102];
   fixedsidecheck[0]      = param[103];
   fixedsidecheck[1]      = param[104];
+  rampmaxdelay           = param[105];
 
   for (int p = 0; p < numCS; p++) {
     CSfreq[p] = CSfreq[p] * 1000;         // convert frequency from kHz to Hz

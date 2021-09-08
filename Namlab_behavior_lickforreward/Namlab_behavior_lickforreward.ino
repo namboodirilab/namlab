@@ -185,6 +185,7 @@ unsigned long maxdelaytosolenoid;
 unsigned long cueonset;
 float actualopentime;
 float ramptimingexp;
+float rampmaxdelay;
 unsigned long timeforfirstlick;
 
 const int numlicktube = 2;       // number of recording lick tubes for lick dependent experiments
@@ -735,7 +736,7 @@ void loop() {
 
 // Accept parameters from MATLAB
 void getParams() {
-  int pn = 105;                              // number of parameter inputs
+  int pn = 106;                              // number of parameter inputs
   unsigned long param[pn];                  // parameters
 
   for (int p = 0; p < pn; p++) {
@@ -837,6 +838,7 @@ void getParams() {
   CSlasercheck[2]          = param[102];
   fixedsidecheck[0]      = param[103];
   fixedsidecheck[1]      = param[104];
+  rampmaxdelay           = param[105];
 
   for (int p = 0; p < numCS; p++) {
     CSfreq[p] = CSfreq[p] * 1000;         // convert frequency from kHz to Hz

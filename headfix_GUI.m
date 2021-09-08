@@ -22,7 +22,7 @@ function varargout = headfix_GUI(varargin)
 
 % Edit the above text to modify the response to help headfix_GUI
 
-% Last Modified by GUIDE v2.5 06-Aug-2021 11:56:42
+% Last Modified by GUIDE v2.5 08-Sep-2021 13:43:39
 
 % cd 'F:\acads\Stuber lab\headfix'; %Change to directory
 
@@ -109,6 +109,7 @@ set(handles.maxdelaycuetovacuum, 'Enable', 'off');
 set(handles.minITI, 'Enable', 'off');
 set(handles.maxITI, 'Enable', 'off');
 set(handles.ramptimingexp, 'Enable','off');
+set(handles.rampmaxdelay,'Enable','off');
 set(handles.testcs1, 'Enable', 'off');
 set(handles.testcs2, 'Enable', 'off');
 set(handles.testcs3, 'Enable', 'off');
@@ -251,6 +252,7 @@ if selectedmode == 1 || selectedmode == 4 || selectedmode ==6;
     set(handles.minITI, 'Enable', 'on');
     set(handles.maxITI, 'Enable', 'on');
     set(handles.ramptimingexp,'Enable','on');
+    set(handles.rampmaxdelay,'Enable','on');
     set(handles.backgroundsolenoid, 'Enable', 'on');
     set(handles.T_bgd, 'Enable', 'on');
     set(handles.r_bgd, 'Enable', 'on');
@@ -365,6 +367,7 @@ set(handles.maxdelaycuetovacuum, 'Enable', 'off');
 set(handles.minITI, 'Enable', 'off');
 set(handles.maxITI, 'Enable', 'off');
 set(handles.ramptimingexp,'Enable','off');
+set(handles.rampmaxdelay,'Enable','off');
 
 set(handles.testcs1, 'Enable', 'off');
 set(handles.testcs2, 'Enable', 'off');
@@ -785,6 +788,8 @@ maxdelaycuetovacuum = get(handles.maxdelaycuetovacuum,'String');
 maxdelaycuetovacuum = str2double(maxdelaycuetovacuum);
 ramptimingexp = get(handles.ramptimingexp,'String');
 ramptimingexp = str2double(ramptimingexp);
+rampmaxdelay = get(handles.rampmaxdelay,'String');
+rampmaxdelay = str2double(rampmaxdelay);
 
 %Bgd solenoids
 
@@ -854,7 +859,7 @@ inputs = [numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur, CS_t_fxd,...
           laserlatency, laserduration, randlaserflag, laserpulseperiod, laserpulseoffperiod,...
           lasertrialbytrialflag, maxdelaycuetovacuum, CSlight,variableratioflag, variableintervalflag,...
           licklight, ramptimingexp_input, CS1lasercheck, CS2lasercheck, CS3lasercheck,...
-          fixedsidecheck]; % collect all inputs into array
+          fixedsidecheck,rampmaxdelay]; % collect all inputs into array
 
 negIn  = inputs < 0;
 intIn  = inputs - fix(inputs);
@@ -881,6 +886,7 @@ set(handles.minITI,'Enable','off')
 set(handles.maxITI,'Enable','off')
 set(handles.maxdelaycuetovacuum,'Enable','off')
 set(handles.ramptimingexp,'Enable','off');
+set(handles.rampmaxdelay,'Enable','off');
 
 set(handles.backgroundsolenoid,'Enable','off')
 set(handles.T_bgd,'Enable','off')
@@ -934,7 +940,7 @@ params = sprintf('%G+', numtrials, CSfreq, CSsolenoid, CSprob, CSopentime,...
                  laserlatency, laserduration, randlaserflag, laserpulseperiod,...
                  laserpulseoffperiod, lasertrialbytrialflag, maxdelaycuetovacuum, CSlight,...
                  variableratioflag,variableintervalflag,licklight, ramptimingexp,...
-                 CS1lasercheck, CS2lasercheck, CS3lasercheck,fixedsidecheck);
+                 CS1lasercheck, CS2lasercheck, CS3lasercheck,fixedsidecheck,rampmaxdelay);
 params = params(1:end-1);
 
 % Run arduino code
@@ -987,6 +993,8 @@ maxdelaycuetovacuum = get(handles.maxdelaycuetovacuum,'String');
 maxdelaycuetovacuum = str2double(maxdelaycuetovacuum);
 ramptimingexp = get(handles.ramptimingexp, 'String');
 ramptimingexp = str2double(ramptimingexp);
+rampmaxdelay = get(handles.rampmaxdelay, 'String');
+rampmaxdelay = str2double(rampmaxdelay);
 
 %Bgd solenoids
 
@@ -1055,7 +1063,7 @@ inputs = [numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur, CS_t_fxd,...
           laserlatency, laserduration, randlaserflag, laserpulseperiod, laserpulseoffperiod,...
           lasertrialbytrialflag, maxdelaycuetovacuum, CSlight,variableratioflag,...
           variableintervalflag,licklight, ramptimingexp_input, CS1lasercheck,...
-          CS2lasercheck, CS3lasercheck,fixedsidecheck]; % collect all inputs into array
+          CS2lasercheck, CS3lasercheck,fixedsidecheck,rampmaxdelay]; % collect all inputs into array
           
 negIn  = inputs < 0;
 intIn  = inputs - fix(inputs);
@@ -1126,7 +1134,7 @@ params = sprintf('%G+', numtrials, CSfreq, CSsolenoid, CSprob, CSopentime,...
                  laserlatency, laserduration, randlaserflag, laserpulseperiod, laserpulseoffperiod,...
                  lasertrialbytrialflag, maxdelaycuetovacuum, CSlight,variableratioflag,...
                  variableintervalflag,licklight, ramptimingexp, CS1lasercheck,...
-                 CS2lasercheck, CS3lasercheck,fixedsidecheck);
+                 CS2lasercheck, CS3lasercheck,fixedsidecheck,rampmaxdelay);
              
 params = params(1:end-1);
 
@@ -1199,3 +1207,4 @@ set(handles.primelickretractsolenoid1, 'Enable','off')
 set(handles.primelickretractsolenoid2, 'Enable','off')
 set(handles.clearlick1rewards,'Enable','off');
 set(handles.clearlick2rewards,'Enable','off');
+
