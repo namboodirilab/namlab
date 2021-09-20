@@ -717,11 +717,81 @@ try
 %     end
 %     
 %     probstr = ['CSprob' sprintf('_%u', CSprob)];
+    params = regexprep(params, '+', ' ');
+    params = str2num(params);
     
+    param = struct();
+    paramnames = string({'numtrials'; 'CSfreq'; 'CSsolenoid'; 'CSprob'; 'CSopentime';...
+                 'CSdur'; 'CS_t_fxd'; 'CSpulse'; 'CSspeaker'; 'golickreq'; 'golicktube'; 'CSsignal';...
+                 'minITI'; 'maxITI'; 'expitiflag'; 'backgroundsolenoid'; 'T_bgd'; 'r_bgd'; ...
+                 'mindelaybgdtocue'; 'mindelayfxdtobgd'; 'experimentmode'; ...
+                 'rialbytrialbgdsolenoidflag'; 'totPoisssolenoid'; 'reqlicknum';...
+                 'licksolenoid'; 'lickprob'; 'lickopentime'; 'delaytoreward'; 'delaytolick';...
+                 'minrewards'; 'signaltolickreq'; 'soundsignalpulse'; 'soundfreq'; 'sounddur'; 'lickspeaker';...
+                 'laserlatency'; 'laserduration'; 'randlaserflag'; 'laserpulseperiod'; 'laserpulseoffperiod';...
+                 'lasertrialbytrialflag'; 'maxdelaycuetovacuum'; 'CSlight'; 'variableratioflag';...
+                 'variableintervalflag'; 'licklight'; 'ramptimingexp'; 'CS1lasercheck';...
+                 'CS2lasercheck'; 'CS3lasercheck'; 'fixedsidecheck'; 'rampmaxdelay'});
+
+        param.(paramnames(1)) = params(1:3);
+        param.(paramnames(2)) = params(4:6);
+        param.(paramnames(3)) = params(7:12);
+        param.(paramnames(4)) = params(13:18);
+        param.(paramnames(5)) = params(19:24);
+        param.(paramnames(6)) = params(25:27);
+        param.(paramnames(7)) = params(28:33);
+        param.(paramnames(8)) = params(34:36);
+        param.(paramnames(9)) = params(37:39);
+        param.(paramnames(10)) = params(40:42);
+        param.(paramnames(11)) = params(43:45);
+        param.(paramnames(12)) = params(46:48);
+        param.(paramnames(13)) = params(49);
+        param.(paramnames(14)) = params(50);
+        param.(paramnames(15)) = params(51);
+        param.(paramnames(16)) = params(52);
+        param.(paramnames(17)) = params(53);
+        param.(paramnames(18)) = params(54);
+        param.(paramnames(19)) = params(55);
+        param.(paramnames(20)) = params(56);
+        param.(paramnames(21)) = params(57);
+        param.(paramnames(22)) = params(58);
+        param.(paramnames(23)) = params(59);
+        param.(paramnames(24)) = params(60:61);
+        param.(paramnames(25)) = params(62:63);
+        param.(paramnames(26)) = params(64:65);
+        param.(paramnames(27)) = params(66:67);
+        param.(paramnames(28)) = params(68:69);
+        param.(paramnames(29)) = params(70:71);
+        param.(paramnames(30)) = params(72:73);
+        param.(paramnames(31)) = params(74:75);
+        param.(paramnames(32)) = params(76:77);
+        param.(paramnames(33)) = params(78:79);
+        param.(paramnames(34)) = params(80:81);
+        param.(paramnames(35)) = params(82:83);
+        param.(paramnames(36)) = params(84);
+        param.(paramnames(37)) = params(85);
+        param.(paramnames(38)) = params(86);
+        param.(paramnames(39)) = params(87);
+        param.(paramnames(40)) = params(88);
+        param.(paramnames(41)) = params(89);
+        param.(paramnames(42)) = params(90);
+        param.(paramnames(43)) = params(91:93);
+        param.(paramnames(44)) = params(94:95);
+        param.(paramnames(45)) = params(96:97);
+        param.(paramnames(46)) = params(98:99);
+        param.(paramnames(47)) = params(100);
+        param.(paramnames(48)) = params(101);
+        param.(paramnames(49)) = params(102);
+        param.(paramnames(50)) = params(103);
+        param.(paramnames(51)) = params(104:105);
+        param.(paramnames(52)) = params(106);
+
+
+        
     assignin('base','eventlog',eventlog);
 %     file = [saveDir fname '_' num2str(r_bgd) '_' num2str(T_bgd) '_'  str probstr laserstr bgdsolenoidstr extinctionstr date '.mat'];
     file = [saveDir fname '_' str date '.mat'];
-    save(file, 'eventlog', 'params')
+    save(file, 'eventlog', 'param')
 
 catch exception
     if l < logInit
@@ -786,5 +856,75 @@ catch exception
     
 %     file = [saveDir fname '_' num2str(r_bgd) '_' num2str(T_bgd) '_'  str probstr laserstr bgdsolenoidstr extinctionstr date '.mat'];
     file = [saveDir '_error_' fname '_' str date '.mat'];
-    save(file, 'eventlog', 'params','exception')
+       
+    params = regexprep(params, '+', ' ');
+    params = str2num(params);
+    
+    param = struct();
+    paramnames = string({'numtrials'; 'CSfreq'; 'CSsolenoid'; 'CSprob'; 'CSopentime';...
+                 'CSdur'; 'CS_t_fxd'; 'CSpulse'; 'CSspeaker'; 'golickreq'; 'golicktube'; 'CSsignal';...
+                 'minITI'; 'maxITI'; 'expitiflag'; 'backgroundsolenoid'; 'T_bgd'; 'r_bgd'; ...
+                 'mindelaybgdtocue'; 'mindelayfxdtobgd'; 'experimentmode'; ...
+                 'rialbytrialbgdsolenoidflag'; 'totPoisssolenoid'; 'reqlicknum';...
+                 'licksolenoid'; 'lickprob'; 'lickopentime'; 'delaytoreward'; 'delaytolick';...
+                 'minrewards'; 'signaltolickreq'; 'soundsignalpulse'; 'soundfreq'; 'sounddur'; 'lickspeaker';...
+                 'laserlatency'; 'laserduration'; 'randlaserflag'; 'laserpulseperiod'; 'laserpulseoffperiod';...
+                 'lasertrialbytrialflag'; 'maxdelaycuetovacuum'; 'CSlight'; 'variableratioflag';...
+                 'variableintervalflag'; 'licklight'; 'ramptimingexp'; 'CS1lasercheck';...
+                 'CS2lasercheck'; 'CS3lasercheck'; 'fixedsidecheck'; 'rampmaxdelay'});
+
+        param.(paramnames(1)) = params(1:3);
+        param.(paramnames(2)) = params(4:6);
+        param.(paramnames(3)) = params(7:12);
+        param.(paramnames(4)) = params(13:18);
+        param.(paramnames(5)) = params(19:24);
+        param.(paramnames(6)) = params(25:27);
+        param.(paramnames(7)) = params(28:33);
+        param.(paramnames(8)) = params(34:36);
+        param.(paramnames(9)) = params(37:39);
+        param.(paramnames(10)) = params(40:42);
+        param.(paramnames(11)) = params(43:45);
+        param.(paramnames(12)) = params(46:48);
+        param.(paramnames(13)) = params(49);
+        param.(paramnames(14)) = params(50);
+        param.(paramnames(15)) = params(51);
+        param.(paramnames(16)) = params(52);
+        param.(paramnames(17)) = params(53);
+        param.(paramnames(18)) = params(54);
+        param.(paramnames(19)) = params(55);
+        param.(paramnames(20)) = params(56);
+        param.(paramnames(21)) = params(57);
+        param.(paramnames(22)) = params(58);
+        param.(paramnames(23)) = params(59);
+        param.(paramnames(24)) = params(60:61);
+        param.(paramnames(25)) = params(62:63);
+        param.(paramnames(26)) = params(64:65);
+        param.(paramnames(27)) = params(66:67);
+        param.(paramnames(28)) = params(68:69);
+        param.(paramnames(29)) = params(70:71);
+        param.(paramnames(30)) = params(72:73);
+        param.(paramnames(31)) = params(74:75);
+        param.(paramnames(32)) = params(76:77);
+        param.(paramnames(33)) = params(78:79);
+        param.(paramnames(34)) = params(80:81);
+        param.(paramnames(35)) = params(82:83);
+        param.(paramnames(36)) = params(84);
+        param.(paramnames(37)) = params(85);
+        param.(paramnames(38)) = params(86);
+        param.(paramnames(39)) = params(87);
+        param.(paramnames(40)) = params(88);
+        param.(paramnames(41)) = params(89);
+        param.(paramnames(42)) = params(90);
+        param.(paramnames(43)) = params(91:93);
+        param.(paramnames(44)) = params(94:95);
+        param.(paramnames(45)) = params(96:97);
+        param.(paramnames(46)) = params(98:99);
+        param.(paramnames(47)) = params(100);
+        param.(paramnames(48)) = params(101);
+        param.(paramnames(49)) = params(102);
+        param.(paramnames(50)) = params(103);
+        param.(paramnames(51)) = params(104:105);
+        param.(paramnames(52)) = params(106);
+    
+    save(file, 'eventlog', 'param','exception')
 end
