@@ -184,8 +184,8 @@ boolean rewardactive;
 unsigned long maxdelaytosolenoid;
 unsigned long cueonset;
 float actualopentime;           // actual open time for solenoid in ramp timing task
-float ramptimingexp;            // exponent factor for ramptiming task reward openning time function;
-float rampmaxdelay;
+unsigned long ramptimingexp;            // exponent factor for ramptiming task reward openning time function;
+unsigned long rampmaxdelay;
 unsigned long timeforfirstlick;
 
 const int numlicktube = 2;       // number of recording lick tubes for lick dependent experiments
@@ -806,14 +806,13 @@ void loop() {
     lightOff = 0;
   }
 
-
   if (!ITIflag && ts >= nextfxdsolenoid && nextfxdsolenoid != 0) { // give fixed solenoid
     if (timeforfirstlick <= CS_t_fxd[2 * cueList[CSct] + 1]) {
       actualopentime = (float)timeforfirstlick / (CS_t_fxd[2 * cueList[CSct] + 1]);
       actualopentime = pow(actualopentime, ramptimingexp);
       actualopentime = actualopentime * CSopentime[2 * cueList[CSct] + 1];
     }
-    else if (timeforfirstlick <= rampmaxdelay && timeforfirstlick > CS_t_fxd[2*cueList[CSct]+1]) {
+    else if (timeforfirstlick <= rampmaxdelay && timeforfirstlick > CS_t_fxd[2 * cueList[CSct] + 1]) {
       actualopentime = CSopentime[2 * cueList[CSct] + 1];
     }
     Serial.print(CSsolenoidcode[2 * cueList[CSct] + 1]);
@@ -834,14 +833,13 @@ void loop() {
     solenoidOff = ts + actualopentime;      // set solenoid off time
     nextfxdsolenoid = 0;
     nextvacuum = ts + actualopentime + maxdelaytovacuumfromcueonset;
-//    Serial.print(timeforfirstlick);
-//    Serial.print(" ");
-//    Serial.print(actualopentime);
-//    Serial.print(" ");
-//    Serial.print(maxdelaytosolenoid);
-//    Serial.print('\n');
+    //    Serial.print(timeforfirstlick);
+    //    Serial.print(" ");
+    //    Serial.print(actualopentime);
+    //    Serial.print(" ");
+    //    Serial.print(maxdelaytosolenoid);
+    //    Serial.print('\n');
   }
-
 
   if (ITIflag && ts >= nextbgdsolenoid && nextbgdsolenoid != 0) { // give background solenoid if you are in ITI
     if (r_bgd > 0) {
@@ -1330,7 +1328,6 @@ void cues() {
   nextfxdsolenoid = 0;
   timeforfirstlick = 0;
   nextvacuum = ts + CS_t_fxd[2 * cueList[CSct] + 1] + maxdelaytovacuumfromcueonset;
-
 }
 
 void deliverlasertocues() {
@@ -1360,6 +1357,10 @@ void lights() {
   lickctforreq[0] = 0;
   lickctforreq[1] = 0;
   lickctforreq[2] = 0;
+  nextfxdsolenoid= 0;
+  timeforfirstlick = 0;
+  nextvacuum = ts + CS_t_fxd[2 * cueList[CSct] + 1] + maxdelaytovacuumfromcueonset;
+
 }
 
 void software_Reboot()
