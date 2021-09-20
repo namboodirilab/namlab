@@ -22,7 +22,7 @@ function varargout = headfix_GUI(varargin)
 
 % Edit the above text to modify the response to help headfix_GUI
 
-% Last Modified by GUIDE v2.5 08-Sep-2021 13:43:39
+% Last Modified by GUIDE v2.5 16-Sep-2021 16:49:47
 
 % cd 'F:\acads\Stuber lab\headfix'; %Change to directory
 
@@ -106,8 +106,9 @@ set(handles.CS2lasercheck, 'Enable', 'off');
 set(handles.CS3lasercheck, 'Enable', 'off');
 set(handles.checkboxexpiti, 'Enable', 'off');
 set(handles.maxdelaycuetovacuum, 'Enable', 'off');
-set(handles.minITI, 'Enable', 'off');
+set(handles.meanITI, 'Enable', 'off');
 set(handles.maxITI, 'Enable', 'off');
+set(handles.minITI, 'Enable', 'off');
 set(handles.ramptimingexp, 'Enable','off');
 set(handles.rampmaxdelay,'Enable','off');
 set(handles.testcs1, 'Enable', 'off');
@@ -249,8 +250,9 @@ if selectedmode == 1 || selectedmode == 4 || selectedmode ==6;
     set(handles.CS3lasercheck, 'Enable', 'on');
     set(handles.checkboxexpiti, 'Enable', 'on');
     set(handles.maxdelaycuetovacuum, 'Enable', 'on');
-    set(handles.minITI, 'Enable', 'on');
+    set(handles.meanITI, 'Enable', 'on');
     set(handles.maxITI, 'Enable', 'on');
+    set(handles.minITI, 'Enable', 'on');
     set(handles.ramptimingexp,'Enable','on');
     set(handles.rampmaxdelay,'Enable','on');
     set(handles.backgroundsolenoid, 'Enable', 'on');
@@ -364,8 +366,9 @@ set(handles.CS2lasercheck, 'Enable', 'off');
 set(handles.CS3lasercheck, 'Enable', 'off');
 set(handles.checkboxexpiti, 'Enable', 'off');
 set(handles.maxdelaycuetovacuum, 'Enable', 'off');
-set(handles.minITI, 'Enable', 'off');
+set(handles.meanITI, 'Enable', 'off');
 set(handles.maxITI, 'Enable', 'off');
+set(handles.minITI, 'Enable', 'off');
 set(handles.ramptimingexp,'Enable','off');
 set(handles.rampmaxdelay,'Enable','off');
 
@@ -779,6 +782,8 @@ golicktube   = cell2mat(csproperties(12,2:end));
 CSsignal = cell2mat(csproperties(13, 2:end));
 
 %ITI
+meanITI = get(handles.meanITI,'String');
+meanITI = str2double(meanITI);
 minITI = get(handles.minITI,'String');
 minITI = str2double(minITI);
 maxITI = get(handles.maxITI,'String');
@@ -851,7 +856,7 @@ else
 end
 
 inputs = [numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur, CS_t_fxd,...
-          CSpulse, CSspeaker, golickreq, golicktube, CSsignal, minITI, maxITI, expitiflag,...
+          CSpulse, CSspeaker, golickreq, golicktube, CSsignal, meanITI, maxITI, expitiflag,...
           backgroundsolenoid, T_bgd, r_bgd, mindelaybgdtocue, mindelayfxdtobgd,...
           experimentmode, trialbytrialbgdsolenoidflag, totPoisssolenoid,...
           reqlicknum, licksolenoid, lickprob, lickopentime, delaytoreward, delaytolick,...
@@ -859,7 +864,7 @@ inputs = [numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur, CS_t_fxd,...
           laserlatency, laserduration, randlaserflag, laserpulseperiod, laserpulseoffperiod,...
           lasertrialbytrialflag, maxdelaycuetovacuum, CSlight,variableratioflag, variableintervalflag,...
           licklight, ramptimingexp_input, CS1lasercheck, CS2lasercheck, CS3lasercheck,...
-          fixedsidecheck,rampmaxdelay]; % collect all inputs into array
+          fixedsidecheck, minITI, rampmaxdelay]; % collect all inputs into array
 
 negIn  = inputs < 0;
 intIn  = inputs - fix(inputs);
@@ -882,8 +887,9 @@ set(handles.lickproperties,'Enable','off')
 set(handles.experimentmode,'Enable','off')
 set(handles.uploadButton,'Enable','off')
 
-set(handles.minITI,'Enable','off')
+set(handles.meanITI,'Enable','off')
 set(handles.maxITI,'Enable','off')
+set(handles.minITI,'Enable','off')
 set(handles.maxdelaycuetovacuum,'Enable','off')
 set(handles.ramptimingexp,'Enable','off');
 set(handles.rampmaxdelay,'Enable','off');
@@ -933,7 +939,7 @@ set(handles.testlaser,'Enable','on')
 
 params = sprintf('%G+', numtrials, CSfreq, CSsolenoid, CSprob, CSopentime,...
                  CSdur, CS_t_fxd, CSpulse, CSspeaker, golickreq, golicktube, CSsignal,...
-                 minITI, maxITI, expitiflag, backgroundsolenoid, T_bgd, r_bgd,...
+                 meanITI, maxITI, minITI, expitiflag, backgroundsolenoid, T_bgd, r_bgd,...
                  mindelaybgdtocue, mindelayfxdtobgd, experimentmode, trialbytrialbgdsolenoidflag,... 
                  totPoisssolenoid, reqlicknum, licksolenoid, lickprob, lickopentime, delaytoreward,...
                  delaytolick, minrewards, signaltolickreq, soundsignalpulse, soundfreq, sounddur, lickspeaker,...
@@ -984,10 +990,12 @@ CSsignal     = cell2mat(csproperties(13, 2:end));
 
 
 %ITI
-minITI = get(handles.minITI,'String');
-minITI = str2double(minITI);
+meanITI = get(handles.meanITI,'String');
+meanITI = str2double(meanITI);
 maxITI = get(handles.maxITI,'String');
 maxITI = str2double(maxITI);
+minITI = get(handles.minITI,'String');
+minITI = str2double(minITI);
 expitiflag = get(handles.checkboxexpiti,'Value');
 maxdelaycuetovacuum = get(handles.maxdelaycuetovacuum,'String');
 maxdelaycuetovacuum = str2double(maxdelaycuetovacuum);
@@ -1055,7 +1063,7 @@ else
     ramptimingexp_input = ramptimingexp;
 end
 inputs = [numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur, CS_t_fxd,...
-          CSpulse, CSspeaker, golickreq, golicktube, CSsignal, minITI, maxITI, expitiflag,...
+          CSpulse, CSspeaker, golickreq, golicktube, CSsignal, meanITI, maxITI, expitiflag,...
           backgroundsolenoid, T_bgd, r_bgd, mindelaybgdtocue, mindelayfxdtobgd,...
           experimentmode, trialbytrialbgdsolenoidflag, totPoisssolenoid,...
           reqlicknum, licksolenoid, lickprob, lickopentime, delaytoreward,...                
@@ -1063,7 +1071,7 @@ inputs = [numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur, CS_t_fxd,...
           laserlatency, laserduration, randlaserflag, laserpulseperiod, laserpulseoffperiod,...
           lasertrialbytrialflag, maxdelaycuetovacuum, CSlight,variableratioflag,...
           variableintervalflag,licklight, ramptimingexp_input, CS1lasercheck,...
-          CS2lasercheck, CS3lasercheck,fixedsidecheck,rampmaxdelay]; % collect all inputs into array
+          CS2lasercheck, CS3lasercheck, minITI, fixedsidecheck,rampmaxdelay]; % collect all inputs into array
           
 negIn  = inputs < 0;
 intIn  = inputs - fix(inputs);
@@ -1126,7 +1134,7 @@ fname = get(handles.fileName,'String');
 
 params = sprintf('%G+', numtrials, CSfreq, CSsolenoid, CSprob, CSopentime,...
                  CSdur, CS_t_fxd, CSpulse, CSspeaker, golickreq, golicktube, CSsignal,...
-                 minITI, maxITI, expitiflag, backgroundsolenoid, T_bgd, r_bgd, ...
+                 meanITI, maxITI, minITI, expitiflag, backgroundsolenoid, T_bgd, r_bgd, ...
                  mindelaybgdtocue, mindelayfxdtobgd, experimentmode, ...
                  trialbytrialbgdsolenoidflag, totPoisssolenoid, reqlicknum,...
                  licksolenoid, lickprob, lickopentime, delaytoreward, delaytolick,...
@@ -1208,3 +1216,25 @@ set(handles.primelickretractsolenoid2, 'Enable','off')
 set(handles.clearlick1rewards,'Enable','off');
 set(handles.clearlick2rewards,'Enable','off');
 
+
+
+function minITI_Callback(hObject, eventdata, handles)
+% hObject    handle to minITI (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of minITI as text
+%        str2double(get(hObject,'String')) returns contents of minITI as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function minITI_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to minITI (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end

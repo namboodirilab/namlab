@@ -4,7 +4,11 @@
 
 cla;                                    % Clear the axes before starting
 %% Parameters
-truncITI = min(maxITI,3*minITI);                     % minITI is really the mean ITI for exponential dbn
+if expitiflag==1
+    truncITI = min(maxITI,3*meanITI);                     % minITI is really the mean ITI for exponential dbn
+else
+    truncITI = min(maxITI,3*minITI);
+end
 licksinit = ceil(sum(numtrials)*(truncITI+max(CS_t_fxd))*10/1E3);  % number of licks to initialize = number of trials*max time per trial in s*10Hz (of licking)
 cuesinit = sum(numtrials);                               % number of cues to initialize
 logInit = 10^6;                                      % Log of all serial input events from the Arduino
@@ -723,7 +727,7 @@ try
     param = struct();
     paramnames = string({'numtrials'; 'CSfreq'; 'CSsolenoid'; 'CSprob'; 'CSopentime';...
                  'CSdur'; 'CS_t_fxd'; 'CSpulse'; 'CSspeaker'; 'golickreq'; 'golicktube'; 'CSsignal';...
-                 'minITI'; 'maxITI'; 'expitiflag'; 'backgroundsolenoid'; 'T_bgd'; 'r_bgd'; ...
+                 'meanITI'; 'maxITI'; 'expitiflag'; 'backgroundsolenoid'; 'T_bgd'; 'r_bgd'; ...
                  'mindelaybgdtocue'; 'mindelayfxdtobgd'; 'experimentmode'; ...
                  'rialbytrialbgdsolenoidflag'; 'totPoisssolenoid'; 'reqlicknum';...
                  'licksolenoid'; 'lickprob'; 'lickopentime'; 'delaytoreward'; 'delaytolick';...
@@ -731,7 +735,7 @@ try
                  'laserlatency'; 'laserduration'; 'randlaserflag'; 'laserpulseperiod'; 'laserpulseoffperiod';...
                  'lasertrialbytrialflag'; 'maxdelaycuetovacuum'; 'CSlight'; 'variableratioflag';...
                  'variableintervalflag'; 'licklight'; 'ramptimingexp'; 'CS1lasercheck';...
-                 'CS2lasercheck'; 'CS3lasercheck'; 'fixedsidecheck'; 'rampmaxdelay'});
+                 'CS2lasercheck'; 'CS3lasercheck'; 'fixedsidecheck'; 'rampmaxdelay';'minITI'});
 
         param.(paramnames(1)) = params(1:3);
         param.(paramnames(2)) = params(4:6);
@@ -785,6 +789,7 @@ try
         param.(paramnames(50)) = params(103);
         param.(paramnames(51)) = params(104:105);
         param.(paramnames(52)) = params(106);
+        param.(paramnames(53)) = params(107);
 
 
         
@@ -863,7 +868,7 @@ catch exception
     param = struct();
     paramnames = string({'numtrials'; 'CSfreq'; 'CSsolenoid'; 'CSprob'; 'CSopentime';...
                  'CSdur'; 'CS_t_fxd'; 'CSpulse'; 'CSspeaker'; 'golickreq'; 'golicktube'; 'CSsignal';...
-                 'minITI'; 'maxITI'; 'expitiflag'; 'backgroundsolenoid'; 'T_bgd'; 'r_bgd'; ...
+                 'meanITI'; 'maxITI'; 'expitiflag'; 'backgroundsolenoid'; 'T_bgd'; 'r_bgd'; ...
                  'mindelaybgdtocue'; 'mindelayfxdtobgd'; 'experimentmode'; ...
                  'rialbytrialbgdsolenoidflag'; 'totPoisssolenoid'; 'reqlicknum';...
                  'licksolenoid'; 'lickprob'; 'lickopentime'; 'delaytoreward'; 'delaytolick';...
@@ -871,7 +876,7 @@ catch exception
                  'laserlatency'; 'laserduration'; 'randlaserflag'; 'laserpulseperiod'; 'laserpulseoffperiod';...
                  'lasertrialbytrialflag'; 'maxdelaycuetovacuum'; 'CSlight'; 'variableratioflag';...
                  'variableintervalflag'; 'licklight'; 'ramptimingexp'; 'CS1lasercheck';...
-                 'CS2lasercheck'; 'CS3lasercheck'; 'fixedsidecheck'; 'rampmaxdelay'});
+                 'CS2lasercheck'; 'CS3lasercheck'; 'fixedsidecheck'; 'rampmaxdelay';'minITI'});
 
         param.(paramnames(1)) = params(1:3);
         param.(paramnames(2)) = params(4:6);
@@ -925,6 +930,8 @@ catch exception
         param.(paramnames(50)) = params(103);
         param.(paramnames(51)) = params(104:105);
         param.(paramnames(52)) = params(106);
-    
+        param.(paramnames(53)) = params(107); 
+        
+        
     save(file, 'eventlog', 'param','exception')
 end
