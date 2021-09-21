@@ -1063,7 +1063,7 @@ else
     ramptimingexp_input = ramptimingexp;
 end
 inputs = [numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur, CS_t_fxd,...
-          CSpulse, CSspeaker, golickreq, golicktube, CSsignal, meanITI, maxITI, minITT, expitiflag,...
+          CSpulse, CSspeaker, golickreq, golicktube, CSsignal, meanITI, maxITI, minITI, expitiflag,...
           backgroundsolenoid, T_bgd, r_bgd, mindelaybgdtocue, mindelayfxdtobgd,...
           experimentmode, trialbytrialbgdsolenoidflag, totPoisssolenoid,...
           reqlicknum, licksolenoid, lickprob, lickopentime, delaytoreward,...                
@@ -1216,25 +1216,3 @@ set(handles.primelickretractsolenoid2, 'Enable','off')
 set(handles.clearlick1rewards,'Enable','off');
 set(handles.clearlick2rewards,'Enable','off');
 
-
-
-function minITI_Callback(hObject, eventdata, handles)
-% hObject    handle to minITI (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of minITI as text
-%        str2double(get(hObject,'String')) returns contents of minITI as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function minITI_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to minITI (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
