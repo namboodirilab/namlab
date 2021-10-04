@@ -849,7 +849,7 @@ void loop() {
       digitalWrite(CSsolenoid[2 * cueList[CSct] + 1], HIGH);      // turn on solenoid
       Serial.print(0);                       //   this indicates that the solenoid was actually given
       Serial.print('\n');
-      if (actualopentime > 10 && Rewardlasercheck > 0) { // if solenoid was open for more than 5 ms, i.e., any reward that can in principle be sensed by the animal
+      if (actualopentime > 10 && Rewardlasercheck > 0) { // if solenoid was open for more than 10 ms, i.e., any reward that can in principle be sensed by the animal
         deliverlasertocues();              // check whether to and deliver laser if needed
       }
     }
