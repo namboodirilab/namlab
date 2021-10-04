@@ -1052,7 +1052,7 @@ void loop() {
 
 // Accept parameters from MATLAB
 void getParams() {
-  int pn = 107;                              // number of parameter inputs
+  int pn = 108;                              // number of parameter inputs
   unsigned long param[pn];                  // parameters
 
   for (int p = 0; p < pn; p++) {

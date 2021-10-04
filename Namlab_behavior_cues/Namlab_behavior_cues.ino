@@ -249,6 +249,7 @@ unsigned long laserPulseOn;      // timestamp to turn on the laser on while puls
 unsigned long laserPulseOff;     // timestamp to turn the laser off while pulsing
 unsigned long laserOff;          // timestamp to turn the laser off
 unsigned long CSlasercheck[numCS];    // flag for checking laser or not for each cue
+unsigned long Rewardlasercheck;  // flag for checking laser for reward
 
 unsigned long u;                 // uniform random number for inverse transform sampling to create an exponential distribution
 unsigned long sessionendtime;    // the time at which session ends. Set to 5s after last fixed solenoid
@@ -1052,7 +1053,7 @@ void loop() {
 
 // Accept parameters from MATLAB
 void getParams() {
-  int pn = 107;                              // number of parameter inputs
+  int pn = 108;                              // number of parameter inputs
   unsigned long param[pn];                  // parameters
 
   for (int p = 0; p < pn; p++) {
@@ -1156,7 +1157,7 @@ void getParams() {
   fixedsidecheck[0]      = param[104];
   fixedsidecheck[1]      = param[105];
   rampmaxdelay           = param[106];
-
+  Rewardlasercheck       = param[107];
 
   for (int p = 0; p < numCS; p++) {
     CSfreq[p] = CSfreq[p] * 1000;         // convert frequency from kHz to Hz
