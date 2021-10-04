@@ -116,7 +116,14 @@
 //97) variable interval flag for lick 2s. 1==variable, 0==fixed
 //98) light number for lick 1
 //99) light number for lick 2
-
+//100) exponent factor for ramp timing 
+//101) laser on flag for CS1, 1==laser on, 0==laser off
+//102) laser on flag for CS2, 1==laser on, 0==laser off
+//103) laser on flag for CS3, 1==laser on, 0==laser off
+//104) fixed reward check for left lick tube (lick tube 1) for delay discounting task 
+//105) fixed reward check for right lick tube (lick tube 2) for delay discounting task 
+//106) max delay to reward for ramp timing task 
+//107) laser flag for reward in ramp timing task, triggered by the first lick after cue if reward is bigger than a certain amount
 
 #include <math.h>
 #include <avr/wdt.h>
