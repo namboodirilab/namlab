@@ -247,6 +247,7 @@ unsigned long laserPulseOn;      // timestamp to turn on the laser on while puls
 unsigned long laserPulseOff;     // timestamp to turn the laser off while pulsing
 unsigned long laserOff;          // timestamp to turn the laser off
 unsigned long CSlasercheck[numCS];  // flag for checking laser for each cue
+unsigned long Rewardlasercheck;  // flag for checking laser for reward
 
 unsigned long u;                 // uniform random number for inverse transform sampling to create an exponential distribution
 unsigned long sessionendtime;    // the time at which session ends. Set to 5s after last fixed solenoid
@@ -747,7 +748,9 @@ void loop() {
       lights();
     }
     maxdelaytosolenoid = ts + rampmaxdelay;
-    deliverlasertocues();              // check whether to and deliver laser if needed
+    if (CSlasercheck[cueList[CSct]]) {
+      deliverlasertocues();              // check whether to and deliver laser if needed
+    }
     ITIflag = false;
   }
 
@@ -846,6 +849,9 @@ void loop() {
       digitalWrite(CSsolenoid[2 * cueList[CSct] + 1], HIGH);      // turn on solenoid
       Serial.print(0);                       //   this indicates that the solenoid was actually given
       Serial.print('\n');
+      if (actualopentime > 10 && Rewardlasercheck > 0) { // if solenoid was open for more than 5 ms, i.e., any reward that can in principle be sensed by the animal
+        deliverlasertocues();              // check whether to and deliver laser if needed
+      }
     }
     else {
       Serial.print(1);                       //   this indicates that the solenoid was not given
@@ -1093,7 +1099,7 @@ void getParams() {
   CSsignal[2]            = param[47];
   meanITI                = param[48];                   // get meanITI, in ms
   maxITI                 = param[49];                   // get maxITI, in ms
-  minITI                  = param[50];
+  minITI                 = param[50];
   expitiflag             = (boolean)param[51];
   backgroundsolenoid     = (int)param[52];
   T_bgd                  = param[53];                   // get T=1/lambda, in ms
@@ -1125,8 +1131,8 @@ void getParams() {
   soundfreq[1]           = param[79];
   sounddur[0]            = param[80];
   sounddur[1]            = param[81];
-  lickspeaker[0]        = param[82];
-  lickspeaker[1]        = param[83];
+  lickspeaker[0]         = param[82];
+  lickspeaker[1]         = param[83];
   laserlatency           = param[84];
   laserduration          = param[85];
   randlaserflag          = (boolean)param[86];          // Random laser flag
@@ -1137,19 +1143,20 @@ void getParams() {
   CSlight[0]             = param[91];
   CSlight[1]             = param[92];
   CSlight[2]             = param[93];
-  variableratioflag[0]      = param[94];
-  variableratioflag[1]      = param[95];
-  variableintervalflag[0]   = param[96];
-  variableintervalflag[1]   = param[97];
+  variableratioflag[0]   = param[94];
+  variableratioflag[1]   = param[95];
+  variableintervalflag[0] = param[96];
+  variableintervalflag[1] = param[97];
   licklight[0]           = param[98];
   licklight[1]           = param[99];
   ramptimingexp          = param[100];
-  CSlasercheck[0]         = param[101];
-  CSlasercheck[1]         = param[102];
-  CSlasercheck[2]         = param[103];
+  CSlasercheck[0]        = param[101];
+  CSlasercheck[1]        = param[102];
+  CSlasercheck[2]        = param[103];
   fixedsidecheck[0]      = param[104];
   fixedsidecheck[1]      = param[105];
   rampmaxdelay           = param[106];
+  Rewardlasercheck       = param[107];
 
   for (int p = 0; p < numCS; p++) {
     CSfreq[p] = CSfreq[p] * 1000;         // convert frequency from kHz to Hz

@@ -22,7 +22,7 @@ function varargout = headfix_GUI(varargin)
 
 % Edit the above text to modify the response to help headfix_GUI
 
-% Last Modified by GUIDE v2.5 16-Sep-2021 16:49:47
+% Last Modified by GUIDE v2.5 04-Oct-2021 12:50:32
 
 % cd 'F:\acads\Stuber lab\headfix'; %Change to directory
 
@@ -104,6 +104,7 @@ set(handles.laserpulseoffperiod, 'Enable', 'off');
 set(handles.CS1lasercheck, 'Enable', 'off');
 set(handles.CS2lasercheck, 'Enable', 'off');
 set(handles.CS3lasercheck, 'Enable', 'off');
+set(handles.Rewardlasercheck, 'Enable', 'off');
 set(handles.checkboxexpiti, 'Enable', 'off');
 set(handles.maxdelaycuetovacuum, 'Enable', 'off');
 set(handles.meanITI, 'Enable', 'off');
@@ -235,7 +236,7 @@ set(handles.openButton,'Enable','off')              % disable 'link' button
 set(handles.refreshButton,'Enable','off')           % disable 'refresh' button
 
 selectedmode = get(handles.experimentmode, 'Value');
-if selectedmode == 1 || selectedmode == 4 || selectedmode ==6;
+if selectedmode == 1 || selectedmode == 4 || selectedmode ==6
     set(handles.sendButton,'Enable','on') 
     set(handles.csproperties, 'Enable', 'on');
     set(handles.checkboxtrialbytrial, 'Enable', 'on');
@@ -248,6 +249,7 @@ if selectedmode == 1 || selectedmode == 4 || selectedmode ==6;
     set(handles.CS1lasercheck, 'Enable', 'on');
     set(handles.CS2lasercheck, 'Enable', 'on');
     set(handles.CS3lasercheck, 'Enable', 'on');
+    set(handles.Rewardlasercheck, 'Enable', 'on');
     set(handles.checkboxexpiti, 'Enable', 'on');
     set(handles.maxdelaycuetovacuum, 'Enable', 'on');
     set(handles.meanITI, 'Enable', 'on');
@@ -364,6 +366,7 @@ set(handles.laserpulseoffperiod, 'Enable', 'off');
 set(handles.CS1lasercheck, 'Enable', 'off');
 set(handles.CS2lasercheck, 'Enable', 'off');
 set(handles.CS3lasercheck, 'Enable', 'off');
+set(handles.Rewardlasercheck, 'Enable', 'off');
 set(handles.checkboxexpiti, 'Enable', 'off');
 set(handles.maxdelaycuetovacuum, 'Enable', 'off');
 set(handles.meanITI, 'Enable', 'off');
@@ -847,6 +850,7 @@ lasertrialbytrialflag = get(handles.lasertrialbytrial,'Value');
 CS1lasercheck = get(handles.CS1lasercheck, 'Value');
 CS2lasercheck = get(handles.CS2lasercheck, 'Value');
 CS3lasercheck = get(handles.CS3lasercheck, 'Value');
+Rewardlasercheck = get(handles.Rewardlasercheck, 'Value');
 
 % Validate inputs
 if ramptimingexp < 1
@@ -864,7 +868,7 @@ inputs = [numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur, CS_t_fxd,...
           laserlatency, laserduration, randlaserflag, laserpulseperiod, laserpulseoffperiod,...
           lasertrialbytrialflag, maxdelaycuetovacuum, CSlight,variableratioflag, variableintervalflag,...
           licklight, ramptimingexp_input, CS1lasercheck, CS2lasercheck, CS3lasercheck,...
-          fixedsidecheck, rampmaxdelay]; % collect all inputs into array
+          fixedsidecheck, rampmaxdelay, Rewardlasercheck]; % collect all inputs into array
 
 negIn  = inputs < 0;
 intIn  = inputs - fix(inputs);
@@ -912,6 +916,7 @@ set(handles.lasertrialbytrial,'Enable','off')
 set(handles.CS1lasercheck,'Enable','off');
 set(handles.CS2lasercheck,'Enable','off');
 set(handles.CS3lasercheck,'Enable','off');
+set(handles.Rewardlasercheck,'Enable','off');
 
 set(handles.testcs1,'Enable','on')
 set(handles.testcs2,'Enable','on')
@@ -946,7 +951,8 @@ params = sprintf('%G+', numtrials, CSfreq, CSsolenoid, CSprob, CSopentime,...
                  laserlatency, laserduration, randlaserflag, laserpulseperiod,...
                  laserpulseoffperiod, lasertrialbytrialflag, maxdelaycuetovacuum, CSlight,...
                  variableratioflag,variableintervalflag,licklight, ramptimingexp,...
-                 CS1lasercheck, CS2lasercheck, CS3lasercheck,fixedsidecheck,rampmaxdelay);
+                 CS1lasercheck, CS2lasercheck, CS3lasercheck,fixedsidecheck,...
+                 rampmaxdelay, Rewardlasercheck);
 params = params(1:end-1);
 
 % Run arduino code
@@ -1055,6 +1061,7 @@ lasertrialbytrialflag = get(handles.lasertrialbytrial,'Value');
 CS1lasercheck = get(handles.CS1lasercheck, 'Value');
 CS2lasercheck = get(handles.CS2lasercheck, 'Value');
 CS3lasercheck = get(handles.CS3lasercheck, 'Value');
+Rewardlasercheck = get(handles.Rewardlasercheck, 'Value');
 
 % Validate inputs
 if ramptimingexp < 1
@@ -1071,7 +1078,7 @@ inputs = [numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur, CS_t_fxd,...
           laserlatency, laserduration, randlaserflag, laserpulseperiod, laserpulseoffperiod,...
           lasertrialbytrialflag, maxdelaycuetovacuum, CSlight,variableratioflag,...
           variableintervalflag,licklight, ramptimingexp_input, CS1lasercheck,...
-          CS2lasercheck, CS3lasercheck, fixedsidecheck,rampmaxdelay]; % collect all inputs into array
+          CS2lasercheck, CS3lasercheck, fixedsidecheck,rampmaxdelay, Rewardlasercheck]; % collect all inputs into array
           
 negIn  = inputs < 0;
 intIn  = inputs - fix(inputs);
@@ -1142,7 +1149,7 @@ params = sprintf('%G+', numtrials, CSfreq, CSsolenoid, CSprob, CSopentime,...
                  laserlatency, laserduration, randlaserflag, laserpulseperiod, laserpulseoffperiod,...
                  lasertrialbytrialflag, maxdelaycuetovacuum, CSlight,variableratioflag,...
                  variableintervalflag,licklight, ramptimingexp, CS1lasercheck,...
-                 CS2lasercheck, CS3lasercheck,fixedsidecheck,rampmaxdelay);
+                 CS2lasercheck, CS3lasercheck,fixedsidecheck,rampmaxdelay, Rewardlasercheck);
              
 params = params(1:end-1);
 
@@ -1216,3 +1223,28 @@ set(handles.primelickretractsolenoid2, 'Enable','off')
 set(handles.clearlick1rewards,'Enable','off');
 set(handles.clearlick2rewards,'Enable','off');
 
+function minITI_Callback(hObject, eventdata, handles)
+% hObject    handle to minITI (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+% Hints: get(hObject,'String') returns contents of minITI as text
+%        str2double(get(hObject,'String')) returns contents of minITI as a double
+% --- Executes during object creation, after setting all properties.
+function minITI_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to minITI (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in Rewardlasercheck.
+function Rewardlasercheck_Callback(hObject, eventdata, handles)
+% hObject    handle to Rewardlasercheck (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of Rewardlasercheck
