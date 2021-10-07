@@ -1412,12 +1412,6 @@ void cues() {
       nextfxdsolenoid = fxdrwtime[fxdrwct];
     }
   }
-  Serial.print(int(nextcue));                        // code data as laser timestamp
-  Serial.print(" ");
-  Serial.print(int(nextfxdsolenoid));                        // send timestamp of laser
-  Serial.print(" ");
-  Serial.print(CSct);
-  Serial.print('\n');
   
   numfxdsolenoids = 0;                                   // Zero fixed solenoids given till now
   cueOff  = ts + CSdur[cueList[CSct]];                   // set timestamp of cue cessation
