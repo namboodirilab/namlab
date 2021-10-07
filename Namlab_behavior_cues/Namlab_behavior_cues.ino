@@ -180,7 +180,7 @@ unsigned long CSsignal[numCS];
 unsigned long meanITI;           // mean duration of ITI for the exponential distribution 
 unsigned long maxITI;            // maximum duration of ITI
 unsigned long minITI;            // minimum duration of ITI
-boolean expitiflag;              // if ==1, itis are drawn from an exponential distribution
+int intervaldistribution;              // 1, exponential iti; 2, uniform iti; 3, poisson cue
 int backgroundsolenoid;
 unsigned long T_bgd;             // inverse of the background rate of solenoids =1/lambda
 unsigned long r_bgd;             // magnitude of background solenoid; in solenoid duration
@@ -269,6 +269,7 @@ unsigned long tempITI;
 int lickctforreq[3];            // number of licks on lick tubes 1, 2 and 3 during the cue-reward delay. If this is >= golickreq for the appropriate golicktube, animals get rewarded after the corresponding cue
 
 int CSct;                        // number of cues delivered
+int fxdrwct;                     // number of fixed reward delivered 
 int numbgdsolenoid;              // number of background solenoids delivered
 int numfxdsolenoids;             // number of fixed solenoids delivered per cue till now. Useful since same cue can have two delayed solenoids
 
@@ -277,6 +278,7 @@ int *cueList = 0;                // Using dynamic allocation for defining the cu
 unsigned long T_bgdvec[120];     // inverse of the background rate of solenoids for each trial. This assumes that if background solenoid changes on a trial-by-trial basis, there are a total of 120 trials
 //unsigned long T_bgdvecnonzero[60]; // all the non-zero elements of the bgd vecs. Every other trial has zero background solenoid rate. This vector will be shuffled later
 int *Laserontrial = 0;             // Is there laser on any given trial?
+unsigned long *fxdrwtime = 0;             // save fixed reward times for poisson cue condition
 
 // SETUP code ////////////////
 void setup() {
@@ -603,11 +605,11 @@ void setup() {
   }
 
   truncITI = min(3 * meanITI, maxITI); //truncation is set at 3 times the meanITI or that hardcoded in maxITI; used for exponential distribution
-  if (expitiflag == 1) {               // generate exponential random numbers for itis
-    if (meanITI==maxITI) {
-      nextcue = meanITI;
-    }
-    else {
+  if (meanITI==maxITI) {
+    nextcue = meanITI;    
+  }
+  else {
+    if (intervaldistribution == 1 || intervaldistribution ==3) { // generate exponential random numbers for itis
       tempITI = 0;
       while (tempITI<=minITI) {
         u = random(0, 10000);
@@ -619,22 +621,14 @@ void setup() {
         temp = -log(1 - temp);
         tempITI = (unsigned long)mindelaybgdtocue + meanITI * temp;
       }
-      nextcue  = tempITI; // set timestamp of first cue
-    //nextlaser  = nextcue;
+      nextcue  = tempITI; // set timestamp of first cue      
     }
-  }
-  else if (expitiflag == 0) {          // generate uniform random numbers for itis
-    if (meanITI==maxITI) {
-      nextcue = meanITI;
-    }
-    else {
+    else if (intervaldistribution == 2) { // generate uniform random numbers for itis
       u = random(0, 10000);
       temp = (float)u / 10000;
       tempu = (unsigned long)(maxITI - minITI) * temp;
-      nextcue    = minITI + tempu; // set timestamp of first cue
-    }
-    nextttlouton = nextcue - baselinedur;
-    //nextlaser  = nextcue;
+      nextcue    = minITI + tempu; // set timestamp of first cue      
+    }    
   }
     
   if (randlaserflag == 1) {
@@ -655,6 +649,10 @@ void setup() {
     nextbgdsolenoid = 0;
   }
 
+  if (intervaldistribution==3){
+    fxdrwtime = new unsigned long[totalnumtrials];
+  }
+
   cueOff     = nextcue + CSdur[cueList[0]];           // get timestamp of first cue cessation
   ITIflag = true;
   solenoidOff = 0;
@@ -662,6 +660,7 @@ void setup() {
   lightOff = 0;
 
   CSct = 0;                            // Number of CSs is initialized to 0
+  fxdrwct = 0;                         // Number of initial fixed rewards is initialized to 0
   rewardct[0] = 0;                        // Number of initial rewards for lick tube 1 is initialized to 0
   rewardct[1] = 0;                        // Number of initial rewards for lick tube 2 is initialized to 0
   numfxdsolenoids = 0;                      // Number of fixed solenoids initialized to 0
@@ -670,6 +669,9 @@ void setup() {
   lickctforreq[0] = 0;                 // Number of licks1 during cue for first trial is initialized to 0
   lickctforreq[1] = 0;                 // Number of licks2 during cue for first trial is initialized to 0
   lickctforreq[2] = 0;                 // Number of licks3 during cue for first trial is initialized to 0
+
+  nextvacuum = 0; 
+  nextvacuumOff = 0;
 
   // UNCOMMENT THESE LINES FOR TRIGGERING IMAGE COLLECTION AT BEGINNING
   //digitalWrite(ttloutpin, HIGH);
@@ -719,7 +721,7 @@ void loop() {
   // 30 = frame
   // 31 = laser
 
-  if (CSct >= totalnumtrials && sessionendtime == 0) {
+  if (CSct >= totalnumtrials && sessionendtime == 0 && intervaldistribution<3) {
     sessionendtime = ts + 5000;   // end session 5 seconds after the fixed solenoid is given (or would've been for CS-) so as to store licks occuring during this time
   }
 
@@ -730,7 +732,7 @@ void loop() {
   licking();                           // determine if lick occured or was withdrawn
   frametimestamp();                    // store timestamps of frames
 
-  if (ts >= nextcue && ITIflag) {
+  if (ts >= nextcue && ((ITIflag && intervaldistribution<3) || intervaldistribution==3)) {
     if (CSsignal[cueList[CSct]] == 1) {           // Check which CS signal to give (sound/light/both)
       Serial.print(15 + cueList[CSct]);         // code data as CS1, CS2 or CS3 timestamp
       Serial.print(" ");
@@ -763,6 +765,18 @@ void loop() {
       deliverlasertocues();              // check whether to and deliver laser if needed
     }
     ITIflag = false;
+    
+    if (intervaldistribution==3) {
+      CSct++;  
+      u = random(0, 10000);
+      temp = (float)u / 10000;        
+      temp1 = (float)truncITI / meanITI; 
+      temp1 = exp(-temp1);
+      temp1 = 1 - temp1;
+      temp = temp * temp1;
+      temp = -log(1 - temp);
+      nextcue =  (unsigned long)ts + meanITI * temp;
+    }
   }
 
   // UNCOMMENT THESE LINES FOR TRIGGERING COLLECTION TRIAL-BY-TRIAL
@@ -842,43 +856,71 @@ void loop() {
     lightOff = 0;
   }
 
-  if (!ITIflag && ts >= nextfxdsolenoid && nextfxdsolenoid != 0) { // give fixed solenoid
-
-    Serial.print(CSsolenoidcode[2 * cueList[CSct] + numfxdsolenoids]);
+  if (((!ITIflag && intervaldistribution<3) || intervaldistribution==3) && ts >= nextfxdsolenoid && nextfxdsolenoid != 0) { // give fixed solenoid
+    if (intervaldistribution<3) {
+      Serial.print(CSsolenoidcode[2 * cueList[CSct] + numfxdsolenoids]);      
+    }
+    else if (intervaldistribution==3) {
+      Serial.print(CSsolenoidcode[2 * cueList[fxdrwct] + 1]);      
+    }
     Serial.print(" ");
     Serial.print(ts);                      //   send timestamp of solenoid onset
     Serial.print(" ");
 
-    u = random(0, 100);
-    if (numfxdsolenoids == 1) {
-      temp2 = golickreq[cueList[CSct]];     // Go lick requirement only applies to the second reward per cue
+    if (intervaldistribution<3) {
+      u = random(0, 100);
+      if (numfxdsolenoids == 1) {
+        temp2 = golickreq[cueList[CSct]];     // Go lick requirement only applies to the second reward per cue
+      }
+      else {
+        temp2 = 0;
+      }
+  
+      if (CSopentime[2 * cueList[CSct] + numfxdsolenoids] > 0 && u < CSprob[2 * cueList[CSct] + numfxdsolenoids] && lickctforreq[golicktube[cueList[CSct]]] >= temp2 && temp2 != -1) {
+        digitalWrite(CSsolenoid[2 * cueList[CSct] + numfxdsolenoids], HIGH);      // turn on solenoid
+        Serial.print(0);                       //   this indicates that the solenoid was actually given
+        Serial.print('\n');
+      }
+      else if (CSopentime[2 * cueList[CSct] + numfxdsolenoids] > 0 && lickctforreq[golicktube[cueList[CSct]]] == 0 && temp2 == -1) {  // -1 on golickreq indicates no-go cue, no licks on the lick tube gives a reward
+        digitalWrite(CSsolenoid[2 * cueList[CSct] + numfxdsolenoids], HIGH);      // turn on solenoid
+        Serial.print(0);                       //   this indicates that the solenoid was actually given
+        Serial.print('\n');
+      }
+      else {
+        Serial.print(1);                       //   this indicates that the solenoid was not given
+        Serial.print('\n');
+      }
+      solenoidOff = ts + CSopentime[2 * cueList[CSct] + numfxdsolenoids];      // set solenoid off time
+      numfxdsolenoids++;                                     // Increase fixed solenoids given till now for this cue
+      
+      if (numfxdsolenoids == 1) { //set time for next fixed solenoid
+        nextfxdsolenoid = ts + CS_t_fxd[2 * cueList[CSct] + numfxdsolenoids] - CS_t_fxd[2 * cueList[CSct]];
+      }
+      else {
+        nextfxdsolenoid = 0;
+        nextvacuum = ts + CSopentime[2 * cueList[CSct] + 1] + maxdelaytovacuumfromcueonset - CS_t_fxd[2 * cueList[CSct] + 1];
+      }
     }
-    else {
-      temp2 = 0;
-    }
-
-    if (CSopentime[2 * cueList[CSct] + numfxdsolenoids] > 0 && u < CSprob[2 * cueList[CSct] + numfxdsolenoids] && lickctforreq[golicktube[cueList[CSct]]] >= temp2 && temp2 != -1) {
-      digitalWrite(CSsolenoid[2 * cueList[CSct] + numfxdsolenoids], HIGH);      // turn on solenoid
+    else if (intervaldistribution==3) {
+      digitalWrite(CSsolenoid[2 * cueList[fxdrwct] + 1], HIGH);      // turn on solenoid
       Serial.print(0);                       //   this indicates that the solenoid was actually given
       Serial.print('\n');
-    }
-    else if (CSopentime[2 * cueList[CSct] + numfxdsolenoids] > 0 && lickctforreq[golicktube[cueList[CSct]]] == 0 && temp2 == -1) {  // -1 on golickreq indicates no-go cue, no licks on the lick tube gives a reward
-      digitalWrite(CSsolenoid[2 * cueList[CSct] + numfxdsolenoids], HIGH);      // turn on solenoid
-      Serial.print(0);                       //   this indicates that the solenoid was actually given
-      Serial.print('\n');
-    }
-    else {
-      Serial.print(1);                       //   this indicates that the solenoid was not given
-      Serial.print('\n');
-    }
-    solenoidOff = ts + CSopentime[2 * cueList[CSct] + numfxdsolenoids];      // set solenoid off time
-    numfxdsolenoids++;                                     // Increase fixed solenoids given till now for this cue
-    if (numfxdsolenoids == 1) { //set time for next fixed solenoid
-      nextfxdsolenoid = ts + CS_t_fxd[2 * cueList[CSct] + numfxdsolenoids] - CS_t_fxd[2 * cueList[CSct]];
-    }
-    else {
-      nextfxdsolenoid = 0;
-      nextvacuum = ts + CSopentime[2 * cueList[CSct] + 1] + maxdelaytovacuumfromcueonset - CS_t_fxd[2 * cueList[CSct] + 1];
+      
+      solenoidOff = ts + CSopentime[2 * cueList[fxdrwct] + 1];      // set solenoid off time
+      fxdrwtime[fxdrwct] = 0;
+      fxdrwct++;
+      if (fxdrwct>=totalnumtrials) {
+        nextfxdsolenoid = 0;
+        sessionendtime = ts+5000;
+      }
+      else {
+        if (fxdrwct<CSct) {
+          nextfxdsolenoid = fxdrwtime[fxdrwct];
+        }
+        else {
+          nextfxdsolenoid = 0;
+        }
+      }
     }
   }
 
@@ -993,12 +1035,11 @@ void loop() {
 
     if (ITIflag == false) {            // if exit was from a trial, move into ITI and set the next cue and bgdsolenoid times
       ITIflag = true;
-
-      if (expitiflag == 1) {
-        if (meanITI==maxITI) {
-          nextcue = (unsigned long)ts + meanITI;
-        }
-        else {
+      if (meanITI==maxITI) {
+        nextcue = ts+meanITI;
+      }
+      else {
+        if (intervaldistribution ==1 || intervaldistribution ==3) {
           tempITI = 0;
           while (tempITI<=minITI) {
             u = random(0, 10000);
@@ -1012,19 +1053,14 @@ void loop() {
           }
           nextcue    = (unsigned long)ts + tempITI; // set timestamp of next cue
         }
-      }
-      else if (expitiflag == 0) {
-        if (meanITI==maxITI) {
-          nextcue = ts + meanITI;          
-        }
-        else {
+        else if (intervaldistribution ==2) {
           u = random(0, 10000);
           temp = (float)u / 10000;
           tempu = (unsigned long)(maxITI - minITI) * temp;
           nextcue = ts + minITI + tempu; // set timestamp of first cue
         }
-        nextttlouton = nextcue - baselinedur;
       }
+
       if (randlaserflag == 1) {
         temp = nextcue - mindelaybgdtocue;
         nextlaser = random(ts, temp);
@@ -1107,8 +1143,8 @@ void getParams() {
   CSsignal[2]            = param[47];
   meanITI                = param[48];                   // get meanITI, in ms
   maxITI                 = param[49];                   // get maxITI, in ms
-  minITI                  = param[50];  
-  expitiflag             = (boolean)param[51];
+  minITI                 = param[50];  
+  intervaldistribution   = (int)param[51];
   backgroundsolenoid     = (int)param[52];
   T_bgd                  = param[53];                   // get T=1/lambda, in ms
   r_bgd                  = param[54];                   // get r_bgd, ms open time for the solenoid
@@ -1353,6 +1389,7 @@ void cues() {
   //  Serial.print(" ");
   //  Serial.print(0);
   //  Serial.print('\n');
+    
   if (CSdur[cueList[CSct]] > 0) {
     tone(CSspeaker[cueList[CSct]], CSfreq[cueList[CSct]]);               // turn on tone only when the CSdur is bigger than 0
   }
@@ -1366,7 +1403,22 @@ void cues() {
     cuePulseOn = 0;                          // No cue pulsing
   }
 
-  nextfxdsolenoid = ts + CS_t_fxd[2 * cueList[CSct]];    // next fixed solenoid comes at a fixed delay following cue onset
+  if (intervaldistribution<3) {
+    nextfxdsolenoid = ts + CS_t_fxd[2 * cueList[CSct]];    // next fixed solenoid comes at a fixed delay following cue onset    
+  }
+  else if (intervaldistribution==3) {
+    fxdrwtime[CSct] = ts + CS_t_fxd[2 * cueList[CSct]+1];
+    if (nextfxdsolenoid==0) {
+      nextfxdsolenoid = fxdrwtime[fxdrwct];
+    }
+  }
+  Serial.print(int(nextcue));                        // code data as laser timestamp
+  Serial.print(" ");
+  Serial.print(int(nextfxdsolenoid));                        // send timestamp of laser
+  Serial.print(" ");
+  Serial.print(CSct);
+  Serial.print('\n');
+  
   numfxdsolenoids = 0;                                   // Zero fixed solenoids given till now
   cueOff  = ts + CSdur[cueList[CSct]];                   // set timestamp of cue cessation
   lickctforreq[0] = 0;                 // reset lick1 count to zero at cue onset

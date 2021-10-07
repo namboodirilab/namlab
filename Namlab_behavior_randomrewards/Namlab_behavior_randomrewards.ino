@@ -181,7 +181,7 @@ unsigned long CSsignal[numCS];
 unsigned long meanITI;           // mean duration of ITI for the exponential distribution 
 unsigned long maxITI;            // maximum duration of ITI
 unsigned long minITI;            // minimum duration of ITI
-boolean expitiflag;              // if ==1, itis are drawn from an exponential distribution
+int intervaldistribution;              // 1, exponential iti; 2, uniform iti; 3, poisson cue
 int backgroundsolenoid;
 unsigned long T_bgd;             // inverse of the background rate of solenoids =1/lambda
 unsigned long r_bgd;             // magnitude of background solenoid; in solenoid duration
@@ -262,6 +262,7 @@ unsigned long sessionendtime;    // the time at which session ends. Set to 5s af
 float temp;                      // temporary float variable for temporary operations
 float temp1;                     // temporary float variable for temporary operations
 unsigned long tempu;
+int tempITI;
 
 int lickctforreq[3];            // number of licks on lick tubes 1, 2 and 3 during the cue-reward delay. If this is >= golickreq for the appropriate golicktube, animals get rewarded after the corresponding cue
 
@@ -601,22 +602,30 @@ void setup() {
   }
 
   truncITI = min(3 * meanITI, maxITI); //truncation is set at 3 times the meanITI or that hardcoded in maxITI; used for exponential distribution
-  u = random(0, 10000);
-  temp = (float)u / 10000;
-  if (expitiflag == 1) {               // generate exponential random numbers for itis
-    temp1 = (float)truncITI / meanITI;
-    temp1 = exp(-temp1);
-    temp1 = 1 - temp1;
-    temp = temp * temp1;
-    temp = -log(1 - temp);
-    nextcue    = (unsigned long)mindelaybgdtocue + meanITI * temp; // set timestamp of first cue
-    //nextlaser  = nextcue;
+  if (meanITI==maxITI) {
+    nextcue = meanITI;    
   }
-  else if (expitiflag == 0) {          // generate uniform random numbers for itis
-    tempu = (unsigned long)(maxITI - minITI) * temp;
-    nextcue    = minITI + tempu; // set timestamp of first cue
-    nextttlouton = nextcue - baselinedur;
-    //nextlaser  = nextcue;
+  else {
+    if (intervaldistribution == 1 || intervaldistribution ==3) { // generate exponential random numbers for itis
+      tempITI = 0;
+      while (tempITI<=minITI) {
+        u = random(0, 10000);
+        temp = (float)u / 10000;
+        temp1 = (float)truncITI / meanITI;
+        temp1 = exp(-temp1);
+        temp1 = 1 - temp1;
+        temp = temp * temp1;
+        temp = -log(1 - temp);
+        tempITI = (unsigned long)mindelaybgdtocue + meanITI * temp;
+      }
+      nextcue  = tempITI; // set timestamp of first cue      
+    }
+    else if (intervaldistribution == 2) { // generate uniform random numbers for itis
+      u = random(0, 10000);
+      temp = (float)u / 10000;
+      tempu = (unsigned long)(maxITI - minITI) * temp;
+      nextcue    = minITI + tempu; // set timestamp of first cue      
+    }    
   }
   if (randlaserflag == 1) {
     temp = nextcue - mindelaybgdtocue;
@@ -849,7 +858,7 @@ void getParams() {
   meanITI                = param[48];                   // get meanITI, in ms
   maxITI                 = param[49];                   // get maxITI, in ms
   minITI                 = param[50];
-  expitiflag             = (boolean)param[51];
+  intervaldistribution   = (int)param[51];
   backgroundsolenoid     = (int)param[52];
   T_bgd                  = param[53];                   // get T=1/lambda, in ms
   r_bgd                  = param[54];                   // get r_bgd, ms open time for the solenoid

@@ -182,7 +182,7 @@ unsigned long CSsignal[numCS];
 unsigned long meanITI;           // mean duration of ITI for the exponential distribution OR minimum ITI for uniform distribution
 unsigned long maxITI;            // maximum duration of ITI
 unsigned long minITI;            // minimum duration of ITI
-boolean expitiflag;              // if ==1, itis are drawn from an exponential distribution
+int intervaldistribution;              // 1, exponential iti; 2, uniform iti; 3, poisson cue
 int backgroundsolenoid;
 unsigned long T_bgd;             // inverse of the background rate of solenoids =1/lambda
 unsigned long r_bgd;             // magnitude of background solenoid; in solenoid duration
@@ -606,11 +606,11 @@ void setup() {
   }
 
   truncITI = min(3 * meanITI, maxITI); //truncation is set at 3 times the meanITI or that hardcoded in maxITI; used for exponential distribution
-  if (expitiflag == 1) {               // generate exponential random numbers for itis
-    if (meanITI==maxITI) {
-      nextcue = meanITI;
-    }
-    else {
+  if (meanITI==maxITI) {
+    nextcue = meanITI;    
+  }
+  else {
+    if (intervaldistribution == 1 || intervaldistribution ==3) { // generate exponential random numbers for itis
       tempITI = 0;
       while (tempITI<=minITI) {
         u = random(0, 10000);
@@ -622,22 +622,14 @@ void setup() {
         temp = -log(1 - temp);
         tempITI = (unsigned long)mindelaybgdtocue + meanITI * temp;
       }
-      nextcue  = tempITI; // set timestamp of first cue
-      //nextlaser  = nextcue;
+      nextcue  = tempITI; // set timestamp of first cue      
     }
-  }
-  else if (expitiflag == 0) {          // generate uniform random numbers for itis
-    if (meanITI==maxITI) {
-      nextcue = meanITI;
-    }
-    else {
+    else if (intervaldistribution == 2) { // generate uniform random numbers for itis
       u = random(0, 10000);
       temp = (float)u / 10000;
       tempu = (unsigned long)(maxITI - minITI) * temp;
-      nextcue    = minITI + tempu; // set timestamp of first cue
-    }
-    nextttlouton = nextcue - baselinedur;
-    //nextlaser  = nextcue;
+      nextcue    = minITI + tempu; // set timestamp of first cue      
+    }    
   }
   if (randlaserflag == 1) {
     temp = nextcue - mindelaybgdtocue;
@@ -1106,14 +1098,11 @@ void loop() {
 
     if (ITIflag == false) {            // if exit was from a trial, move into ITI and set the next cue and bgdsolenoid times
       ITIflag = true;
-
-      u = random(0, 10000);
-      temp = (float)u / 10000;
-      if (expitiflag == 1) {
-        if (meanITI==maxITI) {
-          nextcue = (unsigned long)ts + meanITI;
-        }
-        else {
+      if (meanITI==maxITI) {
+        nextcue = ts+meanITI;
+      }
+      else {
+        if (intervaldistribution ==1 || intervaldistribution ==3) {
           tempITI = 0;
           while (tempITI<=minITI) {
             u = random(0, 10000);
@@ -1127,18 +1116,12 @@ void loop() {
           }
           nextcue    = (unsigned long)ts + tempITI; // set timestamp of next cue
         }
-      }
-      else if (expitiflag == 0) {
-        if (meanITI==maxITI) {
-          nextcue = ts + meanITI;          
-        }
-        else {
+        else if (intervaldistribution ==2) {
           u = random(0, 10000);
           temp = (float)u / 10000;
           tempu = (unsigned long)(maxITI - minITI) * temp;
           nextcue = ts + minITI + tempu; // set timestamp of first cue
         }
-        nextttlouton = nextcue - baselinedur;
       }
       
       if (randlaserflag == 1) {
@@ -1223,8 +1206,8 @@ void getParams() {
   CSsignal[2]            = param[47];
   meanITI                = param[48];                   // get meanITI, in ms
   maxITI                 = param[49];                   // get maxITI, in ms
-  minITI                  = param[50];
-  expitiflag             = (boolean)param[51];
+  minITI                 = param[50];
+  intervaldistribution   = (int)param[51];
   backgroundsolenoid     = (int)param[52];
   T_bgd                  = param[53];                   // get T=1/lambda, in ms
   r_bgd                  = param[54];                   // get r_bgd, ms open time for the solenoid

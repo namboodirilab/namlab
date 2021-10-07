@@ -180,7 +180,7 @@ unsigned long CSsignal[numCS];
 unsigned long meanITI;           // mean duration of ITI for the exponential distribution OR minimum ITI for uniform distribution
 unsigned long maxITI;            // maximum duration of ITI
 unsigned long minITI;
-boolean expitiflag;              // if ==1, itis are drawn from an exponential distribution
+int intervaldistribution;              // 1, exponential iti; 2, uniform iti; 3, poisson cue
 int backgroundsolenoid;
 unsigned long T_bgd;             // inverse of the background rate of solenoids =1/lambda
 unsigned long r_bgd;             // magnitude of background solenoid; in solenoid duration
@@ -796,7 +796,7 @@ void getParams() {
   meanITI                = param[48];                   // get meanITI, in ms
   maxITI                 = param[49];                   // get maxITI, in ms
   minITI                  = param[50];
-  expitiflag             = (boolean)param[51];
+  intervaldistribution   = (int)param[51];
   backgroundsolenoid     = (int)param[52];
   T_bgd                  = param[53];                   // get T=1/lambda, in ms
   r_bgd                  = param[54];                   // get r_bgd, ms open time for the solenoid

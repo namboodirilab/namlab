@@ -4,11 +4,8 @@
 
 cla;                                    % Clear the axes before starting
 %% Parameters
-if expitiflag==1
-    truncITI = min(maxITI,3*meanITI);                     % minITI is really the mean ITI for exponential dbn
-else
-    truncITI = min(maxITI,3*minITI);
-end
+truncITI = min(maxITI,3*meanITI);                     % minITI is really the mean ITI for exponential dbn
+
 licksinit = ceil(sum(numtrials)*(truncITI+max(CS_t_fxd))*10/1E3);  % number of licks to initialize = number of trials*max time per trial in s*10Hz (of licking)
 cuesinit = sum(numtrials);                               % number of cues to initialize
 logInit = 10^6;                                      % Log of all serial input events from the Arduino
@@ -55,7 +52,11 @@ l = 0;% Counter for logged events
 % since there is variability in intercue interval.
 templicks = NaN(ceil(licksinit/sum(numtrials)), 3); % 3 licktubes
 templicksct = [0, 0, 0];                                                % count of temp licks. Calculated explicitly to speed up indexing
+if numtrials(1)~=0
 templicksPSTH1 = NaN(ceil(licksinit/(numtrials(1))),numtrials(1),3); % Array in which all CS1 licks are stored for calculating PSTH 
+elseif numtrials(1)==0
+    templicksPSTH1 = [];
+end
 if numtrials(2)~=0
     templicksPSTH2 = NaN(ceil(licksinit/numtrials(2)),numtrials(2),3); % Array in which all CS2 licks are stored for calculating PSTH 
 elseif numtrials(2)==0
@@ -91,7 +92,7 @@ templight3 = NaN(1,1);
 
 % setup plot
 axes(actvAx)                            % make the activity axes the current one
-if experimentmode == 1 || experimentmode == 4 || experimentmode == 6 || experimentmode == 7
+if (experimentmode == 1 && intervaldistribution<3) || experimentmode == 4 || experimentmode == 6 || experimentmode == 7
     plot(xWindow,[0 0],'k','LineWidth',2);hold on                   % start figure for plots
     set(actvAx,'ytick',[], ...
                'ylim',[-sum(numtrials) yOffset+1], ...
@@ -101,7 +102,7 @@ if experimentmode == 1 || experimentmode == 4 || experimentmode == 6 || experime
                'xticklabel',labelsStr');        % set labels: Raster plot with y-axis containing trials. Chronological order = going from top to bottom
     xlabel('time (s)');
     ylabel('Trials');
-elseif experimentmode == 2 || experimentmode == 3
+elseif (experimentmode == 1 && intervaldistribution==3) || experimentmode == 2 || experimentmode == 3
     plot([0 0;0 0],[0 0;-1 -1],'w');hold on
     xlabel('time (s)');
     ylabel(' ');
@@ -134,6 +135,7 @@ try
         read = [];
         if s.BytesAvailable > 0 % is data available to read? This avoids the timeout problem
             read = fscanf(s,'%f'); % scan for data sent only when data is available
+            read
         end
         if isempty(read)
             drawnow
@@ -184,12 +186,12 @@ try
         
         
         if code == 1                                % Lick1 onset; BLUE
-            if experimentmode == 1 || experimentmode == 4 || experimentmode == 6                  % Store lick1 timestamp for later plotting after trial ends
+            if (experimentmode == 1 && intervaldistribution<3) || experimentmode == 4 || experimentmode == 6                  % Store lick1 timestamp for later plotting after trial ends
                 lickct(1) = lickct(1) + 1;
                 set(handles.licks1Edit,'String',num2str(lickct(1)))  % change the gui input
                 templicksct(1) = templicksct(1)+1;         % keep track of temp licktube number
                 templicks(templicksct(1),1) = time;       % keep track of temporary licks timestamp
-            elseif experimentmode == 2 || experimentmode == 3 || experimentmode == 7    %If only Poisson solenoids are given or lick for rewards, plot when lick occurs in real time
+            elseif (experimentmode == 1 && intervaldistribution==3) || experimentmode == 2 || experimentmode == 3 || experimentmode == 7    %If only Poisson solenoids are given or lick for rewards, plot when lick occurs in real time
                 lickct(1) = lickct(1) + 1;
                 set(handles.licks1Edit,'String',num2str(lickct(1)))
                 trial = floor(time/durationtrialpartitionnocues);
@@ -197,12 +199,12 @@ try
                 plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'color',[0.2 0.6 1],'LineWidth',1);hold on
             end
         elseif code == 3                            % Lick2 onset; GREY
-            if experimentmode == 1 || experimentmode == 4 || experimentmode == 6                      % Store lick1 timestamp for later plotting after trial ends
+            if (experimentmode == 1 && intervaldistribution<3) || experimentmode == 4 || experimentmode == 6                      % Store lick1 timestamp for later plotting after trial ends
                 lickct(2) = lickct(2) + 1;
                 set(handles.licks2Edit,'String',num2str(lickct(2)))
                 templicksct(2) = templicksct(2)+1;
                 templicks(templicksct(2),2) = time;
-            elseif experimentmode == 2 || experimentmode == 3 || experimentmode == 7    %If only Poisson solenoids are given or lick for rewards, plot when lick occurs in real time
+            elseif (experimentmode == 1 && intervaldistribution==3) || experimentmode == 2 || experimentmode == 3 || experimentmode == 7    %If only Poisson solenoids are given or lick for rewards, plot when lick occurs in real time
                 lickct(2) = lickct(2) + 1;
                 set(handles.licks2Edit,'String',num2str(lickct(2)))
                 trial = floor(time/durationtrialpartitionnocues);
@@ -210,12 +212,12 @@ try
                 plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',0.65*[1, 1, 1],'LineWidth',1);hold on
             end
         elseif code == 5                                % Lick3 onset; BROWN
-            if experimentmode == 1 || experimentmode == 4 || experimentmode == 6                       % Store lick3 timestamp for later plotting after trial ends
+            if (experimentmode == 1 && intervaldistribution<3) || experimentmode == 4 || experimentmode == 6                       % Store lick3 timestamp for later plotting after trial ends
                 lickct(3) = lickct(3) + 1;
                 set(handles.licks3Edit,'String',num2str(lickct(3)))  % change the gui input
                 templicksct(3) = templicksct(3)+1;         % keep track of temp licktube number
                 templicks(templicksct(3),3) = time;       % keep track of temporary licks timestamp
-            elseif experimentmode == 2 || experimentmode == 3 || experimentmode == 7    %If only Poisson solenoids are given or lick for rewards, plot when lick occurs in real time
+            elseif (experimentmode == 1 && intervaldistribution==3) || experimentmode == 2 || experimentmode == 3 || experimentmode == 7    %If only Poisson solenoids are given or lick for rewards, plot when lick occurs in real time
                 lickct(3) = lickct(3) + 1;
                 set(handles.licks3Edit,'String',num2str(lickct(3)))
                 trial = floor(time/durationtrialpartitionnocues);
@@ -224,7 +226,7 @@ try
             end
         elseif code == 7                            
             % Background solenoid; cyan (solenoid1) [0.64, 0.08, 0.18] (solenoid2)
-            if experimentmode == 1 || experimentmode == 4 || experimentmode == 6   
+            if (experimentmode == 1 && intervaldistribution<3) || experimentmode == 4 || experimentmode == 6   
                 bgdus = bgdus + 1;
                 set(handles.bgdsolenoidsEdit,'String',num2str(bgdus))    % change the gui background solenoid info
                 for i = 1:4
@@ -251,14 +253,14 @@ try
                 end                
             end
         elseif code == 8                            % Fixed solenoid 1; cyan, 'c'
-            if experimentmode == 1 || experimentmode == 4 || experimentmode == 6
+            if (experimentmode == 1 && intervaldistribution<3) || experimentmode == 4 || experimentmode == 6
                 if nosolenoidflag == 0                      % Indicates trial with solenoid
                     fxdus1 = fxdus1 + 1;            
                     set(handles.fxdsolenoids1Edit,'String',num2str(fxdus1))
                     tempsolenoidsct(1) = tempsolenoidsct(1)+1;      % keep track of solenoid1 count
                     tempsolenoids(tempsolenoidsct(1), 1) = time;   % keep track of solenoid1 timestamp
                 end
-            elseif experimentmode == 3 || experimentmode == 7
+            elseif (experimentmode == 1 && intervaldistribution==3) || experimentmode == 3 || experimentmode == 7
                 if nosolenoidflag == 0
                     fxdus1 = fxdus1 + 1;
                     set(handles.fxdsolenoids1Edit,'String',num2str(fxdus1))
@@ -268,14 +270,14 @@ try
                 end
             end
         elseif code == 9                            % Fixed solenoid 2; [0.64, 0.08, 0.18]
-            if experimentmode == 1 || experimentmode == 4 || experimentmode == 6
+            if (experimentmode == 1 && intervaldistribution<3) || experimentmode == 4 || experimentmode == 6
                 if nosolenoidflag == 0                      % Indicates trial with solenoid
                     fxdus2 = fxdus2 + 1;            
                     set(handles.fxdsolenoids2Edit,'String',num2str(fxdus2))
                     tempsolenoidsct(2) = tempsolenoidsct(2)+1;      % keep track of solenoid2 count
                     tempsolenoids(tempsolenoidsct(2), 2) = time;   % keep track of solenoid2 timestamp
                 end
-             elseif experimentmode == 3 || experimentmode == 7
+             elseif (experimentmode == 1 && intervaldistribution==3) || experimentmode == 3 || experimentmode == 7
                  if nosolenoidflag == 0
                      fxdus2 = fxdus2 + 1;
                      set(handles.fxdsolenoids2Edit,'String',num2str(fxdus2))
@@ -285,14 +287,14 @@ try
                  end
             end      
         elseif code == 10                            % Fixed solenoid 3; orange [1 0.5 0]
-             if experimentmode == 1 || experimentmode == 4 || experimentmode == 6  
+             if (experimentmode == 1 && intervaldistribution<3) || experimentmode == 4 || experimentmode == 6  
                 if nosolenoidflag == 0                      % Indicates trial with solenoid
                     fxdus3 = fxdus3 + 1;            
                     set(handles.fxdsolenoids3Edit,'String',num2str(fxdus3))
                     tempsolenoidsct(3) = tempsolenoidsct(3)+1;      % keep track of solenoid3 count
                     tempsolenoids(tempsolenoidsct(3), 3) = time;   % keep track of solenoid3 timestamp
                 end 
-             elseif experimentmode == 3 || experimentmode == 7
+             elseif (experimentmode == 1 && intervaldistribution==3) || experimentmode == 3 || experimentmode == 7
                  if nosolenoidflag == 0
                      fxdus3 = fxdus3 + 1;
                      set(handles.fxdsolenoids3Edit,'String',num2str(fxdus3))
@@ -302,14 +304,14 @@ try
                  end
             end 
         elseif code == 11                            % Fixed solenoid 4; [0.72 0.27 1]
-            if experimentmode == 1 || experimentmode == 4 || experimentmode == 6
+            if (experimentmode == 1 && intervaldistribution<3) || experimentmode == 4 || experimentmode == 6
                 if nosolenoidflag == 0                      % Indicates trial with solenoid
                     fxdus4 = fxdus4 + 1;            
                     set(handles.fxdsolenoids4Edit,'String',num2str(fxdus4))
                     tempsolenoidsct(4) = tempsolenoidsct(4)+1;      % keep track of solenoid4 count
                     tempsolenoids(tempsolenoidsct(4), 4) = time;   % keep track of solenoid4 timestamp
                 end 
-             elseif experimentmode == 3 || experimentmode == 7
+             elseif (experimentmode == 1 && intervaldistribution==3) || experimentmode == 3 || experimentmode == 7
                  if nosolenoidflag == 0
                      fxdus4 = fxdus4 + 1;
                      set(handles.fxdsolenoids4Edit,'String',num2str(fxdus4))
@@ -319,14 +321,14 @@ try
                  end
             end 
         elseif code == 12                            % Lick retraction solenoid1; [0.3 0.75 0.93]
-            if experimentmode == 1 || experimentmode == 4 || experimentmode    
+            if (experimentmode == 1 && intervaldistribution<3) || experimentmode == 4 || experimentmode    
                 if nosolenoidflag == 0                      % Indicates trial with solenoid
                     lickretractsolenoid1 = lickretractsolenoid1 + 1;            
                     set(handles.lickretractsolenoid1Edit,'String',num2str(lickretractsolenoid1))
                     tempsolenoidsct(5) = tempsolenoidsct(5)+1;      % keep track of solenoid4 count
                     tempsolenoids(tempsolenoidsct(5), 5) = time;   % keep track of solenoid4 timestamp
                 end 
-             elseif experimentmode == 3 || experimentmode == 7
+             elseif (experimentmode == 1 && intervaldistribution==3) || experimentmode == 3 || experimentmode == 7
                  if nosolenoidflag == 0
                      lickretractsolenoid1 = lickretractsolenoid1 + 1;
                      set(handles.lickretractsolenoid1Edit,'String',num2str(lickretractsolenoid1))
@@ -336,14 +338,14 @@ try
                  end
             end 
         elseif code == 13                            % Lick retraction solenoid2; [0.97 0.28 0.18]
-            if experimentmode == 1 || experimentmode == 4 || experimentmode == 6   
+            if (experimentmode == 1 && intervaldistribution<3) || experimentmode == 4 || experimentmode == 6   
                 if nosolenoidflag == 0                      % Indicates trial with solenoid
                     lickretractsolenoid2 = lickretractsolenoid2 + 1;            
                     set(handles.lickretractsolenoid2Edit,'String',num2str(lickretractsolenoid2))
                     tempsolenoidsct(6) = tempsolenoidsct(6)+1;      % keep track of solenoid4 count
                     tempsolenoids(tempsolenoidsct(6), 6) = time;   % keep track of solenoid4 timestamp
                 end 
-             elseif experimentmode == 3 || experimentmode == 7
+             elseif (experimentmode == 1 && intervaldistribution==3) || experimentmode == 3 || experimentmode == 7
                  if nosolenoidflag == 0
                      lickretractsolenoid2 = lickretractsolenoid2 + 1;
                      set(handles.lickretractsolenoid2Edit,'String',num2str(lickretractsolenoid2))
@@ -353,7 +355,7 @@ try
                  end
             end 
         elseif code == 18                            % Lick retraction solenoid1 and 2;
-            if experimentmode == 1 || experimentmode == 4 || experimentmode == 6  
+            if (experimentmode == 1 && intervaldistribution<3) || experimentmode == 4 || experimentmode == 6  
                 if nosolenoidflag == 0                      % Indicates trial with solenoid
                     lickretractsolenoid1 = lickretractsolenoid1 + 1;
                     set(handles.lickretractsolenoid1Edit,'String',num2str(lickretractsolenoid1))
@@ -364,7 +366,7 @@ try
                     tempsolenoidsct(6) = tempsolenoidsct(6)+1;      % keep track of solenoid4 count
                     tempsolenoids(tempsolenoidsct(6), 6) = time;   % keep track of solenoid4 timestamp
                 end 
-             elseif experimentmode == 3 || experimentmode == 7
+             elseif (experimentmode == 1 && intervaldistribution==3) || experimentmode == 3 || experimentmode == 7
                  if nosolenoidflag == 0
                      lickretractsolenoid2 = lickretractsolenoid2 + 1;
                      set(handles.lickretractsolenoid2Edit,'String',num2str(lickretractsolenoid2))
@@ -379,7 +381,7 @@ try
                  end
             end 
         elseif code == 14                            % Vaccum;            
-            if experimentmode ==1 || experimentmode == 4 || experimentmode == 6  
+            if (experimentmode == 1 && intervaldistribution<3) || experimentmode == 4 || experimentmode == 6  
                 tempcuetovacuumdelay = NaN;
                 if ~isnan(tempcue1)                      % indicates there is cue1
                     tempcuetovacuumdelay = time - tempcue1;      
@@ -549,7 +551,7 @@ try
             if cs1+cs2+cs3+light1+light2+light3-both1-both2-both3<sum(numtrials)
                 fprintf('Executing trial %d\n',cs1+cs2+cs3+light1+light2+light3-both1-both2-both3);
             end
-            if experimentmode == 3  || experimentmode == 7
+            if (experimentmode == 1 && intervaldistribution==3) || experimentmode == 3  || experimentmode == 7
                 trial = floor(time/durationtrialpartitionnocues);
                 temptrialdur = trial*durationtrialpartitionnocues;
                 plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'g','LineWidth',2);hold on
@@ -561,7 +563,7 @@ try
             if cs1+cs2+cs3+light1+light2+light3-both1-both2-both3<sum(numtrials)
                 fprintf('Executing trial %d\n',cs1+cs2+cs3+light1+light2+light3-both1-both2-both3);
             end
-            if experimentmode == 3 || experimentmode == 7
+            if (experimentmode == 1 && intervaldistribution==3) || experimentmode == 3 || experimentmode == 7
                 trial = floor(time/durationtrialpartitionnocues);
                 temptrialdur = trial*durationtrialpartitionnocues;
                 plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'r','LineWidth',2);hold on
@@ -573,7 +575,7 @@ try
             if cs1+cs2+cs3+light1+light2+light3-both1-both2-both3<sum(numtrials)
                 fprintf('Executing trial %d\n',cs1+cs2+cs3+light1+light2+light3-both1-both2-both3);
             end
-            if experimentmode == 3 || experimentmode == 7
+            if (experimentmode == 1 && intervaldistribution==3) || experimentmode == 3 || experimentmode == 7
                 trial = floor(time/durationtrialpartitionnocues);
                 temptrialdur = trial*durationtrialpartitionnocues;
                 plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'b','LineWidth',2);hold on
@@ -585,7 +587,7 @@ try
             if cs1+cs2+cs3+light1+light2+light3-both1-both2-both3<sum(numtrials)
                 fprintf('Executing trial %d\n',cs1+cs2+cs3+light1+light2+light3-both1-both2-both3);
             end
-            if experimentmode == 3 || experimentmode == 7
+            if (experimentmode == 1 && intervaldistribution==3) || experimentmode == 3 || experimentmode == 7
                 trial = floor(time/durationtrialpartitionnocues);
                 temptrialdur = trial*durationtrialpartitionnocues;
                 plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0 0.45 0.74],'LineWidth',2);hold on
@@ -597,7 +599,7 @@ try
             if cs1+cs2+cs3+light1+light2+light3-both1-both2-both3<sum(numtrials)
                 fprintf('Executing trial %d\n',cs1+cs2+cs3+light1+light2+light3-both1-both2-both3);
             end
-            if experimentmode == 3 || experimentmode == 7
+            if (experimentmode == 1 && intervaldistribution==3) || experimentmode == 3 || experimentmode == 7
                 trial = floor(time/durationtrialpartitionnocues);
                 temptrialdur = trial*durationtrialpartitionnocues;
                 plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0.93 0.69 0.13],'LineWidth',2);hold on
@@ -609,7 +611,7 @@ try
             if cs1+cs2+cs3+light1+light2+light3-both1-both2-both3<sum(numtrials)
                 fprintf('Executing trial %d\n',cs1+cs2+cs3+light1+light2+light3-both1-both2-both3);
             end
-            if experimentmode == 3 || experimentmode == 7
+            if (experimentmode == 1 && intervaldistribution==3) || experimentmode == 3 || experimentmode == 7
                 trial = floor(time/durationtrialpartitionnocues);
                 temptrialdur = trial*durationtrialpartitionnocues;
                 plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0.85 0.33 0.1],'LineWidth',2);hold on %light cue3
@@ -625,7 +627,7 @@ try
             if cs1+cs2+cs3+light1+light2+light3-both1-both2-both3<sum(numtrials)
                 fprintf('Executing trial %d\n',cs1+cs2+cs3+light1+light2+light3-both1-both2-both3);
             end
-            if experimentmode == 3 || experimentmode == 7
+            if (experimentmode == 1 && intervaldistribution==3) || experimentmode == 3 || experimentmode == 7
                 trial = floor(time/durationtrialpartitionnocues);
                 temptrialdur = trial*durationtrialpartitionnocues;
                 plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0 0.45 0.74],'LineWidth',2);hold on %light cue1
@@ -641,7 +643,7 @@ try
             if cs1+cs2+cs3+light1+light2+light3-both1-both2-both3<sum(numtrials)
                 fprintf('Executing trial %d\n',cs1+cs2+cs3+light1+light2+light3-both1-both2-both3);
             end
-            if experimentmode == 3 || experimentmode == 7
+            if (experimentmode == 1 && intervaldistribution==3) || experimentmode == 3 || experimentmode == 7
                 trial = floor(time/durationtrialpartitionnocues);
                 temptrialdur = trial*durationtrialpartitionnocues;
                 plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0.93 0.69 0.13],'LineWidth',2);hold on %light cue2
@@ -657,7 +659,7 @@ try
             if cs1+cs2+cs3+light1+light2+light3-both1-both2-both3<sum(numtrials)
                 fprintf('Executing trial %d\n',cs1+cs2+cs3+light1+light2+light3-both1-both2-both3);
             end
-            if experimentmode == 3 || experimentmode == 7
+            if (experimentmode == 1 && intervaldistribution==3) || experimentmode == 3 || experimentmode == 7
                 trial = floor(time/durationtrialpartitionnocues);
                 temptrialdur = trial*durationtrialpartitionnocues;
                 plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0.85 0.33 0.1],'LineWidth',2);hold on %light cue3
@@ -727,7 +729,7 @@ try
     params = struct();
     paramnames = string({'numtrials'; 'CSfreq'; 'CSsolenoid'; 'CSprob'; 'CSopentime';...
                  'CSdur'; 'CS_t_fxd'; 'CSpulse'; 'CSspeaker'; 'golickreq'; 'golicktube'; 'CSsignal';...
-                 'meanITI'; 'maxITI'; 'minITI'; 'expitiflag'; 'backgroundsolenoid'; 'T_bgd'; 'r_bgd'; ...
+                 'meanITI'; 'maxITI'; 'minITI'; 'intervaldistribution'; 'backgroundsolenoid'; 'T_bgd'; 'r_bgd'; ...
                  'mindelaybgdtocue'; 'mindelayfxdtobgd'; 'experimentmode'; ...
                  'rialbytrialbgdsolenoidflag'; 'totPoisssolenoid'; 'reqlicknum';...
                  'licksolenoid'; 'lickprob'; 'lickopentime'; 'delaytoreward'; 'delaytolick';...
@@ -867,7 +869,7 @@ catch exception
     params = struct();
     paramnames = string({'numtrials'; 'CSfreq'; 'CSsolenoid'; 'CSprob'; 'CSopentime';...
                  'CSdur'; 'CS_t_fxd'; 'CSpulse'; 'CSspeaker'; 'golickreq'; 'golicktube'; 'CSsignal';...
-                 'meanITI'; 'maxITI'; 'minITI'; 'expitiflag'; 'backgroundsolenoid'; 'T_bgd'; 'r_bgd'; ...
+                 'meanITI'; 'maxITI'; 'minITI'; 'intervaldistribution'; 'backgroundsolenoid'; 'T_bgd'; 'r_bgd'; ...
                  'mindelaybgdtocue'; 'mindelayfxdtobgd'; 'experimentmode'; ...
                  'rialbytrialbgdsolenoidflag'; 'totPoisssolenoid'; 'reqlicknum';...
                  'licksolenoid'; 'lickprob'; 'lickopentime'; 'delaytoreward'; 'delaytolick';...

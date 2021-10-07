@@ -22,7 +22,7 @@ function varargout = headfix_GUI(varargin)
 
 % Edit the above text to modify the response to help headfix_GUI
 
-% Last Modified by GUIDE v2.5 04-Oct-2021 12:50:32
+% Last Modified by GUIDE v2.5 06-Oct-2021 01:02:29
 
 % cd 'F:\acads\Stuber lab\headfix'; %Change to directory
 
@@ -67,7 +67,7 @@ guidata(hObject, handles);
 
 global actvAx saveDir
 
-mainPath = 'C:\Users\namboodirilab\OneDrive - University of California, San Francisco\Behavioral_acquisition_and_analysis';
+mainPath = 'D:\namboodirilab\OneDrive - University of California, San Francisco\Behavioral_acquisition_and_analysis';
 addpath(mainPath)
 saveDir = [mainPath '\data\'];          % where to save data
 
@@ -105,7 +105,7 @@ set(handles.CS1lasercheck, 'Enable', 'off');
 set(handles.CS2lasercheck, 'Enable', 'off');
 set(handles.CS3lasercheck, 'Enable', 'off');
 set(handles.Rewardlasercheck, 'Enable', 'off');
-set(handles.checkboxexpiti, 'Enable', 'off');
+set(handles.checkboxintervaldistribution, 'Enable', 'off');
 set(handles.maxdelaycuetovacuum, 'Enable', 'off');
 set(handles.meanITI, 'Enable', 'off');
 set(handles.maxITI, 'Enable', 'off');
@@ -155,7 +155,7 @@ varargout{1} = handles.output;
 
 
 % --------------------------------------------------------------------
-function FileMenu_Callback(hObject, eventdata, handles)
+function FileMenu_Callback(~, eventdata, handles)
 % hObject    handle to FileMenu (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
@@ -250,7 +250,7 @@ if selectedmode == 1 || selectedmode == 4 || selectedmode ==6
     set(handles.CS2lasercheck, 'Enable', 'on');
     set(handles.CS3lasercheck, 'Enable', 'on');
     set(handles.Rewardlasercheck, 'Enable', 'on');
-    set(handles.checkboxexpiti, 'Enable', 'on');
+    set(handles.checkboxintervaldistribution, 'Enable', 'on');
     set(handles.maxdelaycuetovacuum, 'Enable', 'on');
     set(handles.meanITI, 'Enable', 'on');
     set(handles.maxITI, 'Enable', 'on');
@@ -303,19 +303,19 @@ basecmd = strcat('"C:\Program Files (x86)\Arduino\hardware\tools\avr/bin/avrdude
 selectedmode = get(handles.experimentmode,'Value');
 
 if selectedmode == 1
-    [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_cues.ino.hex',':i'));
+    [status,cmdout] = dos(strcat(basecmd,'D:\uploads\Namlab_behavior_cues.ino.hex',':i'));
 elseif selectedmode == 2
-    [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_randomrewards.ino.hex',':i'));
+    [status,cmdout] = dos(strcat(basecmd,'D:\uploads\Namlab_behavior_randomrewards.ino.hex',':i'));
 elseif selectedmode == 3
-    [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_lickforreward.ino.hex',':i'));
+    [status,cmdout] = dos(strcat(basecmd,'D:\uploads\Namlab_behavior_lickforreward.ino.hex',':i'));
 elseif selectedmode == 4
-    [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_decisionmaking.ino.hex',':i'));
+    [status,cmdout] = dos(strcat(basecmd,'D:\uploads\Namlab_behavior_decisionmaking.ino.hex',':i'));
 elseif selectedmode == 5
-    [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis\uploads\Serial_port_testing.ino.hex',':i'));
+    [status,cmdout] = dos(strcat(basecmd,'D:\uploads\Serial_port_testing.ino.hex',':i'));
 elseif selectedmode == 6
-    [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_ramptiming.ino.hex',':i'));    
+    [status,cmdout] = dos(strcat(basecmd,'D:\uploads\Namlab_behavior_ramptiming.ino.hex',':i'));    
 elseif selectedmode == 7
-    [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_delaydiscounting_automated.ino.hex',':i'));    
+    [status,cmdout] = dos(strcat(basecmd,'D:\uploads\Namlab_behavior_delaydiscounting_automated.ino.hex',':i'));    
 end
 
 
@@ -367,7 +367,7 @@ set(handles.CS1lasercheck, 'Enable', 'off');
 set(handles.CS2lasercheck, 'Enable', 'off');
 set(handles.CS3lasercheck, 'Enable', 'off');
 set(handles.Rewardlasercheck, 'Enable', 'off');
-set(handles.checkboxexpiti, 'Enable', 'off');
+set(handles.checkboxintervaldistribution, 'Enable', 'off');
 set(handles.maxdelaycuetovacuum, 'Enable', 'off');
 set(handles.meanITI, 'Enable', 'off');
 set(handles.maxITI, 'Enable', 'off');
@@ -620,7 +620,7 @@ function testserialport_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 global s running actvAx saveDir
 
-mainPath = 'C:\Users\namboodirilab\OneDrive - University of California, San Francisco\Behavioral_acquisition_and_analysis';	
+mainPath = 'D:\namboodirilab\OneDrive - University of California, San Francisco\Behavioral_acquisition_and_analysis';	
 addpath(mainPath)	
 saveDir = [mainPath '\serialtest\'];          % save serial testing data here
 
@@ -791,7 +791,7 @@ minITI = get(handles.minITI,'String');
 minITI = str2double(minITI);
 maxITI = get(handles.maxITI,'String');
 maxITI = str2double(maxITI);
-expitiflag = get(handles.checkboxexpiti,'Value');
+intervaldistribution = get(handles.checkboxintervaldistribution,'Value');
 maxdelaycuetovacuum = get(handles.maxdelaycuetovacuum,'String');
 maxdelaycuetovacuum = str2double(maxdelaycuetovacuum);
 ramptimingexp = get(handles.ramptimingexp,'String');
@@ -860,7 +860,7 @@ else
 end
 
 inputs = [numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur, CS_t_fxd,...
-          CSpulse, CSspeaker, golickreq, golicktube, CSsignal, meanITI, maxITI, minITI, expitiflag,...
+          CSpulse, CSspeaker, golickreq, golicktube, CSsignal, meanITI, maxITI, minITI, intervaldistribution,...
           backgroundsolenoid, T_bgd, r_bgd, mindelaybgdtocue, mindelayfxdtobgd,...
           experimentmode, trialbytrialbgdsolenoidflag, totPoisssolenoid,...
           reqlicknum, licksolenoid, lickprob, lickopentime, delaytoreward, delaytolick,...
@@ -904,7 +904,7 @@ set(handles.r_bgd,'Enable','off')
 set(handles.mindelaybgdtocue,'Enable','off')
 set(handles.mindelayfxdtobgd,'Enable','off')
 set(handles.checkboxtrialbytrial,'Enable','off')
-set(handles.checkboxexpiti,'Enable','off')
+set(handles.checkboxintervaldistribution,'Enable','off')
 set(handles.totPoisssolenoid,'Enable','off')
 
 set(handles.laserlatency,'Enable','off')
@@ -944,7 +944,7 @@ set(handles.testlaser,'Enable','on')
 
 params = sprintf('%G+', numtrials, CSfreq, CSsolenoid, CSprob, CSopentime,...
                  CSdur, CS_t_fxd, CSpulse, CSspeaker, golickreq, golicktube, CSsignal,...
-                 meanITI, maxITI, minITI, expitiflag, backgroundsolenoid, T_bgd, r_bgd,...
+                 meanITI, maxITI, minITI, intervaldistribution, backgroundsolenoid, T_bgd, r_bgd,...
                  mindelaybgdtocue, mindelayfxdtobgd, experimentmode, trialbytrialbgdsolenoidflag,... 
                  totPoisssolenoid, reqlicknum, licksolenoid, lickprob, lickopentime, delaytoreward,...
                  delaytolick, minrewards, signaltolickreq, soundsignalpulse, soundfreq, sounddur, lickspeaker,...
@@ -1002,7 +1002,7 @@ maxITI = get(handles.maxITI,'String');
 maxITI = str2double(maxITI);
 minITI = get(handles.minITI,'String');
 minITI = str2double(minITI);
-expitiflag = get(handles.checkboxexpiti,'Value');
+intervaldistribution = get(handles.checkboxintervaldistribution,'Value');
 maxdelaycuetovacuum = get(handles.maxdelaycuetovacuum,'String');
 maxdelaycuetovacuum = str2double(maxdelaycuetovacuum);
 ramptimingexp = get(handles.ramptimingexp, 'String');
@@ -1070,7 +1070,7 @@ else
     ramptimingexp_input = ramptimingexp;
 end
 inputs = [numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur, CS_t_fxd,...
-          CSpulse, CSspeaker, golickreq, golicktube, CSsignal, meanITI, maxITI, minITI, expitiflag,...
+          CSpulse, CSspeaker, golickreq, golicktube, CSsignal, meanITI, maxITI, minITI, intervaldistribution,...
           backgroundsolenoid, T_bgd, r_bgd, mindelaybgdtocue, mindelayfxdtobgd,...
           experimentmode, trialbytrialbgdsolenoidflag, totPoisssolenoid,...
           reqlicknum, licksolenoid, lickprob, lickopentime, delaytoreward,...                
@@ -1141,7 +1141,7 @@ fname = get(handles.fileName,'String');
 
 params = sprintf('%G+', numtrials, CSfreq, CSsolenoid, CSprob, CSopentime,...
                  CSdur, CS_t_fxd, CSpulse, CSspeaker, golickreq, golicktube, CSsignal,...
-                 meanITI, maxITI, minITI, expitiflag, backgroundsolenoid, T_bgd, r_bgd, ...
+                 meanITI, maxITI, minITI, intervaldistribution, backgroundsolenoid, T_bgd, r_bgd, ...
                  mindelaybgdtocue, mindelayfxdtobgd, experimentmode, ...
                  trialbytrialbgdsolenoidflag, totPoisssolenoid, reqlicknum,...
                  licksolenoid, lickprob, lickopentime, delaytoreward, delaytolick,...
