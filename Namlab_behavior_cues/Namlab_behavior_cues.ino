@@ -1414,7 +1414,12 @@ void cues() {
   }
   
   numfxdsolenoids = 0;                                   // Zero fixed solenoids given till now
-  cueOff  = ts + CSdur[cueList[CSct]];                   // set timestamp of cue cessation
+  if (CSdur[cueList[CSct]]>0) {
+    cueOff  = ts + CSdur[cueList[CSct]];                   // set timestamp of cue cessation
+  }
+  else {
+    cueOff = ts + 100;                  // just for the sync with fiber photometry
+  }
   lickctforreq[0] = 0;                 // reset lick1 count to zero at cue onset
   lickctforreq[1] = 0;                 // reset lick2 count to zero at cue onset
   lickctforreq[2] = 0;                 // reset lick3 count to zero at cue onset
