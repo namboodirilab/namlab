@@ -609,7 +609,13 @@ void setup() {
     nextcue = meanITI;    
   }
   else {
-    if (intervaldistribution == 1 || intervaldistribution ==3) { // generate exponential random numbers for itis
+    if (intervaldistribution ==2) { // generate uniform random numbers for itis
+      u = random(0, 10000);
+      temp = (float)u / 10000;
+      tempu = (unsigned long)(maxITI - minITI) * temp;
+      nextcue    = minITI + tempu; // set timestamp of first cue      
+    }
+    else { // generate exponential random numbers for itis
       tempITI = 0;
       while (tempITI<=minITI) {
         u = random(0, 10000);
@@ -622,13 +628,22 @@ void setup() {
         tempITI = (unsigned long)mindelaybgdtocue + meanITI * temp;
       }
       nextcue  = tempITI; // set timestamp of first cue      
+
+      tempITI = 0;
+      if (intervaldistribution == 4) {
+        while (tempITI<=minITI) {
+          u = random(0, 10000);
+          temp = (float)u / 10000;
+          temp1 = (float)truncITI / meanITI;
+          temp1 = exp(-temp1);
+          temp1 = 1 - temp1;
+          temp = temp * temp1;
+          temp = -log(1 - temp);
+          tempITI = (unsigned long)mindelaybgdtocue + meanITI * temp;
+          }
+          nextfxdsolenoid  = tempITI; // set timestamp of first poisson reward             
+      }
     }
-    else if (intervaldistribution == 2) { // generate uniform random numbers for itis
-      u = random(0, 10000);
-      temp = (float)u / 10000;
-      tempu = (unsigned long)(maxITI - minITI) * temp;
-      nextcue    = minITI + tempu; // set timestamp of first cue      
-    }    
   }
     
   if (randlaserflag == 1) {
@@ -732,7 +747,7 @@ void loop() {
   licking();                           // determine if lick occured or was withdrawn
   frametimestamp();                    // store timestamps of frames
 
-  if (ts >= nextcue && ((ITIflag && intervaldistribution<3) || intervaldistribution==3)) {
+  if (ts >= nextcue && ((ITIflag && intervaldistribution<3) || intervaldistribution>2)) {
     if (CSsignal[cueList[CSct]] == 1) {           // Check which CS signal to give (sound/light/both)
       Serial.print(15 + cueList[CSct]);         // code data as CS1, CS2 or CS3 timestamp
       Serial.print(" ");
@@ -764,9 +779,9 @@ void loop() {
     if (CSlasercheck[cueList[CSct]]) {
       deliverlasertocues();              // check whether to and deliver laser if needed
     }
-    ITIflag = false;
     
-    if (intervaldistribution==3) {
+    
+    if (intervaldistribution>2) {
       CSct++;  
       u = random(0, 10000);
       temp = (float)u / 10000;        
@@ -776,6 +791,9 @@ void loop() {
       temp = temp * temp1;
       temp = -log(1 - temp);
       nextcue =  (unsigned long)ts + meanITI * temp;
+    }
+    else {
+      ITIflag = false;
     }
   }
 
@@ -856,11 +874,11 @@ void loop() {
     lightOff = 0;
   }
 
-  if (((!ITIflag && intervaldistribution<3) || intervaldistribution==3) && ts >= nextfxdsolenoid && nextfxdsolenoid != 0) { // give fixed solenoid
+  if (((!ITIflag && intervaldistribution<3) || intervaldistribution>2) && ts >= nextfxdsolenoid && nextfxdsolenoid != 0) { // give fixed solenoid
     if (intervaldistribution<3) {
       Serial.print(CSsolenoidcode[2 * cueList[CSct] + numfxdsolenoids]);      
     }
-    else if (intervaldistribution==3) {
+    else if (intervaldistribution>2) {
       Serial.print(CSsolenoidcode[2 * cueList[fxdrwct] + 1]);      
     }
     Serial.print(" ");
@@ -920,6 +938,31 @@ void loop() {
         else {
           nextfxdsolenoid = 0;
         }
+      }
+    }
+    else if (intervaldistribution==4) {
+      digitalWrite(CSsolenoid[2 * cueList[fxdrwct] + 1], HIGH);      // turn on solenoid
+      Serial.print(0);                       //   this indicates that the solenoid was actually given
+      Serial.print('\n');
+      solenoidOff = ts + CSopentime[2 * cueList[fxdrwct] + 1];      // set solenoid off time
+      fxdrwct++;
+      if (fxdrwct>=totalnumtrials) {
+        nextfxdsolenoid = 0;
+        sessionendtime = ts+5000;
+      }
+      else {
+        tempITI = 0;
+        while (tempITI<=minITI) {
+          u = random(0, 10000);
+          temp = (float)u / 10000;
+          temp1 = (float)truncITI / meanITI;
+          temp1 = exp(-temp1);
+          temp1 = 1 - temp1;
+          temp = temp * temp1;
+          temp = -log(1 - temp);
+          tempITI = (unsigned long)meanITI * temp;
+          }
+          nextfxdsolenoid  = ts + tempITI; // set timestamp of first poisson reward             
       }
     }
   }
