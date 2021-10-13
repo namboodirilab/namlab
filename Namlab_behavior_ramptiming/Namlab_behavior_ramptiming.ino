@@ -664,10 +664,14 @@ void setup() {
   timeforfirstlick = 0;
 
   // UNCOMMENT THESE LINES FOR TRIGGERING IMAGE COLLECTION AT BEGINNING
-  digitalWrite(ttloutpin, HIGH);
-  delay(100);
-  digitalWrite(ttloutpin, LOW);
+  //digitalWrite(ttloutpin, HIGH);
+  //delay(100);
+  //digitalWrite(ttloutpin, LOW);
   // TILL HERE
+
+  // UNCOMMENT THESE LINES FOR TRIGGERING PHOTOMETRY IMAGE COLLECTION AT BEGINNING
+  digitalWrite(ttloutpin, HIGH);
+  // TILL HERE  
 
   // start session
   start = millis();                    // start time
@@ -816,6 +820,8 @@ void loop() {
     cueOff = 0;
     cuePulseOff = 0;
     cuePulseOn = 0;
+    // Sync with fiber photometry
+    digitalWrite(ttloutstoppin, LOW);
   }
   // Turn off laser
   if (ts >= laserOff && laserOff != 0) {   // LASER CESSATION
@@ -1360,7 +1366,12 @@ void cues() {
   }
 
   numfxdsolenoids = 0;                                   // Zero fixed solenoids given till now
-  cueOff  = ts + CSdur[cueList[CSct]];                   // set timestamp of cue cessation
+  if (CSdur[cueList[CSct]]>0) {
+    cueOff  = ts + CSdur[cueList[CSct]];                   // set timestamp of cue cessation
+  }
+  else {
+    cueOff = ts + 100;                  // just for the sync with fiber photometry
+  }
   lickctforreq[0] = 0;                 // reset lick1 count to zero at cue onset
   lickctforreq[1] = 0;                 // reset lick2 count to zero at cue onset
   lickctforreq[2] = 0;                 // reset lick3 count to zero at cue onset
