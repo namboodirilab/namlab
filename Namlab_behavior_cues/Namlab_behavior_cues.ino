@@ -783,6 +783,11 @@ void loop() {
     
     if (intervaldistribution>2) {
       CSct++;  
+      if (CSct>=totalnumtrials && intervaldistribution==4) {
+        nextfxdsolenoid = 0;
+        nextcue = 0;
+        sessionendtime = ts+5000;
+      }
       u = random(0, 10000);
       temp = (float)u / 10000;        
       temp1 = (float)truncITI / meanITI; 
