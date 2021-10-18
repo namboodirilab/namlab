@@ -279,6 +279,7 @@ unsigned long T_bgdvec[120];     // inverse of the background rate of solenoids 
 //unsigned long T_bgdvecnonzero[60]; // all the non-zero elements of the bgd vecs. Every other trial has zero background solenoid rate. This vector will be shuffled later
 int *Laserontrial = 0;             // Is there laser on any given trial?
 unsigned long *fxdrwtime = 0;             // save fixed reward times for poisson cue condition
+unsigned long *cuetime = 0;        // save cue times for poisson reward condition
 
 // SETUP code ////////////////
 void setup() {
@@ -630,6 +631,9 @@ void setup() {
           }
           nextcue  = tempITI; // set timestamp of first cue         
       }
+      else {
+        nextcue = 0;
+      }
 
       tempITI = 0;
       if (intervaldistribution>3) {
@@ -668,6 +672,9 @@ void setup() {
 
   if (intervaldistribution==3){
     fxdrwtime = new unsigned long[totalnumtrials];
+  }
+  if (intervaldistribution==5){
+    cuetime = new unsigned long[totalnumtrials];
   }
 
   cueOff     = nextcue + CSdur[cueList[0]];           // get timestamp of first cue cessation
@@ -749,7 +756,7 @@ void loop() {
   licking();                           // determine if lick occured or was withdrawn
   frametimestamp();                    // store timestamps of frames
 
-  if (ts >= nextcue && ((ITIflag && intervaldistribution<3) || intervaldistribution>2)) {
+  if (ts >= nextcue && ((ITIflag && intervaldistribution<3) || intervaldistribution>2) && nextcue!=0) {
     if (CSsignal[cueList[CSct]] == 1) {           // Check which CS signal to give (sound/light/both)
       Serial.print(15 + cueList[CSct]);         // code data as CS1, CS2 or CS3 timestamp
       Serial.print(" ");
@@ -785,7 +792,7 @@ void loop() {
     
     if (intervaldistribution>2) {
       CSct++;  
-      if (intervaldirstribution<5) { 
+      if (intervaldistribution<5) { 
         if (CSct>=totalnumtrials && intervaldistribution>3) {
           nextfxdsolenoid = 0;
           nextcue = 0;
@@ -799,6 +806,21 @@ void loop() {
         temp = temp * temp1;
         temp = -log(1 - temp);
         nextcue =  (unsigned long)ts + meanITI * temp;
+      }
+      else {
+        if (CSct>totalnumtrials) {
+          nextcue = 0;
+          nextfxdsolenoid = 0;
+          sessionendtime = ts+5000;
+        }
+        else {
+          if (CSct<fxdrwct) { 
+          nextcue = cuetime[CSct];
+          }
+          else {
+            nextcue = 0;
+            }
+        }
       }
     }
     else {
@@ -954,10 +976,14 @@ void loop() {
       Serial.print(0);                       //   this indicates that the solenoid was actually given
       Serial.print('\n');
       solenoidOff = ts + CSopentime[2 * cueList[fxdrwct] + 1];      // set solenoid off time
-      fxdrwct++;
       if (intervaldistribution==5) {
-        nextcue = nextfxdsolenoid + CS_t_fxd[2 * cueList[CSct]+1]
+        cuetime[fxdrwct] = nextfxdsolenoid + CS_t_fxd[2 * cueList[CSct]+1];
+        if (nextcue==0) {
+          nextcue = cuetime[CSct];
+        }
       }
+      fxdrwct++;
+      
       if (fxdrwct>=totalnumtrials && intervaldistribution==4) {
         nextfxdsolenoid = 0;
         sessionendtime = ts+5000;
