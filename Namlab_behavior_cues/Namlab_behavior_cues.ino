@@ -616,21 +616,23 @@ void setup() {
       nextcue    = minITI + tempu; // set timestamp of first cue      
     }
     else { // generate exponential random numbers for itis
-      tempITI = 0;
-      while (tempITI<=minITI) {
-        u = random(0, 10000);
-        temp = (float)u / 10000;
-        temp1 = (float)truncITI / meanITI;
-        temp1 = exp(-temp1);
-        temp1 = 1 - temp1;
-        temp = temp * temp1;
-        temp = -log(1 - temp);
-        tempITI = (unsigned long)mindelaybgdtocue + meanITI * temp;
+      if (intervaldistribution!=5) {
+        tempITI = 0;
+        while (tempITI<=minITI) {
+          u = random(0, 10000);
+          temp = (float)u / 10000;
+          temp1 = (float)truncITI / meanITI;
+          temp1 = exp(-temp1);
+          temp1 = 1 - temp1;
+          temp = temp * temp1;
+          temp = -log(1 - temp);
+          tempITI = (unsigned long)mindelaybgdtocue + meanITI * temp;
+          }
+          nextcue  = tempITI; // set timestamp of first cue         
       }
-      nextcue  = tempITI; // set timestamp of first cue      
 
       tempITI = 0;
-      if (intervaldistribution == 4) {
+      if (intervaldistribution>3) {
         while (tempITI<=minITI) {
           u = random(0, 10000);
           temp = (float)u / 10000;
@@ -783,19 +785,21 @@ void loop() {
     
     if (intervaldistribution>2) {
       CSct++;  
-      if (CSct>=totalnumtrials && intervaldistribution==4) {
-        nextfxdsolenoid = 0;
-        nextcue = 0;
-        sessionendtime = ts+5000;
+      if (intervaldirstribution<5) { 
+        if (CSct>=totalnumtrials && intervaldistribution>3) {
+          nextfxdsolenoid = 0;
+          nextcue = 0;
+          sessionendtime = ts+5000;
+          }
+        u = random(0, 10000);
+        temp = (float)u / 10000;        
+        temp1 = (float)truncITI / meanITI;
+        temp1 = exp(-temp1);
+        temp1 = 1 - temp1;
+        temp = temp * temp1;
+        temp = -log(1 - temp);
+        nextcue =  (unsigned long)ts + meanITI * temp;
       }
-      u = random(0, 10000);
-      temp = (float)u / 10000;        
-      temp1 = (float)truncITI / meanITI; 
-      temp1 = exp(-temp1);
-      temp1 = 1 - temp1;
-      temp = temp * temp1;
-      temp = -log(1 - temp);
-      nextcue =  (unsigned long)ts + meanITI * temp;
     }
     else {
       ITIflag = false;
@@ -945,13 +949,16 @@ void loop() {
         }
       }
     }
-    else if (intervaldistribution==4) {
+    else if (intervaldistribution>3) {
       digitalWrite(CSsolenoid[2 * cueList[fxdrwct] + 1], HIGH);      // turn on solenoid
       Serial.print(0);                       //   this indicates that the solenoid was actually given
       Serial.print('\n');
       solenoidOff = ts + CSopentime[2 * cueList[fxdrwct] + 1];      // set solenoid off time
       fxdrwct++;
-      if (fxdrwct>=totalnumtrials) {
+      if (intervaldistribution==5) {
+        nextcue = nextfxdsolenoid + CS_t_fxd[2 * cueList[CSct]+1]
+      }
+      if (fxdrwct>=totalnumtrials && intervaldistribution==4) {
         nextfxdsolenoid = 0;
         sessionendtime = ts+5000;
       }
