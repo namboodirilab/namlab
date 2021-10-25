@@ -1380,6 +1380,8 @@ void cues() {
   timeforfirstlick = 0;
   nextvacuum = ts + CS_t_fxd[2 * cueList[CSct] + 1] + maxdelaytovacuumfromcueonset;
 
+  // Sync with fiber photometry
+  digitalWrite(ttloutstoppin, HIGH);
 }
 
 void deliverlasertocues() {
@@ -1425,9 +1427,9 @@ void software_Reboot()
 
 // End session //////////////
 void endSession() {
-  digitalWrite(ttloutstoppin, HIGH);
-  delay(100);
-  digitalWrite(ttloutstoppin, LOW);
+  //digitalWrite(ttloutstoppin, HIGH);
+  //delay(100);
+  //digitalWrite(ttloutstoppin, LOW);
   Serial.print(0);                       //   code data as end of session
   Serial.print(" ");
   Serial.print(ts);                      //   send timestamp
