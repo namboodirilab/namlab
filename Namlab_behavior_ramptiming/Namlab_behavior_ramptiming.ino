@@ -197,6 +197,8 @@ float actualopentime;           // actual open time for solenoid in ramp timing 
 unsigned long ramptimingexp;            // exponent factor for ramptiming task reward openning time function;
 unsigned long rampmaxdelay;
 unsigned long timeforfirstlick;
+unsigned long CSrampmaxdelay[numCS];
+
 
 const int numlicktube = 2;       // number of recording lick tubes for lick dependent experiments
 unsigned long reqlicknum[numlicktube];
@@ -751,7 +753,7 @@ void loop() {
       cues();
       lights();
     }
-    maxdelaytosolenoid = ts + rampmaxdelay;
+    maxdelaytosolenoid = ts + CSrampmaxdelay[cueList[CSct]];
     if (CSlasercheck[cueList[CSct]]) {
       deliverlasertocues();              // check whether to and deliver laser if needed
     }
@@ -842,7 +844,7 @@ void loop() {
       actualopentime = pow(actualopentime, ramptimingexp);
       actualopentime = actualopentime * CSopentime[2 * cueList[CSct] + 1];
     }
-    else if (timeforfirstlick <= rampmaxdelay && timeforfirstlick > CS_t_fxd[2 * cueList[CSct] + 1]) {
+    else if (timeforfirstlick <= CSrampmaxdelay[cueList[CSct]] && timeforfirstlick > CS_t_fxd[2 * cueList[CSct] + 1]) {
       actualopentime = CSopentime[2 * cueList[CSct] + 1];
     }
     Serial.print(CSsolenoidcode[2 * cueList[CSct] + 1]);
@@ -1052,7 +1054,7 @@ void loop() {
 
 // Accept parameters from MATLAB
 void getParams() {
-  int pn = 108;                              // number of parameter inputs
+  int pn = 111;                              // number of parameter inputs
   unsigned long param[pn];                  // parameters
 
   for (int p = 0; p < pn; p++) {
@@ -1157,6 +1159,9 @@ void getParams() {
   fixedsidecheck[1]      = param[105];
   rampmaxdelay           = param[106];
   Rewardlasercheck       = param[107];
+  CSrampmaxdelay[0]      = param[108];
+  CSrampmaxdelay[1]      = param[109];
+  CSrampmaxdelay[2]      = param[110];
 
   for (int p = 0; p < numCS; p++) {
     CSfreq[p] = CSfreq[p] * 1000;         // convert frequency from kHz to Hz

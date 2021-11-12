@@ -198,6 +198,7 @@ float actualopentime;
 float ramptimingexp;
 float rampmaxdelay;
 unsigned long timeforfirstlick;
+unsigned long CSrampmaxdelay[numCS];
 
 const int numlicktube = 2;       // number of recording lick tubes for lick dependent experiments
 unsigned long reqlicknum[numlicktube];
@@ -810,7 +811,7 @@ void loop() {
 
 // Accept parameters from MATLAB
 void getParams() {
-  int pn = 108;                              // number of parameter inputs
+  int pn = 111;                              // number of parameter inputs
   unsigned long param[pn];                  // parameters
 
   for (int p = 0; p < pn; p++) {
@@ -915,7 +916,11 @@ void getParams() {
   fixedsidecheck[1]      = param[105];
   rampmaxdelay           = param[106];
   Rewardlasercheck       = param[107];
+  CSrampmaxdelay[0]      = param[108];
+  CSrampmaxdelay[1]      = param[109];
+  CSrampmaxdelay[2]      = param[110];
 
+  
   for (int p = 0; p < numCS; p++) {
     CSfreq[p] = CSfreq[p] * 1000;         // convert frequency from kHz to Hz
     golicktube[p]--;                      // Make go lick tube into a zero index for indexing lickctforreq

@@ -116,13 +116,13 @@
 //97) variable interval flag for lick 2s. 1==variable, 0==fixed
 //98) light number for lick 1
 //99) light number for lick 2
-//100) exponent factor for ramp timing 
+//100) exponent factor for ramp timing
 //101) laser on flag for CS1, 1==laser on, 0==laser off
 //102) laser on flag for CS2, 1==laser on, 0==laser off
 //103) laser on flag for CS3, 1==laser on, 0==laser off
-//104) fixed reward check for left lick tube (lick tube 1) for delay discounting task 
-//105) fixed reward check for right lick tube (lick tube 2) for delay discounting task 
-//106) max delay to reward for ramp timing task 
+//104) fixed reward check for left lick tube (lick tube 1) for delay discounting task
+//105) fixed reward check for right lick tube (lick tube 2) for delay discounting task
+//106) max delay to reward for ramp timing task
 //107) laser flag for reward in ramp timing task, triggered by the first lick after cue if reward is bigger than a certain amount
 
 #include <math.h>
@@ -200,6 +200,7 @@ float actualopentime;
 float ramptimingexp;
 float rampmaxdelay;
 unsigned long timeforfirstlick;
+unsigned long CSrampmaxdelay[numCS];
 
 const int numlicktube = 2;       // number of recording lick tubes for lick dependent experiments
 unsigned long reqlicknum[numlicktube];
@@ -606,13 +607,13 @@ void setup() {
   }
 
   truncITI = min(3 * meanITI, maxITI); //truncation is set at 3 times the meanITI or that hardcoded in maxITI; used for exponential distribution
-  if (meanITI==maxITI) {
-    nextcue = meanITI;    
+  if (meanITI == maxITI) {
+    nextcue = meanITI;
   }
   else {
-    if (intervaldistribution == 1 || intervaldistribution ==3) { // generate exponential random numbers for itis
+    if (intervaldistribution == 1 || intervaldistribution == 3) { // generate exponential random numbers for itis
       tempITI = 0;
-      while (tempITI<=minITI) {
+      while (tempITI <= minITI) {
         u = random(0, 10000);
         temp = (float)u / 10000;
         temp1 = (float)truncITI / meanITI;
@@ -622,14 +623,14 @@ void setup() {
         temp = -log(1 - temp);
         tempITI = (unsigned long)mindelaybgdtocue + meanITI * temp;
       }
-      nextcue  = tempITI; // set timestamp of first cue      
+      nextcue  = tempITI; // set timestamp of first cue
     }
     else if (intervaldistribution == 2) { // generate uniform random numbers for itis
       u = random(0, 10000);
       temp = (float)u / 10000;
       tempu = (unsigned long)(maxITI - minITI) * temp;
-      nextcue    = minITI + tempu; // set timestamp of first cue      
-    }    
+      nextcue    = minITI + tempu; // set timestamp of first cue
+    }
   }
   if (randlaserflag == 1) {
     temp = nextcue - mindelaybgdtocue;
@@ -1098,16 +1099,16 @@ void loop() {
 
     if (ITIflag == false) {            // if exit was from a trial, move into ITI and set the next cue and bgdsolenoid times
       ITIflag = true;
-      if (meanITI==maxITI) {
-        nextcue = ts+meanITI;
+      if (meanITI == maxITI) {
+        nextcue = ts + meanITI;
       }
       else {
-        if (intervaldistribution ==1 || intervaldistribution ==3) {
+        if (intervaldistribution == 1 || intervaldistribution == 3) {
           tempITI = 0;
-          while (tempITI<=minITI) {
+          while (tempITI <= minITI) {
             u = random(0, 10000);
-            temp = (float)u / 10000;        
-            temp1 = (float)truncITI / meanITI; 
+            temp = (float)u / 10000;
+            temp1 = (float)truncITI / meanITI;
             temp1 = exp(-temp1);
             temp1 = 1 - temp1;
             temp = temp * temp1;
@@ -1116,14 +1117,14 @@ void loop() {
           }
           nextcue    = (unsigned long)ts + tempITI; // set timestamp of next cue
         }
-        else if (intervaldistribution ==2) {
+        else if (intervaldistribution == 2) {
           u = random(0, 10000);
           temp = (float)u / 10000;
           tempu = (unsigned long)(maxITI - minITI) * temp;
           nextcue = ts + minITI + tempu; // set timestamp of first cue
         }
       }
-      
+
       if (randlaserflag == 1) {
         temp = nextcue - mindelaybgdtocue;
         nextlaser = random(ts, temp);
@@ -1159,7 +1160,7 @@ void loop() {
 
 // Accept parameters from MATLAB
 void getParams() {
-  int pn = 108;                              // number of parameter inputs
+  int pn = 111;                              // number of parameter inputs
   unsigned long param[pn];                  // parameters
 
   for (int p = 0; p < pn; p++) {
@@ -1264,6 +1265,10 @@ void getParams() {
   fixedsidecheck[1]      = param[105];
   rampmaxdelay           = param[106];
   Rewardlasercheck       = param[107];
+  CSrampmaxdelay[0]      = param[108];
+  CSrampmaxdelay[1]      = param[109];
+  CSrampmaxdelay[2]      = param[110];
+
   
   for (int p = 0; p < numCS; p++) {
     CSfreq[p] = CSfreq[p] * 1000;         // convert frequency from kHz to Hz
