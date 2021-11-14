@@ -736,7 +736,8 @@ try
                  'laserlatency'; 'laserduration'; 'randlaserflag'; 'laserpulseperiod'; 'laserpulseoffperiod';...
                  'lasertrialbytrialflag'; 'maxdelaycuetovacuum'; 'CSlight'; 'variableratioflag';...
                  'variableintervalflag'; 'licklight'; 'ramptimingexp'; 'CS1lasercheck';...
-                 'CS2lasercheck'; 'CS3lasercheck'; 'fixedsidecheck'; 'rampmaxdelay'; 'Rewardlasercheck'});
+                 'CS2lasercheck'; 'CS3lasercheck'; 'fixedsidecheck'; 'rampmaxdelay'; 'Rewardlasercheck'; ...
+                 'CSrampmaxdelay'});
 
         params.(paramnames(1)) = param(1:3);                        % numtrials (3)
         params.(paramnames(2)) = param(4:6);                        % CS frequency (3)
@@ -792,7 +793,8 @@ try
         params.(paramnames(52)) = param(105:106);                   % lick fixed side check (2)
         params.(paramnames(53)) = param(107);   
         params.(paramnames(54)) = param(108);                       % Reward laser check flag
-        
+        params.(paramnames(55)) = param(109:111);
+               
     assignin('base','eventlog',eventlog);
 %     file = [saveDir fname '_' num2str(r_bgd) '_' num2str(T_bgd) '_'  str probstr laserstr bgdsolenoidstr extinctionstr date '.mat'];
     file = [saveDir fname '_' str date '.mat'];
@@ -876,7 +878,8 @@ catch exception
                  'laserlatency'; 'laserduration'; 'randlaserflag'; 'laserpulseperiod'; 'laserpulseoffperiod';...
                  'lasertrialbytrialflag'; 'maxdelaycuetovacuum'; 'CSlight'; 'variableratioflag';...
                  'variableintervalflag'; 'licklight'; 'ramptimingexp'; 'CS1lasercheck';...
-                 'CS2lasercheck'; 'CS3lasercheck'; 'fixedsidecheck'; 'rampmaxdelay'; 'Rewardlasercheck'});
+                 'CS2lasercheck'; 'CS3lasercheck'; 'fixedsidecheck'; 'rampmaxdelay'; 'Rewardlasercheck';...
+                 'CSrampmaxdelay'});
 
         params.(paramnames(1)) = param(1:3);                        % numtrials (3)
         params.(paramnames(2)) = param(4:6);                        % CS frequency (3)
@@ -932,7 +935,7 @@ catch exception
         params.(paramnames(52)) = param(105:106);                   % lick fixed side check (2)
         params.(paramnames(53)) = param(107);                       % after ramp max delay to reward
         params.(paramnames(54)) = param(108);                       % Reward laser check flag
-        
+        params.(paramnames(55)) = param(109:111);
         
     save(file, 'eventlog', 'params','exception')
 end
