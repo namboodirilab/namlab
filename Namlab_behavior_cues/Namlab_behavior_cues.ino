@@ -887,7 +887,7 @@ void loop() {
 
   // Increasing cue
   if (ts >= cuePulseOn && cuePulseOn != 0 && ts < cueOff && CSincrease[cueList[CSct]] == 1) {
-    if (CSfreq[cueList[CSct]]+tempincrease<7000) {
+    if (CSfreq[cueList[CSct]]+tempincrease<6000) {
       tone(speaker2, CSfreq[cueList[CSct]]+tempincrease);               // turn on tone
     }
     else {
