@@ -893,7 +893,7 @@ void loop() {
     else {
       tone(speaker1, CSfreq[cueList[CSct]]-tempincrease);               // turn on tone
     }
-    tempincrease = tempincrease + 200;
+    tempincrease = tempincrease + 80;
     cuePulseOff = ts + 200;                  // Cue pulsing
     cuePulseOn = 0;                          // No cue pulsing
   }
