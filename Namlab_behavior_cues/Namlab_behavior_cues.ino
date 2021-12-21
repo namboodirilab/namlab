@@ -198,6 +198,7 @@ float ramptimingexp;
 float rampmaxdelay;
 unsigned long timeforfirstlick;
 unsigned long CSrampmaxdelay[numCS];
+unsigned long CSincrease[numCS];
 
 const int numlicktube = 2;       // number of recording lick tubes for lick dependent experiments
 unsigned long reqlicknum[numlicktube];
@@ -266,6 +267,7 @@ float temp1;                     // temporary float variable for temporary opera
 int temp2;
 unsigned long tempu;
 unsigned long tempITI;
+unsigned long tempincrease;
 
 int lickctforreq[3];            // number of licks on lick tubes 1, 2 and 3 during the cue-reward delay. If this is >= golickreq for the appropriate golicktube, animals get rewarded after the corresponding cue
 
@@ -357,24 +359,44 @@ void setup() {
     if (reading == 50 || reading == 51 || reading == 52) {                       // Test CS1 or CS2 or CS3
       reading -= 50;
       if (CSsignal[reading] == 1) {
-        if (CSpulse[reading] == 1) {
-          tone(CSspeaker[reading], CSfreq[reading]);               // turn on tone
-          delay(200);                               // Pulse with 200ms cycle
-          noTone(CSspeaker[reading]);
+        if (CSincrease[reading] == 1) {
+          tone(speaker2, 6600);
           delay(200);
-          tone(CSspeaker[reading], CSfreq[reading]);               // turn on tone
-          delay(200);                               // Pulse with 200ms cycle
-          noTone(CSspeaker[reading]);
+          noTone(speaker2);
+          delay(5);
+          tone(speaker2, 6800);
           delay(200);
-          tone(CSspeaker[reading], CSfreq[reading]);               // turn on tone
-          delay(200);                               // Pulse with 200ms cycle
-          noTone(CSspeaker[reading]);
+          noTone(speaker2);
+          delay(5);
+          tone(speaker1, 7000);
+          delay(200);
+          noTone(speaker1);
+          delay(5);
+          tone(speaker1, 7200);
+          delay(200);
+          noTone(speaker1);
+          delay(5);
         }
-        else if (CSpulse[reading] == 0) {
-          tone(CSspeaker[reading], CSfreq[reading]);               // turn on tone
-          delay(1000);
-          noTone(CSspeaker[reading]);
-        }
+        else {
+          if (CSpulse[reading] == 1) {
+            tone(CSspeaker[reading], CSfreq[reading]);               // turn on tone
+            delay(200);                               // Pulse with 200ms cycle
+            noTone(CSspeaker[reading]);
+            delay(200);
+            tone(CSspeaker[reading], CSfreq[reading]);               // turn on tone
+            delay(200);                               // Pulse with 200ms cycle
+            noTone(CSspeaker[reading]);
+            delay(200);
+            tone(CSspeaker[reading], CSfreq[reading]);               // turn on tone
+            delay(200);                               // Pulse with 200ms cycle
+            noTone(CSspeaker[reading]);
+            }
+          else if (CSpulse[reading] == 0) {
+            tone(CSspeaker[reading], CSfreq[reading]);               // turn on tone
+            delay(1000);
+            noTone(CSspeaker[reading]);
+            }
+         }
       }
       else if (CSsignal[reading] == 2) {
         if (CSpulse[reading] == 1) {
@@ -848,16 +870,36 @@ void loop() {
   if (ts >= cuePulseOff && cuePulseOff != 0 && ts < cueOff) {
     noTone(speaker1);                   // turn off tone
     noTone(speaker2);
-    cuePulseOn = ts + 200;
+    if (CSincrease[cueList[CSct]]==0) {
+      cuePulseOn = ts + 200;
+    }
+    else {
+      cuePulseOn = ts + 5;
+    }
     cuePulseOff = 0;
   }
 
-  if (ts >= cuePulseOn && cuePulseOn != 0 && ts < cueOff) {
+  if (ts >= cuePulseOn && cuePulseOn != 0 && ts < cueOff && CSincrease[cueList[CSct]] == 0) {
     tone(CSspeaker[cueList[CSct]], CSfreq[cueList[CSct]]);               // turn on tone
     cuePulseOff = ts + 200;                  // Cue pulsing
     cuePulseOn = 0;                          // No cue pulsing
   }
 
+  // Increasing cue
+  if (ts >= cuePulseOn && cuePulseOn != 0 && ts < cueOff && CSincrease[cueList[CSct]] == 1) {
+    if (CSfreq[cueList[CSct]]+tempincrease<7000) {
+      tone(speaker2, CSfreq[cueList[CSct]]+tempincrease);               // turn on tone
+    }
+    else {
+      tone(speaker1, CSfreq[cueList[CSct]]-tempincrease);               // turn on tone
+    }
+    tempincrease = tempincrease + 80;
+    cuePulseOff = ts + 200;                  // Cue pulsing
+    cuePulseOn = 0;                          // No cue pulsing
+  }
+  
+
+  // Pulse LASER
   if (ts >= nextlaser && nextlaser != 0) {
     Serial.print(31);                        // code data as laser timestamp
     Serial.print(" ");
@@ -871,7 +913,6 @@ void loop() {
     nextlaser = 0;
   }
 
-  // Pulse LASER
   if (ts >= laserPulseOff && laserPulseOff != 0 && ts < laserOff) {
     digitalWrite(laser, LOW);                   // turn off laser
     laserPulseOn = ts + laserpulseoffperiod;
@@ -891,6 +932,7 @@ void loop() {
     cueOff = 0;
     cuePulseOff = 0;
     cuePulseOn = 0;
+    tempincrease = 0;
     // Sync with fiber photometry
     digitalWrite(ttloutstoppin, LOW);
   }
@@ -1178,7 +1220,7 @@ void loop() {
 
 // Accept parameters from MATLAB
 void getParams() {
-  int pn = 111;                              // number of parameter inputs
+  int pn = 114;                              // number of parameter inputs
   unsigned long param[pn];                  // parameters
 
   for (int p = 0; p < pn; p++) {
@@ -1286,7 +1328,9 @@ void getParams() {
   CSrampmaxdelay[0]      = param[108];
   CSrampmaxdelay[1]      = param[109];
   CSrampmaxdelay[2]      = param[110];  
-
+  CSincrease[0]          = param[111];
+  CSincrease[1]          = param[112];
+  CSincrease[2]          = param[113];
 
   
   for (int p = 0; p < numCS; p++) {

@@ -22,7 +22,7 @@ function varargout = headfix_GUI(varargin)
 
 % Edit the above text to modify the response to help headfix_GUI
 
-% Last Modified by GUIDE v2.5 06-Oct-2021 01:02:29
+% Last Modified by GUIDE v2.5 15-Nov-2021 21:22:26
 
 % cd 'F:\acads\Stuber lab\headfix'; %Change to directory
 
@@ -67,7 +67,7 @@ guidata(hObject, handles);
 
 global actvAx saveDir
 
-mainPath = 'C:\Users\namboodirilab\OneDrive - University of California, San Francisco\Behavioral_acquisition_and_analysis';
+mainPath = 'D:\namboodirilab\OneDrive - University of California, San Francisco\Behavioral_acquisition_and_analysis';
 addpath(mainPath)
 saveDir = [mainPath '\data\'];          % where to save data
 
@@ -303,19 +303,19 @@ basecmd = strcat('"C:\Program Files (x86)\Arduino\hardware\tools\avr/bin/avrdude
 selectedmode = get(handles.experimentmode,'Value');
 
 if selectedmode == 1
-    [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_cues.ino.hex',':i'));
+    [status,cmdout] = dos(strcat(basecmd,'D:\uploads\Namlab_behavior_cues.ino.hex',':i'));
 elseif selectedmode == 2
-    [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_randomrewards.ino.hex',':i'));
+    [status,cmdout] = dos(strcat(basecmd,'D:\uploads\Namlab_behavior_randomrewards.ino.hex',':i'));
 elseif selectedmode == 3
-    [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_lickforreward.ino.hex',':i'));
+    [status,cmdout] = dos(strcat(basecmd,'D:\uploads\Namlab_behavior_lickforreward.ino.hex',':i'));
 elseif selectedmode == 4
-    [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_decisionmaking.ino.hex',':i'));
+    [status,cmdout] = dos(strcat(basecmd,'D:\uploads\Namlab_behavior_decisionmaking.ino.hex',':i'));
 elseif selectedmode == 5
-    [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis\uploads\Serial_port_testing.ino.hex',':i'));
+    [status,cmdout] = dos(strcat(basecmd,'D:\uploads\Serial_port_testing.ino.hex',':i'));
 elseif selectedmode == 6
-    [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_ramptiming.ino.hex',':i'));    
+    [status,cmdout] = dos(strcat(basecmd,'D:\uploads\Namlab_behavior_ramptiming.ino.hex',':i'));    
 elseif selectedmode == 7
-    [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_delaydiscounting_automated.ino.hex',':i'));    
+    [status,cmdout] = dos(strcat(basecmd,'D:\uploads\Namlab_behavior_delaydiscounting_automated.ino.hex',':i'));    
 end
 
 
@@ -721,7 +721,8 @@ temp = {'Number of trials', 25, 25, 50;
         'Go lick requirement', 0, 0, 0;
         'Go lick tube (or solenoid)', 1, 1, 3;
         'Sound(1), light(2) or both(3)', 1, 1, 1;
-        'Ramp max delay', 5000, 5000,1200};
+        'Ramp max delay', 5000, 5000,1200;
+        'Increasing cue (1) or not(0)', 0, 0, 0};
 set(hObject, 'Data', temp);
 
 % --- Executes during object creation, after setting all properties.
@@ -785,6 +786,7 @@ golickreq    = cell2mat(csproperties(11,2:end));
 golicktube   = cell2mat(csproperties(12,2:end));
 CSsignal = cell2mat(csproperties(13, 2:end));
 CSrampmaxdelay = cell2mat(csproperties(14, 2:end));
+CSincrease = cell2mat(csproperties(15, 2:end));
 
 %ITI
 meanITI = get(handles.meanITI,'String');
@@ -870,7 +872,7 @@ inputs = [numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur, CS_t_fxd,...
           laserlatency, laserduration, randlaserflag, laserpulseperiod, laserpulseoffperiod,...
           lasertrialbytrialflag, maxdelaycuetovacuum, CSlight,variableratioflag, variableintervalflag,...
           licklight, ramptimingexp_input, CS1lasercheck, CS2lasercheck, CS3lasercheck,...
-          fixedsidecheck, rampmaxdelay, Rewardlasercheck, CSrampmaxdelay]; % collect all inputs into array
+          fixedsidecheck, rampmaxdelay, Rewardlasercheck, CSrampmaxdelay, CSincrease]; % collect all inputs into array
 
 negIn  = inputs < 0;
 intIn  = inputs - fix(inputs);
@@ -954,7 +956,7 @@ params = sprintf('%G+', numtrials, CSfreq, CSsolenoid, CSprob, CSopentime,...
                  laserpulseoffperiod, lasertrialbytrialflag, maxdelaycuetovacuum, CSlight,...
                  variableratioflag,variableintervalflag,licklight, ramptimingexp,...
                  CS1lasercheck, CS2lasercheck, CS3lasercheck,fixedsidecheck,...
-                 rampmaxdelay, Rewardlasercheck, CSrampmaxdelay);
+                 rampmaxdelay, Rewardlasercheck, CSrampmaxdelay, CSincrease);
 params = params(1:end-1);
 
 % Run arduino code
@@ -996,6 +998,7 @@ golickreq    = cell2mat(csproperties(11,2:end));
 golicktube   = cell2mat(csproperties(12,2:end));
 CSsignal     = cell2mat(csproperties(13, 2:end));
 CSrampmaxdelay = cell2mat(csproperties(14, 2:end));
+CSincrease = cell2mat(csproperties(15, 2:end));
 
 
 %ITI
@@ -1081,7 +1084,8 @@ inputs = [numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur, CS_t_fxd,...
           laserlatency, laserduration, randlaserflag, laserpulseperiod, laserpulseoffperiod,...
           lasertrialbytrialflag, maxdelaycuetovacuum, CSlight,variableratioflag,...
           variableintervalflag,licklight, ramptimingexp_input, CS1lasercheck,...
-          CS2lasercheck, CS3lasercheck, fixedsidecheck,rampmaxdelay, Rewardlasercheck, CSrampmaxdelay]; % collect all inputs into array
+          CS2lasercheck, CS3lasercheck, fixedsidecheck,rampmaxdelay, Rewardlasercheck,...
+          CSrampmaxdelay, CSincrease]; % collect all inputs into array
           
 negIn  = inputs < 0;
 intIn  = inputs - fix(inputs);
@@ -1153,7 +1157,7 @@ params = sprintf('%G+', numtrials, CSfreq, CSsolenoid, CSprob, CSopentime,...
                  lasertrialbytrialflag, maxdelaycuetovacuum, CSlight,variableratioflag,...
                  variableintervalflag,licklight, ramptimingexp, CS1lasercheck,...
                  CS2lasercheck, CS3lasercheck,fixedsidecheck,rampmaxdelay, Rewardlasercheck,...
-                 CSrampmaxdelay);
+                 CSrampmaxdelay, CSincrease);
              
 params = params(1:end-1);
 
@@ -1252,3 +1256,13 @@ function Rewardlasercheck_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of Rewardlasercheck
+
+
+% --- Executes on key press with focus on csproperties and none of its controls.
+function csproperties_KeyPressFcn(hObject, eventdata, handles)
+% hObject    handle to csproperties (see GCBO)
+% eventdata  structure with the following fields (see MATLAB.UI.CONTROL.TABLE)
+%	Key: name of the key that was pressed, in lower case
+%	Character: character interpretation of the key(s) that was pressed
+%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
+% handles    structure with handles and user data (see GUIDATA)
