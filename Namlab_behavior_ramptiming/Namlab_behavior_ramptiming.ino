@@ -198,7 +198,10 @@ unsigned long ramptimingexp;            // exponent factor for ramptiming task r
 unsigned long rampmaxdelay;
 unsigned long timeforfirstlick;
 unsigned long CSrampmaxdelay[numCS];
-
+unsigned long CSincrease[numCS];
+signed long delaybetweensoundandlight[numCS];
+boolean cueover;                  // indicator for cue to be over or not
+unsigned long secondcue;          // for second cue in both cues task
 
 const int numlicktube = 2;       // number of recording lick tubes for lick dependent experiments
 unsigned long reqlicknum[numlicktube];
@@ -1054,7 +1057,7 @@ void loop() {
 
 // Accept parameters from MATLAB
 void getParams() {
-  int pn = 114;                              // number of parameter inputs
+  int pn = 117;                              // number of parameter inputs
   unsigned long param[pn];                  // parameters
 
   for (int p = 0; p < pn; p++) {
@@ -1162,7 +1165,12 @@ void getParams() {
   CSrampmaxdelay[0]      = param[108];
   CSrampmaxdelay[1]      = param[109];
   CSrampmaxdelay[2]      = param[110];
-
+  CSincrease[0]          = param[111];
+  CSincrease[1]          = param[112];
+  CSincrease[2]          = param[113];
+  delaybetweensoundandlight[0] = param[114];        // delay between sound cue and light cue if both present
+  delaybetweensoundandlight[1] = param[115];
+  delaybetweensoundandlight[2] = param[116];
   for (int p = 0; p < numCS; p++) {
     CSfreq[p] = CSfreq[p] * 1000;         // convert frequency from kHz to Hz
     golicktube[p]--;                      // Make go lick tube into a zero index for indexing lickctforreq

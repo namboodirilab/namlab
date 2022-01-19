@@ -737,7 +737,7 @@ try
                  'lasertrialbytrialflag'; 'maxdelaycuetovacuum'; 'CSlight'; 'variableratioflag';...
                  'variableintervalflag'; 'licklight'; 'ramptimingexp'; 'CS1lasercheck';...
                  'CS2lasercheck'; 'CS3lasercheck'; 'fixedsidecheck'; 'rampmaxdelay'; 'Rewardlasercheck'; ...
-                 'CSrampmaxdelay'});
+                 'CSrampmaxdelay'; 'CSincrease'; 'delaybetweensoundandlight'});
 
         params.(paramnames(1)) = param(1:3);                        % numtrials (3)
         params.(paramnames(2)) = param(4:6);                        % CS frequency (3)
@@ -793,8 +793,10 @@ try
         params.(paramnames(52)) = param(105:106);                   % lick fixed side check (2)
         params.(paramnames(53)) = param(107);   
         params.(paramnames(54)) = param(108);                       % Reward laser check flag
-        params.(paramnames(55)) = param(109:111);
-               
+        params.(paramnames(55)) = param(109:111);                   % CS max ramp 
+        params.(paramnames(56)) = param(112:114);                   % CS increase
+        params.(paramnames(57)) = param(115:117);                   % delay between sound and light cue if both are present 
+
     assignin('base','eventlog',eventlog);
 %     file = [saveDir fname '_' num2str(r_bgd) '_' num2str(T_bgd) '_'  str probstr laserstr bgdsolenoidstr extinctionstr date '.mat'];
     file = [saveDir fname '_' str date '.mat'];
@@ -863,7 +865,6 @@ catch exception
     
 %     file = [saveDir fname '_' num2str(r_bgd) '_' num2str(T_bgd) '_'  str probstr laserstr bgdsolenoidstr extinctionstr date '.mat'];
     file = [saveDir '_error_' fname '_' str date '.mat'];
-       
     param = regexprep(params, '+', ' ');
     param = str2num(param);
     
@@ -879,7 +880,7 @@ catch exception
                  'lasertrialbytrialflag'; 'maxdelaycuetovacuum'; 'CSlight'; 'variableratioflag';...
                  'variableintervalflag'; 'licklight'; 'ramptimingexp'; 'CS1lasercheck';...
                  'CS2lasercheck'; 'CS3lasercheck'; 'fixedsidecheck'; 'rampmaxdelay'; 'Rewardlasercheck';...
-                 'CSrampmaxdelay'});
+                 'CSrampmaxdelay'; 'CSincrease'; 'delaybetweensoundandlight'});
 
         params.(paramnames(1)) = param(1:3);                        % numtrials (3)
         params.(paramnames(2)) = param(4:6);                        % CS frequency (3)
@@ -936,6 +937,8 @@ catch exception
         params.(paramnames(53)) = param(107);                       % after ramp max delay to reward
         params.(paramnames(54)) = param(108);                       % Reward laser check flag
         params.(paramnames(55)) = param(109:111);
+        params.(paramnames(56)) = param(112:114);                   % CS increase
+        params.(paramnames(57)) = param(115:117);                   % delay between sound and light cue if both are present 
         
     save(file, 'eventlog', 'params','exception')
 end

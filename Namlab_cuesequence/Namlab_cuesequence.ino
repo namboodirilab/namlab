@@ -65,7 +65,7 @@ bool initcues = true;
 boolean lickState = false;         // state of lickometer
 boolean licked;                    // new lick or not
 boolean lickwithdrawn;             // was previous lick withdrawn or not?
-  
+
 
 //boolean framestate;              // state of frame input
 //boolean frameon;                 // did frame input turn on?
@@ -73,9 +73,9 @@ boolean lickwithdrawn;             // was previous lick withdrawn or not?
 
 void setup() {
   // put your setup code here, to run once:
-  
+
   wdt_disable();                   // Disable watchdog timer on bootup. This prevents constant resetting by the watchdog timer in the endSession() function
-    
+
   // initialize arduino states
   Serial.begin(57600);
   randomSeed(analogRead(0));       // Generate a random sequence of numbers every time
@@ -108,10 +108,10 @@ void setup() {
     reading = Serial.read();
 
     // Test Cue1,2,3,4, or 5
-    if (reading == 50 || reading == 51 || reading == 52 || reading == 53 || reading == 54) {                       
+    if (reading == 50 || reading == 51 || reading == 52 || reading == 53 || reading == 54) {
       reading -= 50;
       if (pulsecue[reading]) {          //TEST PULSE CUE
-        int numpulses = floor(statedur[reading]/(cuepulsedur[reading][1] + cuepulsedur[reading][2]));
+        int numpulses = floor(statedur[reading] / (cuepulsedur[reading][1] + cuepulsedur[reading][2]));
         for (int i = 0; i < numpulses; i++) {
           if (cuetype[reading] == 1) {    //pulse tone
             tone(cuesource[reading], cuefreq[reading]); //turn on tone
@@ -120,9 +120,9 @@ void setup() {
             delay(cuepulsedur[reading][2]);             //keep tone off for cuepulsedur off time
           } else {                        //pulse light
             digitalWrite(cuesource[reading], HIGH);     //turn on light
-            delay(cuepulsedur[reading][1]);             
+            delay(cuepulsedur[reading][1]);
             digitalWrite(cuesource[reading], LOW);
-            delay(cuepulsedur[reading][2]);             //keep light off for cuepulsedur off time          
+            delay(cuepulsedur[reading][2]);             //keep light off for cuepulsedur off time
           }
         }
       } else {                          //TEST CUE (NO PULSE)
@@ -136,39 +136,39 @@ void setup() {
           digitalWrite(cuesource[reading], LOW);
         }
       }
-    }  
+    }
 
-//    if (reading == 65) {                 // MANUAL solenoid 1
-//      digitalWrite(solenoid1, HIGH);          // turn on solenoid 1
-//      delay(statedur[rewstate]);
-//      digitalWrite(solenoid1, LOW);           // turn off solenoid 1
-//    }
-//
-//    if (reading == 66) {                 // PRIME SOLENOID 1
-//      digitalWrite(solenoid1, HIGH);          // turn on solenoid 1
-//    }
-//
-//    if (reading == 67) {                 // TURN OFF SOLENOID 1
-//      digitalWrite(solenoid1, LOW);           // turn off solenoid 1
-//    }
-//
-//    if (reading == 68) {                 // MANUAL solenoid 2s
-//      digitalWrite(solenoid2, HIGH);          // turn on solenoid 2
-//      delay(statedur[rewstate]);
-//      digitalWrite(solenoid2, LOW);           // turn off solenoid 2
-//    }
-//
-//    if (reading == 69) {                 // PRIME SOLENOID 2
-//      digitalWrite(solenoid2, HIGH);          // turn on solenoid 2
-//    }
-//
-//    if (reading == 70) {                 // TURN OFF SOLENOID 2
-//      digitalWrite(solenoid2, LOW);           // turn off solenoid 2
-//    }
+    //    if (reading == 65) {                 // MANUAL solenoid 1
+    //      digitalWrite(solenoid1, HIGH);          // turn on solenoid 1
+    //      delay(statedur[rewstate]);
+    //      digitalWrite(solenoid1, LOW);           // turn off solenoid 1
+    //    }
+    //
+    //    if (reading == 66) {                 // PRIME SOLENOID 1
+    //      digitalWrite(solenoid1, HIGH);          // turn on solenoid 1
+    //    }
+    //
+    //    if (reading == 67) {                 // TURN OFF SOLENOID 1
+    //      digitalWrite(solenoid1, LOW);           // turn off solenoid 1
+    //    }
+    //
+    //    if (reading == 68) {                 // MANUAL solenoid 2s
+    //      digitalWrite(solenoid2, HIGH);          // turn on solenoid 2
+    //      delay(statedur[rewstate]);
+    //      digitalWrite(solenoid2, LOW);           // turn off solenoid 2
+    //    }
+    //
+    //    if (reading == 69) {                 // PRIME SOLENOID 2
+    //      digitalWrite(solenoid2, HIGH);          // turn on solenoid 2
+    //    }
+    //
+    //    if (reading == 70) {                 // TURN OFF SOLENOID 2
+    //      digitalWrite(solenoid2, LOW);           // turn off solenoid 2
+    //    }
 
     if (reading == 71) {                 // MANUAL solenoid 3
       digitalWrite(solenoid3, HIGH);          // turn on solenoid 3
-      delay(statedur[rewstate-1]);
+      delay(statedur[rewstate - 1]);
       digitalWrite(solenoid3, LOW);           // turn off solenoid 3
     }
 
@@ -180,47 +180,47 @@ void setup() {
       digitalWrite(solenoid3, LOW);           // turn off solenoid 3
     }
 
-//    if (reading == 74) {                 // MANUAL solenoid 4
-//      digitalWrite(solenoid4, HIGH);          // turn on solenoid 4
-//      delay(statedur[rewstate]);
-//      digitalWrite(solenoid4, LOW);           // turn off solenoid 4
-//    }
-//
-//    if (reading == 75) {                 // PRIME SOLENOID 4
-//      digitalWrite(solenoid4, HIGH);          // turn on solenoid 4
-//    }
-//
-//    if (reading == 76) {                 // TURN OFF SOLENOID 4
-//      digitalWrite(solenoid4, LOW);           // turn off solenoid 4
-//    }
+    //    if (reading == 74) {                 // MANUAL solenoid 4
+    //      digitalWrite(solenoid4, HIGH);          // turn on solenoid 4
+    //      delay(statedur[rewstate]);
+    //      digitalWrite(solenoid4, LOW);           // turn off solenoid 4
+    //    }
+    //
+    //    if (reading == 75) {                 // PRIME SOLENOID 4
+    //      digitalWrite(solenoid4, HIGH);          // turn on solenoid 4
+    //    }
+    //
+    //    if (reading == 76) {                 // TURN OFF SOLENOID 4
+    //      digitalWrite(solenoid4, LOW);           // turn off solenoid 4
+    //    }
 
-//    if (reading == 77) {                 // MANUAL lickretractsolenoid11
-//      digitalWrite(lickretractsolenoid1, HIGH);          // turn on lickretractsolenoid1
-//      delay(statedur[rewstate]);
-//      digitalWrite(lickretractsolenoid1, LOW);           // turn off lickretractsolenoid1
-//    }
-//
-//    if (reading == 78) {                 // PRIME LICKRETRACTSOLENOID 1
-//      digitalWrite(lickretractsolenoid1, HIGH);          // turn on lickretractsolenoid1
-//    }
-//
-//    if (reading == 79) {                 // TURN OFF LICKRETRACTSOLENOID 1
-//      digitalWrite(lickretractsolenoid1, LOW);           // turn off lickretractsolenoid1
-//    }
-//
-//    if (reading == 80) {                 // MANUAL lickretractsolenoid12
-//      digitalWrite(lickretractsolenoid2, HIGH);          // turn on lickretractsolenoid2
-//      delay(statedur[rewstate]);
-//      digitalWrite(lickretractsolenoid2, LOW);           // turn off lickretractsolenoid2
-//    }
-//
-//    if (reading == 81) {                 // PRIME LICKRETRACTSOLENOID 2
-//      digitalWrite(lickretractsolenoid2, HIGH);          // turn on lickretractsolenoid2
-//    }
-//
-//    if (reading == 82) {                 // TURN OFF LICKRETRACTSOLENOID 2
-//      digitalWrite(lickretractsolenoid2, LOW);           // turn off lickretractsolenoid2
-//    }
+    //    if (reading == 77) {                 // MANUAL lickretractsolenoid11
+    //      digitalWrite(lickretractsolenoid1, HIGH);          // turn on lickretractsolenoid1
+    //      delay(statedur[rewstate]);
+    //      digitalWrite(lickretractsolenoid1, LOW);           // turn off lickretractsolenoid1
+    //    }
+    //
+    //    if (reading == 78) {                 // PRIME LICKRETRACTSOLENOID 1
+    //      digitalWrite(lickretractsolenoid1, HIGH);          // turn on lickretractsolenoid1
+    //    }
+    //
+    //    if (reading == 79) {                 // TURN OFF LICKRETRACTSOLENOID 1
+    //      digitalWrite(lickretractsolenoid1, LOW);           // turn off lickretractsolenoid1
+    //    }
+    //
+    //    if (reading == 80) {                 // MANUAL lickretractsolenoid12
+    //      digitalWrite(lickretractsolenoid2, HIGH);          // turn on lickretractsolenoid2
+    //      delay(statedur[rewstate]);
+    //      digitalWrite(lickretractsolenoid2, LOW);           // turn off lickretractsolenoid2
+    //    }
+    //
+    //    if (reading == 81) {                 // PRIME LICKRETRACTSOLENOID 2
+    //      digitalWrite(lickretractsolenoid2, HIGH);          // turn on lickretractsolenoid2
+    //    }
+    //
+    //    if (reading == 82) {                 // TURN OFF LICKRETRACTSOLENOID 2
+    //      digitalWrite(lickretractsolenoid2, LOW);           // turn off lickretractsolenoid2
+    //    }
 
     if (reading == 86) {                 // Vacuum
       digitalWrite(vacuum, HIGH);          // turn on vacuum
@@ -234,13 +234,13 @@ void setup() {
       digitalWrite(laser, LOW);         // turn off LASER
     }
   }
-  
+
 
   // start session
   start = millis();                    // start time
- 
-//  cues();                              //begin state 1
-//  cueOff_ts = start + statedur[state-1];
+
+  //  cues();                              //begin state 1
+  //  cueOff_ts = start + statedur[state-1];
 }
 
 void loop() {
@@ -281,35 +281,34 @@ void loop() {
   // 31 = laser
 
   if (reading == 49) {    // MATLAB SIGNAL END SESSION
-      endSession();       // end
+    endSession();       // end
   }
 
   licking();  //check for licking
 
   //if ts > nextstate
-      //pick next state
-      //set as current state
-      //turn on cue or deliver rew
-      //set cue off time
-      
+  //pick next state
+  //set as current state
+  //turn on cue or deliver rew
+  //set cue off time
+
   if (ts >= nextState_ts && nextState_ts != 0) {
     chooseNextState();
     if (state == rewstate) {
       deliverRew();
-      rewOff_ts = ts + statedur[state-1];
+      rewOff_ts = ts + statedur[state - 1];
     } else {
       cues();
     }
     nextState_ts = 0;
   }
-  
   if (ts >= cueOff_ts && cueOff_ts != 0) {
     noTone(speaker1);                   // turn off sound
     noTone(speaker2);
     digitalWrite(light1, LOW);          // turn off light
     digitalWrite(light2, LOW);
     cueOff_ts = 0;
-    nextState_ts = ts + ISI[state-1];   //set next state time
+    nextState_ts = ts + ISI[state - 1]; //set next state time
   }
 
   // Pulse cue
@@ -318,47 +317,47 @@ void loop() {
     noTone(speaker2);
     digitalWrite(light1, LOW);          // turn off light
     digitalWrite(light2, LOW);
-    cuepulseOn_ts = ts + cuepulsedur[state-1][1];
+    cuepulseOn_ts = ts + cuepulsedur[state - 1][1];
     cuepulseOff_ts = 0;
   }
 
   if (ts >= cuepulseOn_ts && cuepulseOn_ts != 0 && ts < cueOff_ts) {
-    if (cuetype[state-1] == 1) {
-      tone(cuesource[state-1], cuefreq[state-1]);     //turn on tone
+    if (cuetype[state - 1] == 1) {
+      tone(cuesource[state - 1], cuefreq[state - 1]); //turn on tone
     } else {
-      digitalWrite(cuesource[state-1], HIGH);         //turn on light
-    }              
-    cuepulseOff_ts = ts + cuepulsedur[state-1][0];    // Cue pulsing
+      digitalWrite(cuesource[state - 1], HIGH);       //turn on light
+    }
+    cuepulseOff_ts = ts + cuepulsedur[state - 1][0];  // Cue pulsing
     cuepulseOn_ts = 0;                                // No cue pulsing
   }
-  
+
   if (ts >= laserOn_ts && laserOn_ts != 0) {
-    digitalWrite(laser, HIGH);               //turn on laser              
-    laserOff_ts = ts + laserdur[state-1];    //set laser off time
-    laserpulseOff_ts = ts + laserpulsedur[state-1][0];
+    digitalWrite(laser, HIGH);               //turn on laser
+    laserOff_ts = ts + laserdur[state - 1];  //set laser off time
+    laserpulseOff_ts = ts + laserpulsedur[state - 1][0];
   }
-      
-  
-  
+
+
+
   //if ts > rewoff
-      //turn off solenoid
-      //wait dur/set vacuum time
-      
+  //turn off solenoid
+  //wait dur/set vacuum time
+
   if (ts >= rewOff_ts && rewOff_ts != 0) {
     digitalWrite(solenoid3, LOW);
     vacuumOn_ts = ts + vacuumdelay;
-    nextState_ts = ts + ISI[state-1];
+    nextState_ts = ts + ISI[state - 1];
     rewOff_ts = 0;
   }
-  
+
   //if ts > vacuumtime
-      //turn on vacuum
-      //set vacuum off time
-      
+  //turn on vacuum
+  //set vacuum off time
+
   if (ts > vacuumOn_ts && vacuumOn_ts != 0) {
     Serial.print(14);         // code vacuum
     Serial.print(" ");
-    Serial.print(ts);          
+    Serial.print(ts);
     Serial.print(" ");
     Serial.print(0);
     Serial.print('\n');
@@ -366,11 +365,11 @@ void loop() {
     vacuumOff_ts = ts + vacuumdur;
     vacuumOn_ts = 0;
   }
-  
+
   //if ts > vacuumoff
-      //turn off vacuum
-      //set nextstate time
-      
+  //turn off vacuum
+  //set nextstate time
+
   if (ts > vacuumOff_ts && vacuumOff_ts != 0) {
     digitalWrite(vacuum, LOW);          // turn off vacuum
     vacuumOff_ts = 0;
@@ -378,18 +377,18 @@ void loop() {
 }
 
 void chooseNextState() {
-   long u = random(0, 100);
-   long prob_sum[numstates];
-   prob_sum[0] = transitions[0][state-1];
-   for (int i = 1; i < numstates; i++) {
-    prob_sum[i] = prob_sum[i-1] + transitions[i][state-1];     //get probabilities from matrix and put in array
-   }
-   for (int i = 0; i < numstates; i++) {
+  long u = random(0, 100);
+  long prob_sum[numstates];
+  prob_sum[0] = transitions[0][state - 1];
+  for (int i = 1; i < numstates; i++) {
+    prob_sum[i] = prob_sum[i - 1] + transitions[i][state - 1]; //get probabilities from matrix and put in array
+  }
+  for (int i = 0; i < numstates; i++) {
     if (u <= prob_sum[i]) {   //go through array seeing if <= cumulative prob
       state = i + 1;
       break;
     }
-   }
+  }
 }
 
 // Check lick status //////
@@ -421,44 +420,54 @@ void licking() {
 }
 
 void deliverRew() {
-  Serial.print(10);         // code data as fixed solenoid 3
-  Serial.print(" ");
-  Serial.print(ts);         // send timestamp of cue
-  Serial.print(" ");
-  Serial.print(0);          //is this the right code for delivering rew?
-  Serial.print('\n');
-  digitalWrite(solenoid3, HIGH);
+  if (statedur[state - 1] > 0) {
+    Serial.print(10);         // code data as fixed solenoid 3
+    Serial.print(" ");
+    Serial.print(ts);         // send timestamp of cue
+    Serial.print(" ");
+    Serial.print(0);          //0 is for giving reward
+    Serial.print('\n');
+    digitalWrite(solenoid3, HIGH);
+  }
+  else if (statedur[state - 1] == 0) {
+    Serial.print(10);         // code data as fixed solenoid 3
+    Serial.print(" ");
+    Serial.print(ts);         // send timestamp of cue
+    Serial.print(" ");
+    Serial.print(1);          //no reward is given
+    Serial.print('\n');
+  }
 }
 
 // DELIVER CUE //////////////
 void cues() {
-    Serial.print(14 + state);         // code data as CS1,2,3,4 or 5 timestamp
-    Serial.print(" ");
-    Serial.print(ts);                 // send timestamp of cue
-    Serial.print(" ");
-    Serial.print(0);
-    Serial.print('\n');
+  Serial.print(14 + state);         // code data as CS1,2,3,4 or 5 timestamp
+  Serial.print(" ");
+  Serial.print(ts);                 // send timestamp of cue
+  Serial.print(" ");
+  Serial.print(0);
+  Serial.print('\n');
 
-    if (cuetype[state-1] == 1) {
-      tone(cuesource[state-1], cuefreq[state-1]);     //turn on tone
-    } else {
-      digitalWrite(cuesource[state-1], HIGH);         //turn on light
-    }
+  if (cuetype[state - 1] == 1) {
+    tone(cuesource[state - 1], cuefreq[state - 1]); //turn on tone
+  } else {
+    digitalWrite(cuesource[state - 1], HIGH);       //turn on light
+  }
 
-    if (pulsecue[state-1]) {
-      cuepulseOff_ts = ts + cuepulsedur[state-1][0];  // Cue pulsing
-      cuepulseOn_ts = 0;
-    }
-    else {
-      cuepulseOff_ts = 0;                         // No cue pulsing
-      cuepulseOn_ts = 0;                          // No cue pulsing
-    }
+  if (pulsecue[state - 1]) {
+    cuepulseOff_ts = ts + cuepulsedur[state - 1][0]; // Cue pulsing
+    cuepulseOn_ts = 0;
+  }
+  else {
+    cuepulseOff_ts = 0;                         // No cue pulsing
+    cuepulseOn_ts = 0;                          // No cue pulsing
+  }
 
-    cueOff_ts = ts + statedur[state-1];
+  cueOff_ts = ts + statedur[state - 1];
 
-    if (pulselaser[state-1]) {
-      laserOn_ts = ts + laserdelay[state-1];
-    }
+  if (pulselaser[state - 1]) {
+    laserOn_ts = ts + laserdelay[state - 1];
+  }
 }
 
 // Accept parameters from MATLAB
@@ -475,7 +484,7 @@ void getParams() {
 
   for (int i = 0; i < numstates; i++) {
     for (int j = 0; j < numstates; j++) {
-      transitions[j][i]= param[p];    //matrix organized same as ui table
+      transitions[j][i] = param[p];   //matrix organized same as ui table
       p++;
     }
   }
@@ -531,7 +540,7 @@ void getParams() {
     ISI[i] = param[p];
     p++;
   }
-  
+
   for (int i = 0; i < numstates; i++) {
     for (int j = 0; j < 2; j++) {
       laserpulsedur[i][j] = param[p];   //each row = on, off times for each state
@@ -570,7 +579,7 @@ void getParams() {
     timedses = true;
   } else {               //sesdur is max number of rewards
     timedses = false;
-  }  
+  }
 }
 
 // End session //////////////
@@ -603,20 +612,17 @@ void endSession() {
   delay(100);                              //  wait
   //while(1){}                               //  Stops executing the program
   //asm volatile (" jmp 0");                 //  reset arduino; this is unclean and doesn't reset the hardware
-//  delete [] cueList;
-//  int *cueList = 0;
-//  delete [] Laserontrial;
-//  int *Laserontrial = 0;
+  //  delete [] cueList;
+  //  int *cueList = 0;
+  //  delete [] Laserontrial;
+  //  int *Laserontrial = 0;
   software_Reboot();
 
 }
 
 void software_Reboot() {
   wdt_enable(WDTO_500MS);
-  while (1){
+  while (1) {
   }
   wdt_reset();
 }
-
-
-  
