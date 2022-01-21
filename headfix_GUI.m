@@ -110,8 +110,6 @@ set(handles.maxdelaycuetovacuum, 'Enable', 'off');
 set(handles.meanITI, 'Enable', 'off');
 set(handles.maxITI, 'Enable', 'off');
 set(handles.minITI, 'Enable', 'off');
-set(handles.ramptimingexp, 'Enable','off');
-set(handles.rampmaxdelay,'Enable','off');
 set(handles.testcs1, 'Enable', 'off');
 set(handles.testcs2, 'Enable', 'off');
 set(handles.testcs3, 'Enable', 'off');
@@ -255,8 +253,6 @@ if selectedmode == 1 || selectedmode == 4 || selectedmode ==6
     set(handles.meanITI, 'Enable', 'on');
     set(handles.maxITI, 'Enable', 'on');
     set(handles.minITI, 'Enable', 'on');
-    set(handles.ramptimingexp,'Enable','on');
-    set(handles.rampmaxdelay,'Enable','on');
     set(handles.backgroundsolenoid, 'Enable', 'on');
     set(handles.T_bgd, 'Enable', 'on');
     set(handles.r_bgd, 'Enable', 'on');
@@ -372,8 +368,6 @@ set(handles.maxdelaycuetovacuum, 'Enable', 'off');
 set(handles.meanITI, 'Enable', 'off');
 set(handles.maxITI, 'Enable', 'off');
 set(handles.minITI, 'Enable', 'off');
-set(handles.ramptimingexp,'Enable','off');
-set(handles.rampmaxdelay,'Enable','off');
 
 set(handles.testcs1, 'Enable', 'off');
 set(handles.testcs2, 'Enable', 'off');
@@ -722,6 +716,7 @@ temp = {'Number of trials', 25, 25, 50;
         'Go lick tube (or solenoid)', 1, 1, 3;
         'Sound(1), light(2) or both(3)', 1, 1, 1;
         'Ramp max delay', 5000, 5000,1200;
+        'Ramp exponent', 1, 1, 1;
         'Increasing cue (1) or not(0)', 0, 0, 0;
         'Delay between sound and light if both', 0, 0, 0};
 set(hObject, 'Data', temp);
@@ -787,8 +782,9 @@ golickreq    = cell2mat(csproperties(11,2:end));
 golicktube   = cell2mat(csproperties(12,2:end));
 CSsignal = cell2mat(csproperties(13, 2:end));
 CSrampmaxdelay = cell2mat(csproperties(14, 2:end));
-CSincrease = cell2mat(csproperties(15, 2:end));
-delaybetweensoundandlight = cell2mat(csproperties(16, 2:end));
+CSrampexp    = cell2mat(csproperties(15,2:end));
+CSincrease = cell2mat(csproperties(16, 2:end));
+delaybetweensoundandlight = cell2mat(csproperties(17, 2:end));
 
 %ITI
 meanITI = get(handles.meanITI,'String');
@@ -800,10 +796,6 @@ maxITI = str2double(maxITI);
 intervaldistribution = get(handles.checkboxintervaldistribution,'Value');
 maxdelaycuetovacuum = get(handles.maxdelaycuetovacuum,'String');
 maxdelaycuetovacuum = str2double(maxdelaycuetovacuum);
-ramptimingexp = get(handles.ramptimingexp,'String');
-ramptimingexp = str2double(ramptimingexp);
-rampmaxdelay = get(handles.rampmaxdelay,'String');
-rampmaxdelay = str2double(rampmaxdelay);
 
 %Bgd solenoids
 
@@ -859,12 +851,6 @@ CS3lasercheck = get(handles.CS3lasercheck, 'Value');
 Rewardlasercheck = get(handles.Rewardlasercheck, 'Value');
 
 % Validate inputs
-if ramptimingexp < 1
-    ramptimingexp_input = floor(ramptimingexp);
-else 
-    ramptimingexp_input = ramptimingexp;
-end
-
 inputs = [numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur, CS_t_fxd,...
           CSpulse, CSspeaker, golickreq, golicktube, CSsignal, meanITI, maxITI, minITI, intervaldistribution,...
           backgroundsolenoid, T_bgd, r_bgd, mindelaybgdtocue, mindelayfxdtobgd,...
@@ -873,17 +859,17 @@ inputs = [numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur, CS_t_fxd,...
           minrewards, signaltolickreq, soundsignalpulse, soundfreq, sounddur, lickspeaker,...
           laserlatency, laserduration, randlaserflag, laserpulseperiod, laserpulseoffperiod,...
           lasertrialbytrialflag, maxdelaycuetovacuum, CSlight,variableratioflag, variableintervalflag,...
-          licklight, ramptimingexp_input, CS1lasercheck, CS2lasercheck, CS3lasercheck,...
-          fixedsidecheck, rampmaxdelay, Rewardlasercheck, CSrampmaxdelay, CSincrease,delaybetweensoundandlight]; % collect all inputs into array
+          licklight, CS1lasercheck, CS2lasercheck, CS3lasercheck,...
+          fixedsidecheck, Rewardlasercheck, CSrampmaxdelay, CSrampexp, CSincrease,delaybetweensoundandlight]; % collect all inputs into array
 
 negIn  = inputs < 0;
 intIn  = inputs - fix(inputs);
 negIn(40) = 0;
 negIn(41) = 0;
 negIn(42) = 0; % lick requirement can be negative input, go/no go task
-negIn(115) = 0;
 negIn(116) = 0;
-negIn(117) = 0; %delay between sound and light can be negative inputs
+negIn(117) = 0;
+negIn(118) = 0; %delay between sound and light can be negative inputs
 
 if any([negIn intIn])
     errordlg('Invalid inputs')
@@ -903,8 +889,6 @@ set(handles.meanITI,'Enable','off')
 set(handles.maxITI,'Enable','off')
 set(handles.minITI,'Enable','off')
 set(handles.maxdelaycuetovacuum,'Enable','off')
-set(handles.ramptimingexp,'Enable','off');
-set(handles.rampmaxdelay,'Enable','off');
 
 set(handles.backgroundsolenoid,'Enable','off')
 set(handles.T_bgd,'Enable','off')
@@ -958,9 +942,9 @@ params = sprintf('%G+', numtrials, CSfreq, CSsolenoid, CSprob, CSopentime,...
                  delaytolick, minrewards, signaltolickreq, soundsignalpulse, soundfreq, sounddur, lickspeaker,...
                  laserlatency, laserduration, randlaserflag, laserpulseperiod,...
                  laserpulseoffperiod, lasertrialbytrialflag, maxdelaycuetovacuum, CSlight,...
-                 variableratioflag,variableintervalflag,licklight, ramptimingexp,...
+                 variableratioflag,variableintervalflag,licklight,...
                  CS1lasercheck, CS2lasercheck, CS3lasercheck,fixedsidecheck,...
-                 rampmaxdelay, Rewardlasercheck, CSrampmaxdelay, CSincrease,delaybetweensoundandlight);
+                 Rewardlasercheck, CSrampmaxdelay, CSrampexp, CSincrease,delaybetweensoundandlight);
 params = params(1:end-1);
 
 % Run arduino code
@@ -1002,8 +986,9 @@ golickreq    = cell2mat(csproperties(11,2:end));
 golicktube   = cell2mat(csproperties(12,2:end));
 CSsignal     = cell2mat(csproperties(13, 2:end));
 CSrampmaxdelay = cell2mat(csproperties(14, 2:end));
-CSincrease = cell2mat(csproperties(15, 2:end));
-delaybetweensoundandlight = cell2mat(csproperties(16, 2:end));
+CSrampexp    = cell2mat(csproperties(15,2:end));
+CSincrease = cell2mat(csproperties(16, 2:end));
+delaybetweensoundandlight = cell2mat(csproperties(17, 2:end));
 
 
 %ITI
@@ -1016,10 +1001,6 @@ minITI = str2double(minITI);
 intervaldistribution = get(handles.checkboxintervaldistribution,'Value');
 maxdelaycuetovacuum = get(handles.maxdelaycuetovacuum,'String');
 maxdelaycuetovacuum = str2double(maxdelaycuetovacuum);
-ramptimingexp = get(handles.ramptimingexp, 'String');
-ramptimingexp = str2double(ramptimingexp);
-rampmaxdelay = get(handles.rampmaxdelay, 'String');
-rampmaxdelay = str2double(rampmaxdelay);
 
 %Bgd solenoids
 
@@ -1075,11 +1056,6 @@ CS3lasercheck = get(handles.CS3lasercheck, 'Value');
 Rewardlasercheck = get(handles.Rewardlasercheck, 'Value');
 
 % Validate inputs
-if ramptimingexp < 1
-    ramptimingexp_input = floor(ramptimingexp);
-else 
-    ramptimingexp_input = ramptimingexp;
-end
 inputs = [numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur, CS_t_fxd,...
           CSpulse, CSspeaker, golickreq, golicktube, CSsignal, meanITI, maxITI, minITI, intervaldistribution,...
           backgroundsolenoid, T_bgd, r_bgd, mindelaybgdtocue, mindelayfxdtobgd,...
@@ -1088,18 +1064,18 @@ inputs = [numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur, CS_t_fxd,...
           delaytolick, minrewards, signaltolickreq, soundsignalpulse, soundfreq, sounddur, lickspeaker,...
           laserlatency, laserduration, randlaserflag, laserpulseperiod, laserpulseoffperiod,...
           lasertrialbytrialflag, maxdelaycuetovacuum, CSlight,variableratioflag,...
-          variableintervalflag,licklight, ramptimingexp_input, CS1lasercheck,...
-          CS2lasercheck, CS3lasercheck, fixedsidecheck,rampmaxdelay, Rewardlasercheck,...
-          CSrampmaxdelay, CSincrease, delaybetweensoundandlight]; % collect all inputs into array
+          variableintervalflag,licklight, CS1lasercheck,...
+          CS2lasercheck, CS3lasercheck, fixedsidecheck, Rewardlasercheck,...
+          CSrampmaxdelay, CSrampexp, CSincrease, delaybetweensoundandlight]; % collect all inputs into array
           
 negIn  = inputs < 0;
 intIn  = inputs - fix(inputs);
 negIn(40) = 0;
 negIn(41) = 0;
 negIn(42) = 0;
-negIn(115) = 0;
 negIn(116) = 0;
 negIn(117) = 0;
+negIn(118) = 0;
 
 if any([negIn intIn])
     errordlg('Invalid inputs')
@@ -1162,9 +1138,9 @@ params = sprintf('%G+', numtrials, CSfreq, CSsolenoid, CSprob, CSopentime,...
                  minrewards, signaltolickreq, soundsignalpulse, soundfreq, sounddur, lickspeaker,...
                  laserlatency, laserduration, randlaserflag, laserpulseperiod, laserpulseoffperiod,...
                  lasertrialbytrialflag, maxdelaycuetovacuum, CSlight,variableratioflag,...
-                 variableintervalflag,licklight, ramptimingexp, CS1lasercheck,...
-                 CS2lasercheck, CS3lasercheck,fixedsidecheck,rampmaxdelay, Rewardlasercheck,...
-                 CSrampmaxdelay, CSincrease, delaybetweensoundandlight);
+                 variableintervalflag,licklight, CS1lasercheck,...
+                 CS2lasercheck, CS3lasercheck,fixedsidecheck, Rewardlasercheck,...
+                 CSrampmaxdelay, CSrampexp, CSincrease, delaybetweensoundandlight);
              
 params = params(1:end-1);
 

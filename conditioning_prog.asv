@@ -138,7 +138,7 @@ try
 %% Collect data from arduino
     while running
         read = [];
-        if s.BytesAvailable > 0 % is data available to read? This avoids the timeout problemexception
+        if s.BytesAvailable > 0 % is data available to read? This avoids the timeout problem
             read = fscanf(s,'%f'); % scan for data sent only when data is available
         end
         if isempty(read)
@@ -387,19 +387,6 @@ try
         elseif code == 14                            % Vaccum;            
             if (experimentmode == 1 && intervaldistribution<3) || experimentmode == 4 || experimentmode == 6  
                 tempcuetovacuumdelay = NaN;
-                if ~isnan(tempsecondcue1)
-                    tempsecondcue1 = tempsecondcue1 - templight1;
-                elseif ~isnan(tempsecondcue2)
-                    tempsecondcue2 = tempsecondcue2 - templight2;
-                elseif ~isnan(tempsecondcue3)
-                    tempsecondcue3 = tempsecondcue3 - templight3;
-                elseif ~isnan(tempsecondlight1)
-                    tempsecondlight1 = tempsecondlight1 - tempcue1;
-                elseif ~isnan(tempsecondlight2)
-                    tempsecondlight2 = tempsecondlight2 - tempcue2;
-                elseif ~isnan(tempsecondlight3)
-                    tempsecondlight3 = tempsecondlight3 - tempcue3;
-                end
                 if ~isnan(tempcue1)                      % indicates there is cue1
                     tempcuetovacuumdelay = time - tempcue1;      
                     for i=1:3
@@ -438,7 +425,6 @@ try
                     end
                     templight3 = 0;       
                 end
-
                 tempsolenoids = tempsolenoids-time+tempcuetovacuumdelay; %find timestamps wrt vacuum         
                 templicks = templicks-time+tempcuetovacuumdelay;
 
@@ -455,7 +441,7 @@ try
                 plot([tempsolenoids(:,4) tempsolenoids(:,4)],[-(cs-1) -cs],'Color',[0.72, 0.27, 1],'LineWidth',2);hold on       % solenoid4
                 plot([tempsolenoids(:,5) tempsolenoids(:,5)],[-(cs-1) -cs],'Color',[0.3 0.75 0.93],'LineWidth',2);hold on      % lickretractsolenoid1 
                 plot([tempsolenoids(:,6) tempsolenoids(:,6)],[-(cs-1) -cs],'Color',[0.97 0.28 0.18],'LineWidth',2);hold on       % lickretractsolenoid2
-                
+
                 plot([tempcue1 tempcue1],[-(cs-1) -cs],'g','LineWidth',2);hold on       % cue1
                 plot([tempcue2 tempcue2],[-(cs-1) -cs],'r','LineWidth',2);hold on       % cue2
                 plot([tempcue3 tempcue3],[-(cs-1) -cs],'b','LineWidth',2);hold on       % cue3
@@ -593,9 +579,9 @@ try
                 both1 = both1 + 1;
                 tempsecondcue1 = time;
                 set(handles.cues1Edit,'String',num2str(cs1))
-%                 trial = floor(time/durationtrialpartitionnocues);
-%                 temptrialdur = trial*durationtrialpartitionnocues;
-%                 plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'g','LineWidth',2);hold on
+                trial = floor(time/durationtrialpartitionnocues);
+                temptrialdur = trial*durationtrialpartitionnocues;
+                plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'g','LineWidth',2);hold on
             end
         elseif code == 16                            % CS2 cue onset; RED
             if itemflag == 0
@@ -615,9 +601,9 @@ try
                 both2 = both2 +1;
                 set(handles.cues2Edit,'String',num2str(cs2))
                 tempsecondcue2 = time;
-%                 trial = floor(time/durationtrialpartitionnocues);
-%                 temptrialdur = trial*durationtrialpartitionnocues;
-%                 plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'r','LineWidth',2);hold on
+                trial = floor(time/durationtrialpartitionnocues);
+                temptrialdur = trial*durationtrialpartitionnocues;
+                plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'r','LineWidth',2);hold on
             end
         elseif code == 17                            % CS3 cue onset; BLUE
             if itemflag == 0
@@ -637,9 +623,9 @@ try
                 both3 = both3 +1;
                 set(handles.cues3Edit,'String',num2str(cs3))
                 tempsecondcue3 = time;
-%                 trial = floor(time/durationtrialpartitionnocues);
-%                 temptrialdur = trial*durationtrialpartitionnocues;
-%                 plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'b','LineWidth',2);hold on
+                trial = floor(time/durationtrialpartitionnocues);
+                temptrialdur = trial*durationtrialpartitionnocues;
+                plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'b','LineWidth',2);hold on
             end
         elseif code == 21                            % CS1 light onset;
             if itemflag == 0
@@ -659,9 +645,9 @@ try
                 both1 = both1 +1;
                 tempsecondlight1 = time;
                 set(handles.light1Edit,'String',num2str(light1))
-%                 trial = floor(time/durationtrialpartitionnocues);
-%                 temptrialdur = trial*durationtrialpartitionnocues;                
-%                 plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0 0.45 0.74],'LineWidth',2);hold on
+                trial = floor(time/durationtrialpartitionnocues);
+                temptrialdur = trial*durationtrialpartitionnocues;                
+                plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0 0.45 0.74],'LineWidth',2);hold on
             end
         elseif code == 22                            % CS2 light onset;
             if itemflag == 0
@@ -681,9 +667,9 @@ try
                 both2 = both2 +1;
                 tempsecondlight2 = time;
                 set(handles.light2Edit,'String',num2str(light2))
-%                 trial = floor(time/durationtrialpartitionnocues);
-%                 temptrialdur = trial*durationtrialpartitionnocues;
-%                 plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0.93 0.69 0.13],'LineWidth',2);hold on
+                trial = floor(time/durationtrialpartitionnocues);
+                temptrialdur = trial*durationtrialpartitionnocues;
+                plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0.93 0.69 0.13],'LineWidth',2);hold on
             end
         elseif code == 23                            % CS3 light onset;
             if itemflag == 0
@@ -704,8 +690,8 @@ try
                 tempsecondlight3 = time;
                 set(handles.light3Edit,'String',num2str(light3))
 %                 trial = floor(time/durationtrialpartitionnocues);
-%                 temptrialdur = trial*durationtrialpartitionnocues;
-%                 plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0.85 0.33 0.1],'LineWidth',2);hold on %light cue3
+                temptrialdur = trial*durationtrialpartitionnocues;
+                plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0.85 0.33 0.1],'LineWidth',2);hold on %light cue3
             end
         elseif code == 25                           % both CS1 sound and light onset;
             both1 = both1 + 1;
