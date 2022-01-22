@@ -827,9 +827,9 @@ try
                  'minrewards'; 'signaltolickreq'; 'soundsignalpulse'; 'soundfreq'; 'sounddur'; 'lickspeaker';...
                  'laserlatency'; 'laserduration'; 'randlaserflag'; 'laserpulseperiod'; 'laserpulseoffperiod';...
                  'lasertrialbytrialflag'; 'maxdelaycuetovacuum'; 'CSlight'; 'variableratioflag';...
-                 'variableintervalflag'; 'licklight'; 'ramptimingexp'; 'CS1lasercheck';...
-                 'CS2lasercheck'; 'CS3lasercheck'; 'fixedsidecheck'; 'rampmaxdelay'; 'Rewardlasercheck'; ...
-                 'CSrampmaxdelay'; 'CSincrease'; 'delaybetweensoundandlight'});
+                 'variableintervalflag'; 'licklight'; 'CS1lasercheck';...
+                 'CS2lasercheck'; 'CS3lasercheck'; 'fixedsidecheck'; 'Rewardlasercheck'; ...
+                 'CSrampmaxdelay'; 'CSrampexp';'CSincrease'; 'delaybetweensoundandlight'});
 
         params.(paramnames(1)) = param(1:3);                        % numtrials (3)
         params.(paramnames(2)) = param(4:6);                        % CS frequency (3)
@@ -878,16 +878,15 @@ try
         params.(paramnames(44)) = param(95:96);                     % lick variable ratio flag (2)
         params.(paramnames(45)) = param(97:98);                     % lick variable interval flag (2)
         params.(paramnames(46)) = param(99:100);                    % lick light number (2)
-        params.(paramnames(48)) = param(101);                       % ramp timing exponential factor 
-        params.(paramnames(49)) = param(102);                       % CS1 laser check flag
-        params.(paramnames(50)) = param(103);                       % CS2 laser check flag
-        params.(paramnames(51)) = param(104);                       % CS3 laser check flag
-        params.(paramnames(52)) = param(105:106);                   % lick fixed side check (2)
-        params.(paramnames(53)) = param(107);   
-        params.(paramnames(54)) = param(108);                       % Reward laser check flag
-        params.(paramnames(55)) = param(109:111);                   % CS max ramp 
-        params.(paramnames(56)) = param(112:114);                   % CS increase
-        params.(paramnames(57)) = param(115:117);                   % delay between sound and light cue if both are present 
+        params.(paramnames(47)) = param(101);                       % CS1 laser check flag
+        params.(paramnames(48)) = param(102);                       % CS2 laser check flag
+        params.(paramnames(49)) = param(103);                       % CS3 laser check flag
+        params.(paramnames(50)) = param(104:105);                   % lick fixed side check (2)
+        params.(paramnames(51)) = param(106);                       % Reward laser check flag
+        params.(paramnames(52)) = param(107:109);                   % CS max ramp delay 
+        params.(paramnames(53)) = param(110:112);                   % CS ramp exponential factor
+        params.(paramnames(54)) = param(113);                       % CS increase
+        params.(paramnames(55)) = param(114:116);                   % delay between sound and light cue if both are present 
 
     assignin('base','eventlog',eventlog);
 %     file = [saveDir fname '_' num2str(r_bgd) '_' num2str(T_bgd) '_'  str probstr laserstr bgdsolenoidstr extinctionstr date '.mat'];
@@ -970,9 +969,9 @@ catch exception
                  'minrewards'; 'signaltolickreq'; 'soundsignalpulse'; 'soundfreq'; 'sounddur'; 'lickspeaker';...
                  'laserlatency'; 'laserduration'; 'randlaserflag'; 'laserpulseperiod'; 'laserpulseoffperiod';...
                  'lasertrialbytrialflag'; 'maxdelaycuetovacuum'; 'CSlight'; 'variableratioflag';...
-                 'variableintervalflag'; 'licklight'; 'ramptimingexp'; 'CS1lasercheck';...
-                 'CS2lasercheck'; 'CS3lasercheck'; 'fixedsidecheck'; 'rampmaxdelay'; 'Rewardlasercheck';...
-                 'CSrampmaxdelay'; 'CSincrease'; 'delaybetweensoundandlight'});
+                 'variableintervalflag'; 'licklight'; 'CS1lasercheck';...
+                 'CS2lasercheck'; 'CS3lasercheck'; 'fixedsidecheck'; 'Rewardlasercheck';...
+                 'CSrampmaxdelay'; 'CSrampexp'; 'CSincrease'; 'delaybetweensoundandlight'});
 
         params.(paramnames(1)) = param(1:3);                        % numtrials (3)
         params.(paramnames(2)) = param(4:6);                        % CS frequency (3)
@@ -1021,16 +1020,15 @@ catch exception
         params.(paramnames(44)) = param(95:96);                     % lick variable ratio flag (2)
         params.(paramnames(45)) = param(97:98);                     % lick variable interval flag (2)
         params.(paramnames(46)) = param(99:100);                    % lick light number (2)
-        params.(paramnames(48)) = param(101);                       % ramp timing exponential factor 
-        params.(paramnames(49)) = param(102);                       % CS1 laser check flag
-        params.(paramnames(50)) = param(103);                       % CS2 laser check flag
-        params.(paramnames(51)) = param(104);                       % CS3 laser check flag
-        params.(paramnames(52)) = param(105:106);                   % lick fixed side check (2)
-        params.(paramnames(53)) = param(107);                       % after ramp max delay to reward
-        params.(paramnames(54)) = param(108);                       % Reward laser check flag
-        params.(paramnames(55)) = param(109:111);
-        params.(paramnames(56)) = param(112:114);                   % CS increase
-        params.(paramnames(57)) = param(115:117);                   % delay between sound and light cue if both are present 
+        params.(paramnames(47)) = param(101);                       % CS1 laser check flag
+        params.(paramnames(48)) = param(102);                       % CS2 laser check flag
+        params.(paramnames(49)) = param(103);                       % CS3 laser check flag
+        params.(paramnames(50)) = param(104:105);                   % lick fixed side check (2)
+        params.(paramnames(51)) = param(106);                       % Reward laser check flag
+        params.(paramnames(52)) = param(107:109);                   % CS max ramp delay 
+        params.(paramnames(53)) = param(110:112);                   % CS ramp exponential factor
+        params.(paramnames(54)) = param(113);                       % CS increase
+        params.(paramnames(55)) = param(114:116);                   % delay between sound and light cue if both are present 
 
     save(file, 'eventlog', 'params','exception')
 end
