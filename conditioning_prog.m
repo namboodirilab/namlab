@@ -885,8 +885,8 @@ try
         params.(paramnames(51)) = param(106);                       % Reward laser check flag
         params.(paramnames(52)) = param(107:109);                   % CS max ramp delay 
         params.(paramnames(53)) = param(110:112);                   % CS ramp exponential factor
-        params.(paramnames(54)) = param(113);                       % CS increase
-        params.(paramnames(55)) = param(114:116);                   % delay between sound and light cue if both are present 
+        params.(paramnames(54)) = param(113:115);                   % CS increase
+        params.(paramnames(55)) = param(116:118);                   % delay between sound and light cue if both are present 
 
     assignin('base','eventlog',eventlog);
 %     file = [saveDir fname '_' num2str(r_bgd) '_' num2str(T_bgd) '_'  str probstr laserstr bgdsolenoidstr extinctionstr date '.mat'];
@@ -1027,8 +1027,8 @@ catch exception
         params.(paramnames(51)) = param(106);                       % Reward laser check flag
         params.(paramnames(52)) = param(107:109);                   % CS max ramp delay 
         params.(paramnames(53)) = param(110:112);                   % CS ramp exponential factor
-        params.(paramnames(54)) = param(113);                       % CS increase
-        params.(paramnames(55)) = param(114:116);                   % delay between sound and light cue if both are present 
+        params.(paramnames(54)) = param(113:115);                   % CS increase
+        params.(paramnames(55)) = param(116:118);                   % delay between sound and light cue if both are present 
 
     save(file, 'eventlog', 'params','exception')
 end
