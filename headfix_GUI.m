@@ -22,7 +22,7 @@ function varargout = headfix_GUI(varargin)
 
 % Edit the above text to modify the response to help headfix_GUI
 
-% Last Modified by GUIDE v2.5 15-Nov-2021 21:22:26
+% Last Modified by GUIDE v2.5 01-Feb-2022 17:02:35
 
 % cd 'F:\acads\Stuber lab\headfix'; %Change to directory
 
@@ -104,6 +104,7 @@ set(handles.laserpulseoffperiod, 'Enable', 'off');
 set(handles.CS1lasercheck, 'Enable', 'off');
 set(handles.CS2lasercheck, 'Enable', 'off');
 set(handles.CS3lasercheck, 'Enable', 'off');
+set(handles.CS4lasercheck, 'Enable', 'off');
 set(handles.Rewardlasercheck, 'Enable', 'off');
 set(handles.checkboxintervaldistribution, 'Enable', 'off');
 set(handles.maxdelaycuetovacuum, 'Enable', 'off');
@@ -247,6 +248,7 @@ if selectedmode == 1 || selectedmode == 4 || selectedmode ==6
     set(handles.CS1lasercheck, 'Enable', 'on');
     set(handles.CS2lasercheck, 'Enable', 'on');
     set(handles.CS3lasercheck, 'Enable', 'on');
+    set(handles.CS4lasercheck, 'Enable', 'on');
     set(handles.Rewardlasercheck, 'Enable', 'on');
     set(handles.checkboxintervaldistribution, 'Enable', 'on');
     set(handles.maxdelaycuetovacuum, 'Enable', 'on');
@@ -362,6 +364,7 @@ set(handles.laserpulseoffperiod, 'Enable', 'off');
 set(handles.CS1lasercheck, 'Enable', 'off');
 set(handles.CS2lasercheck, 'Enable', 'off');
 set(handles.CS3lasercheck, 'Enable', 'off');
+set(handles.CS4lasercheck, 'Enable', 'off');
 set(handles.Rewardlasercheck, 'Enable', 'off');
 set(handles.checkboxintervaldistribution, 'Enable', 'off');
 set(handles.maxdelaycuetovacuum, 'Enable', 'off');
@@ -702,23 +705,25 @@ function csproperties_CreateFcn(hObject, eventdata, handles)
 %         'Sound(1), light(2) or both(3)', 1, 1, 1};
     
 %%% DEFAULT FOR LASER PAVLOVIAN
-temp = {'Number of trials', 25, 25, 50;
-        'Frequency(kHz)', 12, 3, 5;
-        'Predicted solenoid', '5+3', '5+3', '1+3';
-        'Probability of solenoid', '0+100', '0+100', '0+0';
-        'Solenoid open time (ms)', '3000+40', '3000+40', '0+30';
-        'Cue duration (ms)', 1000, 1000, 1000;
-        'Delay to solenoid (ms)', '0+3000', '0+3000', '0+3000';
-        'Pulse tone (1) or not (0)', 0, 0, 1;
-        'Speaker number', 1, 2, 2;
-        'Light number', 1, 2, 1;
-        'Go lick requirement', 0, 0, 0;
-        'Go lick tube (or solenoid)', 1, 1, 3;
-        'Sound(1), light(2) or both(3)', 1, 1, 1;
-        'Ramp max delay', 5000, 5000,1200;
-        'Ramp exponent', 1, 1, 1;
-        'Increasing cue (1) or not(0)', 0, 0, 0;
-        'Delay between sound and light if both', 0, 0, 0};
+temp = {'Number of trials', 25, 25, 50, 0;
+        'Frequency(kHz)', 12, 3, 5, 0;
+        'Predicted solenoid', '5+3', '5+3', '1+3', '1+3';
+        'Probability of solenoid', '0+100', '0+100', '0+0', '0+0';
+        'Solenoid open time (ms)', '3000+40', '3000+40', '0+30', '0+40';
+        'Cue duration (ms)', 1000, 1000, 1000, 1000;
+        'Delay to solenoid (ms)', '0+3000', '0+3000', '0+3000', '0+3000';
+        'Pulse tone (1) or not (0)', 0, 0, 1, 0;
+        'Speaker number', 1, 2, 2, 2;
+        'Light number', 1, 2, 1, 2;
+        'Go lick requirement', 0, 0, 0, 0;
+        'Go lick tube (or solenoid)', 1, 1, 3, 1;
+        'Sound(1), light(2)', 1, 1, 1, 1;
+        'Ramp max delay', 5000, 5000,1200, 5000;
+        'Ramp exponent', 1, 1, 1, 1;
+        'Increasing cue (1) or not(0)', 0, 0, 0, 0;
+        'Delay to deliver the second cue if there is one', 0, 0, 0, 0;
+        'Second cue type: sound(1) light(2) nocue(0)', 0, 0, 0, 0;
+        'Second cue frequency', 5, 5, 5, 5};
 set(hObject, 'Data', temp);
 
 % --- Executes during object creation, after setting all properties.
@@ -784,7 +789,9 @@ CSsignal = cell2mat(csproperties(13, 2:end));
 CSrampmaxdelay = cell2mat(csproperties(14, 2:end));
 CSrampexp    = cell2mat(csproperties(15,2:end));
 CSincrease = cell2mat(csproperties(16, 2:end));
-delaybetweensoundandlight = cell2mat(csproperties(17, 2:end));
+delayforsecondcue = cell2mat(csproperties(17, 2:end));
+secondcuetype = cell2mat(csproperties(18, 2:end));
+secondcuefreq = cell2mat(csproperties(19,2:end));
 
 %ITI
 meanITI = get(handles.meanITI,'String');
@@ -848,6 +855,7 @@ lasertrialbytrialflag = get(handles.lasertrialbytrial,'Value');
 CS1lasercheck = get(handles.CS1lasercheck, 'Value');
 CS2lasercheck = get(handles.CS2lasercheck, 'Value');
 CS3lasercheck = get(handles.CS3lasercheck, 'Value');
+CS4lasercheck = get(handles.CS4lasercheck, 'Value');
 Rewardlasercheck = get(handles.Rewardlasercheck, 'Value');
 
 % Validate inputs
@@ -859,8 +867,9 @@ inputs = [numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur, CS_t_fxd,...
           minrewards, signaltolickreq, soundsignalpulse, soundfreq, sounddur, lickspeaker,...
           laserlatency, laserduration, randlaserflag, laserpulseperiod, laserpulseoffperiod,...
           lasertrialbytrialflag, maxdelaycuetovacuum, CSlight,variableratioflag, variableintervalflag,...
-          licklight, CS1lasercheck, CS2lasercheck, CS3lasercheck,...
-          fixedsidecheck, Rewardlasercheck, CSrampmaxdelay, CSrampexp, CSincrease,delaybetweensoundandlight]; % collect all inputs into array
+          licklight, CS1lasercheck, CS2lasercheck, CS3lasercheck, CS4lasercheck,...
+          fixedsidecheck, Rewardlasercheck, CSrampmaxdelay, CSrampexp, CSincrease,delayforsecondcue,...
+          secondcuetype, secondcuefreq]; % collect all inputs into array
 
 negIn  = inputs < 0;
 intIn  = inputs - fix(inputs);
@@ -908,6 +917,7 @@ set(handles.lasertrialbytrial,'Enable','off')
 set(handles.CS1lasercheck,'Enable','off');
 set(handles.CS2lasercheck,'Enable','off');
 set(handles.CS3lasercheck,'Enable','off');
+set(handles.CS4lasercheck,'Enable','off');
 set(handles.Rewardlasercheck,'Enable','off');
 
 set(handles.testcs1,'Enable','on')
@@ -943,8 +953,9 @@ params = sprintf('%G+', numtrials, CSfreq, CSsolenoid, CSprob, CSopentime,...
                  laserlatency, laserduration, randlaserflag, laserpulseperiod,...
                  laserpulseoffperiod, lasertrialbytrialflag, maxdelaycuetovacuum, CSlight,...
                  variableratioflag,variableintervalflag,licklight,...
-                 CS1lasercheck, CS2lasercheck, CS3lasercheck,fixedsidecheck,...
-                 Rewardlasercheck, CSrampmaxdelay, CSrampexp, CSincrease,delaybetweensoundandlight);
+                 CS1lasercheck, CS2lasercheck, CS3lasercheck,CS4lasercheck,fixedsidecheck,...
+                 Rewardlasercheck, CSrampmaxdelay, CSrampexp, CSincrease,delayforsecondcue,...
+                 secondcuetype, secondcuefreq);
 params = params(1:end-1);
 
 % Run arduino code
@@ -988,8 +999,9 @@ CSsignal     = cell2mat(csproperties(13, 2:end));
 CSrampmaxdelay = cell2mat(csproperties(14, 2:end));
 CSrampexp    = cell2mat(csproperties(15,2:end));
 CSincrease = cell2mat(csproperties(16, 2:end));
-delaybetweensoundandlight = cell2mat(csproperties(17, 2:end));
-
+delayforsecondcue = cell2mat(csproperties(17, 2:end));
+secondcuetype = cell2mat(csproperties(18, 2:end));
+secondcuefreq = cell2mat(csproperties(19, 2:end));
 
 %ITI
 meanITI = get(handles.meanITI,'String');
@@ -1053,6 +1065,7 @@ lasertrialbytrialflag = get(handles.lasertrialbytrial,'Value');
 CS1lasercheck = get(handles.CS1lasercheck, 'Value');
 CS2lasercheck = get(handles.CS2lasercheck, 'Value');
 CS3lasercheck = get(handles.CS3lasercheck, 'Value');
+CS4lasercheck = get(handles.CS4lasercheck, 'Value');
 Rewardlasercheck = get(handles.Rewardlasercheck, 'Value');
 
 % Validate inputs
@@ -1065,8 +1078,9 @@ inputs = [numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur, CS_t_fxd,...
           laserlatency, laserduration, randlaserflag, laserpulseperiod, laserpulseoffperiod,...
           lasertrialbytrialflag, maxdelaycuetovacuum, CSlight,variableratioflag,...
           variableintervalflag,licklight, CS1lasercheck,...
-          CS2lasercheck, CS3lasercheck, fixedsidecheck, Rewardlasercheck,...
-          CSrampmaxdelay, CSrampexp, CSincrease, delaybetweensoundandlight]; % collect all inputs into array
+          CS2lasercheck, CS3lasercheck, CS4lasercheck, fixedsidecheck, Rewardlasercheck,...
+          CSrampmaxdelay, CSrampexp, CSincrease, delayforsecondcue,...
+          secondcuetype]; % collect all inputs into array
           
 negIn  = inputs < 0;
 intIn  = inputs - fix(inputs);
@@ -1139,8 +1153,9 @@ params = sprintf('%G+', numtrials, CSfreq, CSsolenoid, CSprob, CSopentime,...
                  laserlatency, laserduration, randlaserflag, laserpulseperiod, laserpulseoffperiod,...
                  lasertrialbytrialflag, maxdelaycuetovacuum, CSlight,variableratioflag,...
                  variableintervalflag,licklight, CS1lasercheck,...
-                 CS2lasercheck, CS3lasercheck,fixedsidecheck, Rewardlasercheck,...
-                 CSrampmaxdelay, CSrampexp, CSincrease, delaybetweensoundandlight);
+                 CS2lasercheck, CS3lasercheck,CS4lasercheck, fixedsidecheck, Rewardlasercheck,...
+                 CSrampmaxdelay, CSrampexp, CSincrease, delayforsecondcue,...
+                 secondcuetype);
              
 params = params(1:end-1);
 
@@ -1249,3 +1264,58 @@ function csproperties_KeyPressFcn(hObject, eventdata, handles)
 %	Character: character interpretation of the key(s) that was pressed
 %	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
 % handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in CS4lasercheck.
+function CS4lasercheck_Callback(hObject, eventdata, handles)
+% hObject    handle to CS4lasercheck (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of CS4lasercheck
+
+
+
+function cues4Edit_Callback(hObject, eventdata, handles)
+% hObject    handle to cues4Edit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of cues4Edit as text
+%        str2double(get(hObject,'String')) returns contents of cues4Edit as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function cues4Edit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to cues4Edit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function lights4Edit_Callback(hObject, eventdata, handles)
+% hObject    handle to lights4Edit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of lights4Edit as text
+%        str2double(get(hObject,'String')) returns contents of lights4Edit as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function lights4Edit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to lights4Edit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end

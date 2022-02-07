@@ -37,12 +37,15 @@ vacuum = 0;% Counter for vacuums
 cs1 = 0;% Counter for cue 1's
 cs2 = 0;% Counter for cue 2's
 cs3 = 0;% Counter for cue 3's
+cs4 = 0;
 light1 = 0;% Counter for light 1's
 light2 = 0;% Counter for light 2's
 light3 = 0;% Counter for light 3's
+light4 = 0;
 both1 = 0;% Counter for both light and cue 1's
 both2 = 0;% Counter for both light and cue 2's
 both3 = 0;% Counter for both light and cue 3's
+both4 = 0;
 eventlog = zeros(logInit,3);% empty event log for all events 
 l = 0;% Counter for logged events
 
@@ -53,30 +56,39 @@ l = 0;% Counter for logged events
 templicks = NaN(ceil(licksinit/sum(numtrials)), 3); % 3 licktubes
 templicksct = [0, 0, 0];                                                % count of temp licks. Calculated explicitly to speed up indexing
 if numtrials(1)~=0
-templicksPSTH1 = NaN(ceil(licksinit/(numtrials(1))),numtrials(1),3); % Array in which all CS1 licks are stored for calculating PSTH 
+templicksPSTH1 = NaN(ceil(licksinit/(numtrials(1))),numtrials(1),4); % Array in which all CS1 licks are stored for calculating PSTH 
 elseif numtrials(1)==0
     templicksPSTH1 = [];
 end
 if numtrials(2)~=0
-    templicksPSTH2 = NaN(ceil(licksinit/numtrials(2)),numtrials(2),3); % Array in which all CS2 licks are stored for calculating PSTH 
+    templicksPSTH2 = NaN(ceil(licksinit/numtrials(2)),numtrials(2),4); % Array in which all CS2 licks are stored for calculating PSTH 
 elseif numtrials(2)==0
     templicksPSTH2 = [];
 end
 if numtrials(3)~=0
-    templicksPSTH3 = NaN(ceil(licksinit/numtrials(3)),numtrials(3),3); % Array in which all CS3 licks are stored for calculating PSTH 
+    templicksPSTH3 = NaN(ceil(licksinit/numtrials(3)),numtrials(3),4); % Array in which all CS3 licks are stored for calculating PSTH 
 elseif numtrials(3)==0
     templicksPSTH3 = [];
+end
+if numtrials(4)~=0
+    templicksPSTH4 = NaN(ceil(licksinit/numtrials(4)),numtrials(4),4); % Array in which all CS4 licks are stored for calculating PSTH 
+elseif numtrials(4)==0
+    templicksPSTH4 = [];
 end
 
 hPSTH1 = [];                                                % Handle to lick1 PSTH plot on CS1 trials
 hPSTH2 = [];                                                % Handle to lick1 PSTH plot on CS2 trials
 hPSTH3 = [];                                                % Handle to lick1 PSTH plot on CS3 trials
-hPSTH4 = [];                                                % Handle to lick2 PSTH plot on CS1 trials
-hPSTH5 = [];                                                % Handle to lick2 PSTH plot on CS2 trials
-hPSTH6 = [];                                                % Handle to lick2 PSTH plot on CS3 trials
-hPSTH7 = [];                                                % Handle to lick3 PSTH plot on CS1 trials
-hPSTH8 = [];                                                % Handle to lick3 PSTH plot on CS2 trials
-hPSTH9 = [];                                                % Handle to lick3 PSTH plot on CS3 trials
+hPSTH4 = [];                                                % Handle to lick1 PSTH plot on CS4 trials
+hPSTH5 = [];                                                % Handle to lick2 PSTH plot on CS1 trials
+hPSTH6 = [];                                                % Handle to lick2 PSTH plot on CS2 trials
+hPSTH7 = [];                                                % Handle to lick2 PSTH plot on CS3 trials
+hPSTH8 = [];                                                % Handle to lick2 PSTH plot on CS4 trials
+hPSTH9 = [];                                                % Handle to lick3 PSTH plot on CS1 trials
+hPSTH10 = [];                                                % Handle to lick3 PSTH plot on CS2 trials
+hPSTH11 = [];                                                % Handle to lick3 PSTH plot on CS3 trials
+hPSTH12 = [];                                                % Handle to lick3 PSTH plot on CS4 trials
+
 
 tempsolenoids = NaN(ceil((bgdsolenoidsinit+cuesinit)/sum(numtrials)),6); % 6 solenoids
 tempsolenoidsct = [0 0 0 0 0 0];
@@ -85,15 +97,19 @@ tempsolenoidsct = [0 0 0 0 0 0];
 tempcue1 = NaN(1,1);
 tempcue2 = NaN(1,1);
 tempcue3 = NaN(1,1);
+tempcue4 = NaN(1,1);
 templight1 = NaN(1,1); 
 templight2 = NaN(1,1);
 templight3 = NaN(1,1);
+templight4 = NaN(1,1);
 tempsecondcue1 = NaN(1,1);
 tempsecondcue2 = NaN(1,1);
 tempsecondcue3 = NaN(1,1);
+tempsecondcue4 = NaN(1,1);
 tempsecondlight1 = NaN(1,1);
 tempsecondlight2 = NaN(1,1);
 tempsecondlight3 = NaN(1,1);
+tempsecondlight4 = NaN(1,1);
 
 % setup plot
 axes(actvAx)                            % make the activity axes the current one
@@ -172,12 +188,14 @@ try
         %   12 = Lick retract solenoid 1
         %   13 = Lick retract solenoid 2
         %   14 = Vacuum   
-        %   15 = CS1
-        %   16 = CS2
-        %   17 = CS3                    % leave room for possible cues 
-        %   21 = Light 1
-        %   22 = Light 2
+        %   15 = sound 1
+        %   16 = sound 2
+        %   17 = sound 3                    % leave room for possible cues 
+        %   18 = sound 4
+        %   21 = light 1
+        %   22 = light 2
         %   23 = light 3
+        %   24 = light 4
         %   25 = both CSsound1 and CSlight1
         %   26 = both CSsound2 and CSlight2
         %   27 = both CSsound3 and CSlight3
@@ -471,9 +489,10 @@ try
                 plot([tempsecondlight3 tempsecondlight3],[-(cs-1) -cs],'Color',[0.85 0.33 0.1],'LineWidth',2);hold on     % light3
 
                 % Begin PSTH plotting
-                delete(hPSTH1);delete(hPSTH2);delete(hPSTH3); %Clear previous PSTH plots  
-                delete(hPSTH4);delete(hPSTH5);delete(hPSTH6); %Clear previous PSTH plots  
-                delete(hPSTH7);delete(hPSTH8);delete(hPSTH9); %Clear previous PSTH plots      
+                delete(hPSTH1);delete(hPSTH2);delete(hPSTH3);delete(hPSTH4); %Clear previous PSTH plots  
+                delete(hPSTH5);delete(hPSTH6);delete(hPSTH7);delete(hPSTH8); %Clear previous PSTH plots  
+                delete(hPSTH9);delete(hPSTH10);delete(hPSTH11); delete(hPSTH12);%Clear previous PSTH plots      
+
                 if ~isempty(templicksPSTH1)
                     if sum(~isnan(templicksPSTH1(:,:,1)), 'all')>0
                         temp = templicksPSTH1(:,:,1);
@@ -488,7 +507,7 @@ try
                         temp = templicksPSTH1(:,:,2);
                         nPSTH1 = histc(temp(~isnan(temp)),xbins); % Count licks2 in each bin for all trials until now
                         nPSTH1 = nPSTH1/max(nPSTH1); % Plot PSTH for CS1 scaled to the available range on the y-axis            
-                        hPSTH4 = plot(xbins,nPSTH1*yOffset,'Marker','o','MarkerFaceColor',[0.27 0.67 0.19],'Color',[0.27 0.67 0.19]);
+                        hPSTH5 = plot(xbins,nPSTH1*yOffset,'Marker','o','MarkerFaceColor',[0.27 0.67 0.19],'Color',[0.27 0.67 0.19]);
     %                     hold on;
                     end
                     if sum(~isnan(templicksPSTH1(:,:,3)), 'all')>0
@@ -497,7 +516,7 @@ try
                         temp = templicksPSTH1(:,:,3);
                         nPSTH1 = histc(temp(~isnan(temp)),xbins); % Count licks3 in each bin for all trials until now
                         nPSTH1 = nPSTH1/max(nPSTH1); % Plot PSTH for CS1 scaled to the available range on the y-axis            
-                        hPSTH7 = plot(xbins,nPSTH1*yOffset,'Marker','o','MarkerFaceColor',[0.09 0.43 0.02],'Color',[0.09 0.43 0.02]);
+                        hPSTH9 = plot(xbins,nPSTH1*yOffset,'Marker','o','MarkerFaceColor',[0.09 0.43 0.02],'Color',[0.09 0.43 0.02]);
     %                     hold on;
                     end
                 end
@@ -513,14 +532,14 @@ try
                         temp = templicksPSTH2(:,:,2);
                         nPSTH2 = histc(temp(~isnan(temp)),xbins); % Count licks2 in each bin for all trials until now
                         nPSTH2 = nPSTH2/max(nPSTH2); % Plot PSTH for CS2 scaled to the available range on the y-axis
-                        hPSTH5 = plot(xbins,nPSTH2*yOffset,'Marker','o','MarkerFaceColor',[1 0.35 0.78],'Color',[1 0.35 0.78]);
+                        hPSTH6 = plot(xbins,nPSTH2*yOffset,'Marker','o','MarkerFaceColor',[1 0.35 0.78],'Color',[1 0.35 0.78]);
     %                     hold on;
                     end
                     if sum(~isnan(templicksPSTH2(:,:,3)), 'all')>0
                         temp = templicksPSTH2(:,:,3);
                         nPSTH2 = histc(temp(~isnan(temp)),xbins); % Count licks3 in each bin for all trials until now
                         nPSTH2 = nPSTH2/max(nPSTH2); % Plot PSTH for CS2 scaled to the available range on the y-axis
-                        hPSTH8 = plot(xbins,nPSTH2*yOffset,'Marker','o','MarkerFaceColor',[0.79 0.03 0.56],'Color',[0.79 0.03 0.56]);
+                        hPSTH10 = plot(xbins,nPSTH2*yOffset,'Marker','o','MarkerFaceColor',[0.79 0.03 0.56],'Color',[0.79 0.03 0.56]);
     %                     hold on;
                     end
                 end
@@ -536,14 +555,37 @@ try
                         temp = templicksPSTH3(:,:,2);
                         nPSTH3 = histc(temp(~isnan(temp)),xbins); % Count licks2 in each bin for all trials until now
                         nPSTH3 = nPSTH3/max(nPSTH3); % Plot PSTH for CS3 scaled to the available range on the y-axis
-                        hPSTH6 = plot(xbins,nPSTH3*yOffset,'Marker','o','MarkerFaceColor',[0.2 0.35 1],'Color',[0.2 0.35 1]);
+                        hPSTH7 = plot(xbins,nPSTH3*yOffset,'Marker','o','MarkerFaceColor',[0.2 0.35 1],'Color',[0.2 0.35 1]);
     %                     hold on;
                     end
                     if sum(~isnan(templicksPSTH3(:,:,3)), 'all')>0
                         temp = templicksPSTH3(:,:,3);
                         nPSTH3 = histc(temp(~isnan(temp)),xbins); % Count licks3 in each bin for all trials until now
                         nPSTH3 = nPSTH3/max(nPSTH3); % Plot PSTH for CS3 scaled to the available range on the y-axis
-                        hPSTH9 = plot(xbins,nPSTH3*yOffset,'Marker','o','MarkerFaceColor',[0.03 0.14 0.69],'Color',[0.03 0.14 0.69]);
+                        hPSTH11 = plot(xbins,nPSTH3*yOffset,'Marker','o','MarkerFaceColor',[0.03 0.14 0.69],'Color',[0.03 0.14 0.69]);
+    %                     hold on;
+                    end
+                end
+                if ~isempty(templicksPSTH4)
+                    if sum(~isnan(templicksPSTH4(:,:,1)), 'all')>0
+                        temp = templicksPSTH4(:,:,1);
+                        nPSTH4 = histc(temp(~isnan(temp)),xbins); % Count licks1 in each bin for all trials until now
+                        nPSTH4 = nPSTH4/max(nPSTH4); % Plot PSTH for CS3 scaled to the available range on the y-axis
+                        hPSTH4 = plot(xbins,nPSTH4*yOffset,'Marker','o','MarkerFaceColor',[0.88 0.88 0.49],'Color',[0.97 0.97 0.47]);
+                        %                     hold on;
+                    end
+                    if sum(~isnan(templicksPSTH4(:,:,2)), 'all')>0
+                        temp = templicksPSTH4(:,:,2);
+                        nPSTH4 = histc(temp(~isnan(temp)),xbins); % Count licks2 in each bin for all trials until now
+                        nPSTH4 = nPSTH4/max(nPSTH4); % Plot PSTH for CS3 scaled to the available range on the y-axis
+                        hPSTH8 = plot(xbins,nPSTH4*yOffset,'Marker','o','MarkerFaceColor',[0.79 0.79 0.05],'Color',[0.79 0.79 0.05]);
+                        %                     hold on;
+                    end
+                    if sum(~isnan(templicksPSTH4(:,:,3)), 'all')>0
+                        temp = templicksPSTH4(:,:,3);
+                        nPSTH4 = histc(temp(~isnan(temp)),xbins); % Count licks3 in each bin for all trials until now
+                        nPSTH4 = nPSTH4/max(nPSTH4); % Plot PSTH for CS3 scaled to the available range on the y-axis
+                        hPSTH12 = plot(xbins,nPSTH4*yOffset,'Marker','o','MarkerFaceColor',[0.69 0.69 0.08],'Color',[0.69 0.69 0.08]);
     %                     hold on;
                     end
                 end
@@ -564,15 +606,19 @@ try
                 tempcue1 = NaN;
                 tempcue2 = NaN;
                 tempcue3 = NaN;  
+                tempcue4 = NaN;
                 tempsecondcue1 = NaN;
                 tempsecondcue2 = NaN;
                 tempsecondcue3 = NaN;
+                tempseconccue4 = NaN;
                 templight1 = NaN; 
                 templight2 = NaN;
                 templight3 = NaN;
+                templight4 = NaN;
                 tempsecondlight1 = NaN;
                 tempsecondlight2 = NaN;
                 tempsecondlight3 = NaN;
+                tempsecondlight4 = NaN;
 
             end
         elseif code == 15                            % CS1 cue onset; GREEN
@@ -635,6 +681,28 @@ try
             elseif itemflag == 1
                 cs3 = cs3 + 1;
                 both3 = both3 +1;
+                set(handles.cues3Edit,'String',num2str(cs3))
+                tempsecondcue3 = time;
+%                 trial = floor(time/durationtrialpartitionnocues);
+%                 temptrialdur = trial*durationtrialpartitionnocues;
+%                 plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'b','LineWidth',2);hold on
+            end
+        elseif code == 18                            % CS4 cue onset; 
+            if itemflag == 0
+                cs4 = cs4 + 1;
+                set(handles.cues3Edit,'String',num2str(cs4))
+                tempcue3 = time;
+                if cs1+cs2+cs4+light1+light2+light3-both1-both2-both3<sum(numtrials)
+                    fprintf('Executing trial %d\n',cs1+cs2+cs4+light1+light2+light3-both1-both2-both3-both4);
+                end
+                if (experimentmode == 1 && intervaldistribution>2) || experimentmode == 3 || experimentmode == 7
+                    trial = floor(time/durationtrialpartitionnocues);
+                    temptrialdur = trial*durationtrialpartitionnocues;
+                    plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0.49 0.18 0.56],'LineWidth',2);hold on
+                end
+            elseif itemflag == 1
+                cs4 = cs4 + 1;
+                both4 = both4 +1;
                 set(handles.cues3Edit,'String',num2str(cs3))
                 tempsecondcue3 = time;
 %                 trial = floor(time/durationtrialpartitionnocues);
@@ -707,54 +775,80 @@ try
 %                 temptrialdur = trial*durationtrialpartitionnocues;
 %                 plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0.85 0.33 0.1],'LineWidth',2);hold on %light cue3
             end
-        elseif code == 25                           % both CS1 sound and light onset;
-            both1 = both1 + 1;
-            cs1 = cs1 + 1;
-            set(handles.cues1Edit,'String',num2str(cs1))
-            tempcue1 = time;
-            light1 = light1 + 1;
-            set(handles.light1Edit,'String',num2str(light1))
-            templight1 = time;
-            if cs1+cs2+cs3+light1+light2+light3-both1-both2-both3<sum(numtrials)
-                fprintf('Executing trial %d\n',cs1+cs2+cs3+light1+light2+light3-both1-both2-both3);
+        elseif code == 24                            % CS3 light onset;
+            if itemflag == 0
+                light3 = light3 + 1;
+                set(handles.light3Edit,'String',num2str(light3))
+                templight3 = time;
+                if cs1+cs2+cs3+light1+light2+light3-both1-both2-both3<sum(numtrials)
+                    fprintf('Executing trial %d\n',cs1+cs2+cs3+light1+light2+light3-both1-both2-both3);
+                end
+                if (experimentmode == 1 && intervaldistribution>2) || experimentmode == 3 || experimentmode == 7
+                    trial = floor(time/durationtrialpartitionnocues);
+                    temptrialdur = trial*durationtrialpartitionnocues;
+                    plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0.43 0.68 0.1],'LineWidth',2);hold on %light cue3
+                end
+            elseif itemflag == 1
+                light3 = light3 + 1;
+                both3 = both3 + 1;
+                tempsecondlight3 = time;
+                set(handles.light3Edit,'String',num2str(light3))
+%                 trial = floor(time/durationtrialpartitionnocues);
+%                 temptrialdur = trial*durationtrialpartitionnocues;
+%                 plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0.85 0.33 0.1],'LineWidth',2);hold on %light cue3
             end
-            if (experimentmode == 1 && intervaldistribution>2) || experimentmode == 3 || experimentmode == 7 
-                trial = floor(time/durationtrialpartitionnocues);
-                temptrialdur = trial*durationtrialpartitionnocues;
-                plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0 0.45 0.74],'LineWidth',2);hold on %light cue1
-            end
-        elseif code == 26                           % both CS2 sound and light onset;                     
-            both2 = both2 + 1;
-            cs2 = cs2 + 1;
-            set(handles.cues2Edit,'String',num2str(cs2))
-            tempcue2 = time;
-            light2 = light2 + 1;
-            set(handles.light2Edit,'String',num2str(light2))
-            templight2 = time;
-            if cs1+cs2+cs3+light1+light2+light3-both1-both2-both3<sum(numtrials)
-                fprintf('Executing trial %d\n',cs1+cs2+cs3+light1+light2+light3-both1-both2-both3);
-            end
-            if (experimentmode == 1 && intervaldistribution>2) || experimentmode == 3 || experimentmode == 7
-                trial = floor(time/durationtrialpartitionnocues);
-                temptrialdur = trial*durationtrialpartitionnocues;
-                plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0.93 0.69 0.13],'LineWidth',2);hold on %light cue2
-            end
-        elseif code == 27                           % both CS3 sound and light onset;
-            both3 = both3 + 1;
-            cs3 = cs3 + 1;
-            set(handles.cues3Edit,'String',num2str(cs3))
-            tempcue3 = time;
-            light3 = light3 + 1;
-            set(handles.light3Edit,'String',num2str(light3))
-            templight3 = time;
-            if cs1+cs2+cs3+light1+light2+light3-both1-both2-both3<sum(numtrials)
-                fprintf('Executing trial %d\n',cs1+cs2+cs3+light1+light2+light3-both1-both2-both3);
-            end
-            if (experimentmode == 1 && intervaldistribution>2) || experimentmode == 3 || experimentmode == 7
-                trial = floor(time/durationtrialpartitionnocues);
-                temptrialdur = trial*durationtrialpartitionnocues;
-                plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0.85 0.33 0.1],'LineWidth',2);hold on %light cue3
-            end
+
+
+
+
+%         elseif code == 25                           % both CS1 sound and light onset;
+%             both1 = both1 + 1;
+%             cs1 = cs1 + 1;
+%             set(handles.cues1Edit,'String',num2str(cs1))
+%             tempcue1 = time;
+%             light1 = light1 + 1;
+%             set(handles.light1Edit,'String',num2str(light1))
+%             templight1 = time;
+%             if cs1+cs2+cs3+light1+light2+light3-both1-both2-both3<sum(numtrials)
+%                 fprintf('Executing trial %d\n',cs1+cs2+cs3+light1+light2+light3-both1-both2-both3);
+%             end
+%             if (experimentmode == 1 && intervaldistribution>2) || experimentmode == 3 || experimentmode == 7 
+%                 trial = floor(time/durationtrialpartitionnocues);
+%                 temptrialdur = trial*durationtrialpartitionnocues;
+%                 plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0 0.45 0.74],'LineWidth',2);hold on %light cue1
+%             end
+%         elseif code == 26                           % both CS2 sound and light onset;                     
+%             both2 = both2 + 1;
+%             cs2 = cs2 + 1;
+%             set(handles.cues2Edit,'String',num2str(cs2))
+%             tempcue2 = time;
+%             light2 = light2 + 1;
+%             set(handles.light2Edit,'String',num2str(light2))
+%             templight2 = time;
+%             if cs1+cs2+cs3+light1+light2+light3-both1-both2-both3<sum(numtrials)
+%                 fprintf('Executing trial %d\n',cs1+cs2+cs3+light1+light2+light3-both1-both2-both3);
+%             end
+%             if (experimentmode == 1 && intervaldistribution>2) || experimentmode == 3 || experimentmode == 7
+%                 trial = floor(time/durationtrialpartitionnocues);
+%                 temptrialdur = trial*durationtrialpartitionnocues;
+%                 plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0.93 0.69 0.13],'LineWidth',2);hold on %light cue2
+%             end
+%         elseif code == 27                           % both CS3 sound and light onset;
+%             both3 = both3 + 1;
+%             cs3 = cs3 + 1;
+%             set(handles.cues3Edit,'String',num2str(cs3))
+%             tempcue3 = time;
+%             light3 = light3 + 1;
+%             set(handles.light3Edit,'String',num2str(light3))
+%             templight3 = time;
+%             if cs1+cs2+cs3+light1+light2+light3-both1-both2-both3<sum(numtrials)
+%                 fprintf('Executing trial %d\n',cs1+cs2+cs3+light1+light2+light3-both1-both2-both3);
+%             end
+%             if (experimentmode == 1 && intervaldistribution>2) || experimentmode == 3 || experimentmode == 7
+%                 trial = floor(time/durationtrialpartitionnocues);
+%                 temptrialdur = trial*durationtrialpartitionnocues;
+%                 plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0.85 0.33 0.1],'LineWidth',2);hold on %light cue3
+%             end
         end
     end
     
