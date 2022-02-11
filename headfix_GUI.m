@@ -881,18 +881,31 @@ inputs = [numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur, CS_t_fxd,...
 
 negIn  = inputs < 0;
 intIn  = inputs - fix(inputs);
-negIn(40) = 0;
-negIn(41) = 0;
-negIn(42) = 0; % lick requirement can be negative input, go/no go task
-negIn(116) = 0;
-negIn(117) = 0;
-negIn(118) = 0; %delay between sound and light can be negative inputs
+negIn(53) = 0;
+negIn(54) = 0;
+negIn(55) = 0;
+negIn(56) = 0; % Go lick requirement can be negative for no go task
 
 if any([negIn intIn])
     errordlg('Invalid inputs')
     error('Invalid inputs')
 end
-
+if inputs(37) < inputs(137) || inputs(38) < inputs(137)
+    errordlg('Invalid inputs')
+    error('Invalid inputs: delay to solenoids must be bigger or same with delay to second cue')
+end
+if inputs(39) < inputs(138) || inputs(40) < inputs(138)
+    errordlg('Invalid inputs')
+    error('Invalid inputs: delay to solenoids must be bigger or same with delay to second cue')
+end
+if inputs(41) < inputs(139) || inputs(42) < inputs(139)
+    errordlg('Invalid inputs')
+    error('Invalid inputs: delay to solenoids must be bigger or same with delay to second cue')
+end
+if inputs(43) < inputs(140) || inputs(44) < inputs(140)
+    errordlg('Invalid inputs')
+    error('Invalid inputs: delay to solenoids must be bigger or same with delay to second cue')
+end
 
 % disable/enable certain options
 set(handles.startButton,'Enable','on')
@@ -1098,16 +1111,30 @@ inputs = [numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur, CS_t_fxd,...
           
 negIn  = inputs < 0;
 intIn  = inputs - fix(inputs);
-negIn(40) = 0;
-negIn(41) = 0;
-negIn(42) = 0;
-negIn(116) = 0;
-negIn(117) = 0;
-negIn(118) = 0;
+negIn(53) = 0;
+negIn(54) = 0;
+negIn(55) = 0;
+negIn(56) = 0; % Go lick requirement can be negative for no go task
 
 if any([negIn intIn])
     errordlg('Invalid inputs')
     error('Invalid inputs')
+end
+if inputs(37) < inputs(137) || inputs(38) < inputs(137)
+    errordlg('Invalid inputs')
+    error('Invalid inputs: delay to solenoids must be bigger or same with delay to second cue')
+end
+if inputs(39) < inputs(138) || inputs(40) < inputs(138)
+    errordlg('Invalid inputs')
+    error('Invalid inputs: delay to solenoids must be bigger or same with delay to second cue')
+end
+if inputs(41) < inputs(139) || inputs(42) < inputs(139)
+    errordlg('Invalid inputs')
+    error('Invalid inputs: delay to solenoids must be bigger or same with delay to second cue')
+end
+if inputs(43) < inputs(140) || inputs(44) < inputs(140)
+    errordlg('Invalid inputs')
+    error('Invalid inputs: delay to solenoids must be bigger or same with delay to second cue')
 end
 
 set(handles.licks1Edit,'String','0')

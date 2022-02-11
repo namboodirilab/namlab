@@ -765,24 +765,27 @@ global s;
 experimentmode = get(handles.experimentmode,'Value');
 
 % Cues
-assignin('base', 'csproperties', csproperties);
 csproperties = get(handles.csproperties, 'Data');
+assignin('base', 'csproperties', csproperties);
 numtrials    = cell2mat(csproperties(1,2:end));
 CSfreq       = cell2mat(csproperties(2,2:end));
 CSsolenoid   = [str2double(split(csproperties(3,2),'+'))',...
                 str2double(split(csproperties(3,3),'+'))',...
                 str2double(split(csproperties(3,4),'+'))',...
-                str2double(split(csproperties(3,5),'+'];
+                str2double(split(csproperties(3,5),'+'))'];
 CSprob       = [str2double(split(csproperties(4,2),'+'))',...
                 str2double(split(csproperties(4,3),'+'))',...
-                str2double(split(csproperties(4,4),'+'))'];
+                str2double(split(csproperties(4,4),'+'))',...
+                str2double(split(csproperties(4,5),'+'))'];
 CSopentime   = [str2double(split(csproperties(5,2),'+'))',...
                 str2double(split(csproperties(5,3),'+'))',...
-                str2double(split(csproperties(5,4),'+'))'];
+                str2double(split(csproperties(5,4),'+'))',...
+                str2double(split(csproperties(5,5),'+'))'];
 CSdur        = cell2mat(csproperties(6,2:end));
 CS_t_fxd     = [str2double(split(csproperties(7,2),'+'))',...
                 str2double(split(csproperties(7,3),'+'))',...
-                str2double(split(csproperties(7,4),'+'))'];
+                str2double(split(csproperties(7,4),'+'))',...
+                str2double(split(csproperties(7,5),'+'))'];
 CSpulse      = cell2mat(csproperties(8,2:end));
 CSspeaker    = cell2mat(csproperties(9,2:end));
 CSlight      = cell2mat(csproperties(10,2:end));
@@ -878,18 +881,31 @@ inputs = [numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur, CS_t_fxd,...
 
 negIn  = inputs < 0;
 intIn  = inputs - fix(inputs);
-negIn(40) = 0;
-negIn(41) = 0;
-negIn(42) = 0; % lick requirement can be negative input, go/no go task
-negIn(116) = 0;
-negIn(117) = 0;
-negIn(118) = 0; %delay between sound and light can be negative inputs
+negIn(53) = 0;
+negIn(54) = 0;
+negIn(55) = 0;
+negIn(56) = 0; % Go lick requirement can be negative for no go task
 
 if any([negIn intIn])
     errordlg('Invalid inputs')
     error('Invalid inputs')
 end
-
+if intIn(37) < intIn(137) || intIn(38) < intIn(137)
+    errordlg('Invalid inputs')
+    error('Invalid inputs: delay to solenoids must be bigger or same with delay to second cue')
+end
+if intIn(39) < intIn(138) || intIn(40) < intIn(138)
+    errordlg('Invalid inputs')
+    error('Invalid inputs: delay to solenoids must be bigger or same with delay to second cue')
+end
+if intIn(41) < intIn(139) || intIn(42) < intIn(139)
+    errordlg('Invalid inputs')
+    error('Invalid inputs: delay to solenoids must be bigger or same with delay to second cue')
+end
+if intIn(43) < intIn(140) || intIn(44) < intIn(140)
+    errordlg('Invalid inputs')
+    error('Invalid inputs: delay to solenoids must be bigger or same with delay to second cue')
+end
 
 % disable/enable certain options
 set(handles.startButton,'Enable','on')
@@ -979,22 +995,26 @@ experimentmode = get(handles.experimentmode,'Value');
 
 % Cues
 csproperties = get(handles.csproperties, 'Data');
+assignin('base', 'csproperties', csproperties);
 numtrials    = cell2mat(csproperties(1,2:end));
 CSfreq       = cell2mat(csproperties(2,2:end));
 CSsolenoid   = [str2double(split(csproperties(3,2),'+'))',...
                 str2double(split(csproperties(3,3),'+'))',...
-                str2double(split(csproperties(3,4),'+'))'];
-assignin('base', 'csproperties', csproperties);
+                str2double(split(csproperties(3,4),'+'))',...
+                str2double(split(csproperties(3,5),'+'))'];
 CSprob       = [str2double(split(csproperties(4,2),'+'))',...
                 str2double(split(csproperties(4,3),'+'))',...
-                str2double(split(csproperties(4,4),'+'))'];
+                str2double(split(csproperties(4,4),'+'))',...
+                str2double(split(csproperties(4,5),'+'))'];
 CSopentime   = [str2double(split(csproperties(5,2),'+'))',...
                 str2double(split(csproperties(5,3),'+'))',...
-                str2double(split(csproperties(5,4),'+'))'];
+                str2double(split(csproperties(5,4),'+'))',...
+                str2double(split(csproperties(5,5),'+'))'];
 CSdur        = cell2mat(csproperties(6,2:end));
 CS_t_fxd     = [str2double(split(csproperties(7,2),'+'))',...
                 str2double(split(csproperties(7,3),'+'))',...
-                str2double(split(csproperties(7,4),'+'))'];
+                str2double(split(csproperties(7,4),'+'))',...
+                str2double(split(csproperties(7,5),'+'))'];
 CSpulse      = cell2mat(csproperties(8,2:end));
 CSspeaker    = cell2mat(csproperties(9,2:end));
 CSlight      = cell2mat(csproperties(10,2:end));
@@ -1091,16 +1111,31 @@ inputs = [numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur, CS_t_fxd,...
           
 negIn  = inputs < 0;
 intIn  = inputs - fix(inputs);
-negIn(40) = 0;
-negIn(41) = 0;
-negIn(42) = 0;
-negIn(116) = 0;
-negIn(117) = 0;
-negIn(118) = 0;
+negIn(53) = 0;
+negIn(54) = 0;
+negIn(55) = 0;
+negIn(56) = 0; % Go lick requirement can be negative for no go task
 
 if any([negIn intIn])
     errordlg('Invalid inputs')
     error('Invalid inputs')
+end
+
+if inputs(37) < inputs(137) || input(38) < inputs(137)
+    errordlg('Invalid inputs')
+    error('Invalid inputs: delay to solenoids must be bigger or same with delay to second cue')
+end
+if inputs(39) < inputs(138) || input(40) < inputs(138)
+    errordlg('Invalid inputs')
+    error('Invalid inputs: delay to solenoids must be bigger or same with delay to second cue')
+end
+if inputs(41) < inputs(139) || input(42) < inputs(139)
+    errordlg('Invalid inputs')
+    error('Invalid inputs: delay to solenoids must be bigger or same with delay to second cue')
+end
+if inputs(43) < inputs(140) || input(44) < inputs(140)
+    errordlg('Invalid inputs')
+    error('Invalid inputs: delay to solenoids must be bigger or same with delay to second cue')
 end
 
 set(handles.licks1Edit,'String','0')
@@ -1167,7 +1202,7 @@ params = sprintf('%G+', numtrials, CSfreq, CSsolenoid, CSprob, CSopentime,...
                  secondcuetype, secondcuefreq, secondcuespeaker, secondcuelight);
              
 params = params(1:end-1);
-
+disp(params)
 % Run arduino code
 fprintf(s,'0');                          % Signals to Arduino to start the experiment
 conditioning_prog

@@ -839,7 +839,7 @@ void loop() {
 
       if (intervaldistribution < 3) {
       nextfxdsolenoid = ts + CS_t_fxd[2 * cueList[CSct]];    // next fixed solenoid comes at a fixed delay following cue onset
-        numfxdsolenoids = 0;
+      numfxdsolenoids = 0;
       }
       else if (intervaldistribution == 3) {
       fxdrwtime[CSct] = ts + CS_t_fxd[2 * cueList[CSct] + 1];
@@ -1681,9 +1681,6 @@ void lights() {
       digitalWrite(CSsecondcuelight[cueList[CSct]], HIGH);
     }
   }
-  nextfxdsolenoid = ts + CS_t_fxd[2 * cueList[CSct]];
-  numfxdsolenoids = 0;
-
   lightOff = ts + lightdur;
   lickctforreq[0] = 0;
   lickctforreq[1] = 0;
