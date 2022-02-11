@@ -211,7 +211,10 @@ unsigned long CSincrease[numCS];
 signed long delayforsecondcue[numCS];
 boolean cueover;                  // indicator for cue to be over or not
 unsigned long secondcue;          // for second cue in both cues task
-unsigned long CSsecondcue[numCS];     // for immediate second cue type
+unsigned long CSsecondcue[numCS];           // for immediate second cue type
+unsigned long CSsecondcuefreq[numCS];       // for immediate second frequency
+unsigned long CSsecondcuespeaker[numCS];    // speaker number for second cue
+unsigned long CSsecondcuelight[numCS];      // light number for second cue
 
 const int numlicktube = 2;       // number of recording lick tubes for lick dependent experiments
 unsigned long reqlicknum[numlicktube];
@@ -615,10 +618,21 @@ void setup() {
         }
       }
     }
-    else {
+    else if (a < numtrials[0] + numtrials[1] + numtrials[2]) {
       cueList[a] = 2;
       if (lasertrialbytrialflag == 1) {
         if (a < numtrials[0] + numtrials[1] + 0.8 * numtrials[2]) {
+          Laserontrial[a] = 1;
+        }
+        else {
+          Laserontrial[a] = 0;
+        }
+      }
+    }
+    else {
+      cueList[a] = 3;
+      if (lasertrialbytrialflag == 1) {
+        if (a < numtrials[0] + numtrials[1] + 0.8 * numtrials[2] + 0.8 * numtrials[3]) {
           Laserontrial[a] = 1;
         }
         else {
@@ -794,167 +808,76 @@ void loop() {
   licking();                           // determine if lick occured or was withdrawn
   frametimestamp();                    // store timestamps of frames
 
-  if (ts >= nextcue && ((ITIflag && intervaldistribution < 3) || intervaldistribution > 2) && nextcue != 0 && !cueover) {
-    if (CSsignal[cueList[CSct]] == 1) {           // Check which CS signal to give (sound/light)
-      if (CSsecondcue[cueList[CSct]] == 0) {      // check if there is second cue, 0 == no second cue
+  if (ts >= nextcue && ((ITIflag && intervaldistribution < 3) || intervaldistribution > 2) && nextcue != 0) {
+    if (secondcue == 0) {
+      if (CSsignal[cueList[CSct]] == 1) {
         Serial.print(15 + cueList[CSct]);         // code data as CS1, CS2 or CS3 timestamp
         Serial.print(" ");
         Serial.print(ts);                         // send timestamp of cue
         Serial.print(" ");
         Serial.print(0);
         Serial.print('\n');
-        cues();                                   // deliver sound cue
-        cueover = true;
+        cues();
       }
-      else {                                      // if there is second cue
-        if (secondcue == 0) {
-          Serial.print(15 + cueList[CSct]);         // code data as CS1, CS2 or CS3 timestamp
-          Serial.print(" ");
-          Serial.print(ts);                         // send timestamp of cue
-          Serial.print(" ");
-          Serial.print(0);
-          Serial.print('\n');
-          cues();
-          secondcue = ts + delayforsecondcue[cueList[CSct]];   // get second cue delivery time 
-        }
-        else if (ts >= secondcue && secondcue != 0) {          //
-          if (CSsecondcue[cueList[CSct]] == 1) {               // if second cue is sound cue, deliver sound
-            Serial.print(15 + cueList[CSct]);
-            Serial.print(" ");
-            Serial.print(ts);                         // send timestamp of sound cue
-            Serial.print(" ");
-            Serial.print(1);                          // indicates second cue 
-            Serial.print('\n');
-            cues();
-            cueover = true;
-          }
-          else if (CSsecondcue[cueList[CSct]] == 2) {          // if second cue is light cue, deliver light 
-            Serial.print(21 + cueList[CSct]); 
-            Serial.print(" ");
-            Serial.print(ts);                         // send timestamp of light cue
-            Serial.print(" ");
-            Serial.print(1);                          // indicates second cue 
-            Serial.print('\n');
-            lights();
-            cueover = true;
-          }
-        }
-      }
-    }
-    else if (CSsignal[cueList[CSct]] == 2) {        // check first cue is light
-      if (CSsecondcue[cueList[CSct]] == 0) {        // check no second cue 
-        Serial.print(21 + cueList[CSct]);           // code data as light1 ot light2 or light3 timestamp
+      else if (CSsignal[cueList[CSct]] == 2) {
+        Serial.print(21 + cueList[CSct]);
         Serial.print(" ");
         Serial.print(ts);                         // send timestamp of light cue
         Serial.print(" ");
-        Serial.print(0);
+        Serial.print(0);                          // indicates second cue
         Serial.print('\n');
-        lights();                          // deliver light
-        cueover = true;
+        lights();
+      }
+      if (CSsecondcue[cueList[CSct]] != 0) {
+        nextcue = ts + delayforsecondcue[cueList[CSct]];
+        secondcue = 1;
       }
       else {
-        if (secondcue == 0) {                       // fisrt give light cue 
-          Serial.print(21 + cueList[CSct]);         // code data as CS1, CS2 or CS3 timestamp
-          Serial.print(" ");
-          Serial.print(ts);                         // send timestamp of cue
-          Serial.print(" ");
-          Serial.print(0);
-          Serial.print('\n');
-          lights();
-          secondcue = ts + delayforsecondcue[cueList[CSct]];
-        }
-        else if (ts >= secondcue && secondcue != 0) {
-          if (CSsecondcue[cueList[CSct]] == 1) {      // check when second cue is sound cue
-            Serial.print(15 + cueList[CSct]);
-            Serial.print(" ");
-            Serial.print(ts);                         // send timestamp of light cue
-            Serial.print(" ");
-            Serial.print(1);                          // indicates second cue
-            Serial.print('\n');
-            cues();
-            cueover = true;
-          }
-          else if (CSsecondcue[cueList[CSct]] == 2) {   // check when second cue is light cue
-            Serial.print(21 + cueList[CSct]); 
-            Serial.print(" ");
-            Serial.print(ts);                         // send timestamp of light cue
-            Serial.print(" ");
-            Serial.print(1);                          // indicates second cue
-            Serial.print('\n');
-            lights();
-            cueover = true;
-          }
+        cueover = true;
+        nextcue = 0;
+      }
+
+      if (intervaldistribution < 3) {
+      nextfxdsolenoid = ts + CS_t_fxd[2 * cueList[CSct]];    // next fixed solenoid comes at a fixed delay following cue onset
+        numfxdsolenoids = 0;
+      }
+      else if (intervaldistribution == 3) {
+      fxdrwtime[CSct] = ts + CS_t_fxd[2 * cueList[CSct] + 1];
+        if (nextfxdsolenoid == 0) {
+          nextfxdsolenoid = fxdrwtime[fxdrwct];
         }
       }
     }
+    else if (secondcue == 1) {
+      if (CSsecondcue[cueList[CSct]] == 1) {               // if second cue is sound cue, deliver sound
+        Serial.print(15 + cueList[CSct]);
+        Serial.print(" ");
+        Serial.print(ts);                         // send timestamp of sound cue
+        Serial.print(" ");
+        Serial.print(1);                          // indicates second cue
+        Serial.print('\n');
+        cues();
+      }
+      else if (CSsecondcue[cueList[CSct]] == 2) {          // if second cue is light cue, deliver light
+        Serial.print(21 + cueList[CSct]);
+        Serial.print(" ");
+        Serial.print(ts);                         // send timestamp of light cue
+        Serial.print(" ");
+        Serial.print(1);                          // indicates second cue
+        Serial.print('\n');
+        lights();
+      }
+      secondcue = 0;
+      nextcue = 0;
+      cueover = true;
+    }
 
-    //    else if (CSsignal[cueList[CSct]] == 3) {     // deliver both
-    //      if (delayforsecondcue[cueList[CSct]] == 0) {
-    //        Serial.print(25 + cueList[CSct]);           // code data as light1 ot light2 timestamp
-    //        Serial.print(" ");
-    //        Serial.print(ts);                         // send timestamp of light cue
-    //        Serial.print(" ");
-    //        Serial.print(0);
-    //        Serial.print('\n');
-    //        cues();
-    //        lights();
-    //        cueover = true;
-    //      }
-    //      else if (delayforsecondcue[cueList[CSct]] > 0) {
-    //        if (secondcue == 0) {
-    //          Serial.print(15 + cueList[CSct]);         // code data as CS1, CS2 or CS3 timestamp
-    //          Serial.print(" ");
-    //          Serial.print(ts);                         // send timestamp of cue
-    //          Serial.print(" ");
-    //          Serial.print(0);
-    //          Serial.print('\n');
-    //          cues();
-    //          secondcue = ts + abs(delayforsecondcue[cueList[CSct]]);
-    //        }
-    //        else if (ts >= secondcue && secondcue != 0) {
-    //          Serial.print(21 + cueList[CSct]);           // code data as light1 ot light2 or light3 timestamp
-    //          Serial.print(" ");
-    //          Serial.print(ts);                         // send timestamp of light cue
-    //          Serial.print(" ");
-    //          Serial.print(1);                    // indicates this is the second cue delivered, signals plotting
-    //          Serial.print('\n');
-    //          lights();                          // deliver light
-    //          cueover = true;
-    //          secondcue = 0;
-    //        }
-    //      }
-    //      else if (delayforsecondcue[cueList[CSct]] < 0) {
-    //        if (secondcue == 0) {
-    //          Serial.print(21 + cueList[CSct]);           // code data as light1 ot light2 or light3 timestamp
-    //          Serial.print(" ");
-    //          Serial.print(ts);                         // send timestamp of light cue
-    //          Serial.print(" ");
-    //          Serial.print(0);
-    //          Serial.print('\n');
-    //          lights();
-    //          secondcue = ts + abs(delayforsecondcue[cueList[CSct]]);
-    //        }
-    //        else if (ts >= secondcue && secondcue != 0) {
-    //          Serial.print(15 + cueList[CSct]);         // code data as CS1, CS2 or CS3 timestamp
-    //          Serial.print(" ");
-    //          Serial.print(ts);                         // send timestamp of cue
-    //          Serial.print(" ");
-    //          Serial.print(1);                          // indicates this is the second cue delivered, signals plotting
-    //          Serial.print('\n');
-    //          cues();
-    //          cueover = true;
-    //          secondcue = 0;
-    //        }
-    //      }
-    //    }
     if (CSlasercheck[cueList[CSct]]) {
       deliverlasertocues();              // check whether to and deliver laser if needed
     }
 
-
     if (intervaldistribution > 2 && cueover) {
       CSct++;
-      cueover = false;
       if (intervaldistribution < 5) {
         if (CSct >= totalnumtrials && intervaldistribution > 3) {
           nextfxdsolenoid = 0;
@@ -1350,7 +1273,6 @@ void loop() {
           nextbgdsolenoid = 0;
         }
       }
-
       if (nextbgdsolenoid > (nextcue - mindelaybgdtocue)) {// next background solenoid can't be closer to CS than mindelaybgdtocue
         nextbgdsolenoid = 0;
       }
@@ -1361,7 +1283,7 @@ void loop() {
 
 // Accept parameters from MATLAB
 void getParams() {
-  int pn = 148;                              // number of parameter inputs
+  int pn = 156;                              // number of parameter inputs
   unsigned long param[pn];                  // parameters
 
   for (int p = 0; p < pn; p++) {
@@ -1379,20 +1301,20 @@ void getParams() {
   CSfreq[2]              = param[6];
   CSfreq[3]              = param[7];
   for (int p = 0; p < 2 * numCS; p++) {
-    CSsolenoid[p]        = param[7 + p];
+    CSsolenoid[p]        = param[8 + p];
   }
   for (int p = 0; p < 2 * numCS; p++) {
-    CSprob[p]            = param[15 + p];
+    CSprob[p]            = param[16 + p];
   }
   for (int p = 0; p < 2 * numCS; p++) {
-    CSopentime[p]        = param[23 + p];
+    CSopentime[p]        = param[24 + p];
   }
   CSdur[0]               = param[32];
   CSdur[1]               = param[33];
   CSdur[2]               = param[34];
   CSdur[3]               = param[35];
   for (int p = 0; p < 2 * numCS; p++) {
-    CS_t_fxd[p]          = param[35 + p];
+    CS_t_fxd[p]          = param[36 + p];
   }
   CSpulse[0]             = param[44];
   CSpulse[1]             = param[45];
@@ -1458,7 +1380,7 @@ void getParams() {
   lasertrialbytrialflag  = (boolean)param[105];          // laser on a trial-by-trial basis?
   maxdelaytovacuumfromcueonset = param[106];
   CSlight[0]             = param[107];
-  CSlight[1]             = param108];
+  CSlight[1]             = param[108];
   CSlight[2]             = param[109];
   CSlight[3]             = param[110];
   variableratioflag[0]      = param[111];
@@ -1486,18 +1408,30 @@ void getParams() {
   CSincrease[1]          = param[133];
   CSincrease[2]          = param[134];
   CSincrease[3]          = param[135];
-  delayforsecondcue[0] = param[136];        // delay between sound cue and light cue if both present
-  delayforsecondcue[1] = param[137];
-  delayforsecondcue[2] = param[138];
-  delayforsecondcue[3] = param[139];
+  delayforsecondcue[0]   = param[136];        // delay between sound cue and light cue if both present
+  delayforsecondcue[1]   = param[137];
+  delayforsecondcue[2]   = param[138];
+  delayforsecondcue[3]   = param[139];
   CSsecondcue[0]             = param[140];
   CSsecondcue[1]             = param[141];
   CSsecondcue[2]             = param[142];
   CSsecondcue[3]             = param[143];
   CSsecondcuefreq[0]         = param[144];
+  CSsecondcuefreq[1]         = param[145];
+  CSsecondcuefreq[2]         = param[146];
+  CSsecondcuefreq[3]         = param[147];
+  CSsecondcuespeaker[0]          = param[148];
+  CSsecondcuespeaker[1]          = param[149];
+  CSsecondcuespeaker[2]          = param[150];
+  CSsecondcuespeaker[3]          = param[151];
+  CSsecondcuelight[0]            = param[152];
+  CSsecondcuelight[1]            = param[153];
+  CSsecondcuelight[2]            = param[154];
+  CSsecondcuelight[3]            = param[155];
 
   for (int p = 0; p < numCS; p++) {
-  CSfreq[p] = CSfreq[p] * 1000;         // convert frequency from kHz to Hz
+    CSfreq[p] = CSfreq[p] * 1000;         // convert frequency from kHz to Hz
+    CSsecondcuefreq[p] = CSsecondcuefreq[p] * 1000;
     golicktube[p]--;                      // Make go lick tube into a zero index for indexing lickctforreq
     if (CSspeaker[p] == 1) {
       CSspeaker[p] = speaker1;
@@ -1511,9 +1445,21 @@ void getParams() {
     else if (CSlight[p] == 2) {
       CSlight[p] = light2;
     }
+    if (CSsecondcuespeaker[p] == 1) {
+      CSsecondcuespeaker[p] = speaker1;
+    }
+    else if (CSsecondcuespeaker[p] == 2) {
+      CSsecondcuespeaker[p] = speaker2;
+    }
+    if (CSsecondcuelight[p] == 1) {
+      CSsecondcuelight[p] = light1;
+    }
+    else if (CSsecondcuelight[p] == 2) {
+      CSsecondcuelight[p] = light2;
+    }
   }
   for (int p = 0; p < 2 * numCS; p++) {
-  if (CSsolenoid[p] == 1) {
+    if (CSsolenoid[p] == 1) {
       CSsolenoid[p] = solenoid1;
       CSsolenoidcode[p] = 8;
     }
@@ -1547,21 +1493,22 @@ void getParams() {
     //    }
   }
 
-  if (backgroundsolenoid == 1) {
-  backgroundsolenoid = solenoid1;
-}
-else if (backgroundsolenoid == 2) {
-  backgroundsolenoid = solenoid2;
-}
-else if (backgroundsolenoid == 3) {
-  backgroundsolenoid = solenoid3;
-}
-else if (backgroundsolenoid == 4) {
-  backgroundsolenoid = solenoid4;
-}
 
-for (int p = 0; p < numlicktube; p++) {
-  if (licksolenoid[p] == 1) {
+  if (backgroundsolenoid == 1) {
+    backgroundsolenoid = solenoid1;
+  }
+  else if (backgroundsolenoid == 2) {
+    backgroundsolenoid = solenoid2;
+  }
+  else if (backgroundsolenoid == 3) {
+    backgroundsolenoid = solenoid3;
+  }
+  else if (backgroundsolenoid == 4) {
+    backgroundsolenoid = solenoid4;
+  }
+
+  for (int p = 0; p < numlicktube; p++) {
+    if (licksolenoid[p] == 1) {
       licksolenoid[p] = solenoid1;
     }
     else if (licksolenoid[p] == 2) {
@@ -1677,15 +1624,13 @@ void frametimestamp() {
 
 // DELIVER CUE //////////////
 void cues() {
-  //  Serial.print(15 + cueList[CSct]);         // code data as CS1, CS2 or CS3 timestamp
-  //  Serial.print(" ");
-  //  Serial.print(ts);                         // send timestamp of cue
-  //  Serial.print(" ");
-  //  Serial.print(0);
-  //  Serial.print('\n');
-
   if (CSdur[cueList[CSct]] > 0) {
-    tone(CSspeaker[cueList[CSct]], CSfreq[cueList[CSct]]);               // turn on tone only when the CSdur is bigger than 0
+    if (secondcue == 0) {
+      tone(CSspeaker[cueList[CSct]], CSfreq[cueList[CSct]]);               // turn on tone only when the CSdur is bigger than 0
+    }
+    else {
+      tone(CSsecondcuespeaker[cueList[CSct]], CSsecondcuefreq[cueList[CSct]]);
+    }
   }
 
   if (CSpulse[cueList[CSct]] == 1) {
@@ -1696,18 +1641,7 @@ void cues() {
     cuePulseOff = 0;                         // No cue pulsing
     cuePulseOn = 0;                          // No cue pulsing
   }
-
-  if (intervaldistribution < 3) {
-    nextfxdsolenoid = ts + CS_t_fxd[2 * cueList[CSct]];    // next fixed solenoid comes at a fixed delay following cue onset
-  }
-  else if (intervaldistribution == 3) {
-    fxdrwtime[CSct] = ts + CS_t_fxd[2 * cueList[CSct] + 1];
-    if (nextfxdsolenoid == 0) {
-      nextfxdsolenoid = fxdrwtime[fxdrwct];
-    }
-  }
-
-  numfxdsolenoids = 0;                                   // Zero fixed solenoids given till now
+  // Zero fixed solenoids given till now
   if (CSdur[cueList[CSct]] > 0) {
     cueOff  = ts + CSdur[cueList[CSct]];                   // set timestamp of cue cessation
   }
@@ -1719,7 +1653,6 @@ void cues() {
   lickctforreq[2] = 0;                 // reset lick3 count to zero at cue onset
   // Sync with fiber photometry
   digitalWrite(ttloutstoppin, HIGH);
-
 }
 
 void deliverlasertocues() {
@@ -1741,11 +1674,16 @@ void lights() {
   //  Serial.print(0);
   //  Serial.print('\n');
   if (CSdur[cueList[CSct]] > 0) {
-    digitalWrite(CSlight[cueList[CSct]], HIGH);           // Turn on light when CSdur is bigger than 0
+    if (secondcue == 0) {
+      digitalWrite(CSlight[cueList[CSct]], HIGH);           // Turn on light when CSdur is bigger than 0
+    }
+    else {
+      digitalWrite(CSsecondcuelight[cueList[CSct]], HIGH);
+    }
   }
-
   nextfxdsolenoid = ts + CS_t_fxd[2 * cueList[CSct]];
   numfxdsolenoids = 0;
+
   lightOff = ts + lightdur;
   lickctforreq[0] = 0;
   lickctforreq[1] = 0;

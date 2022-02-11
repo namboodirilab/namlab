@@ -48,6 +48,7 @@ both3 = 0;% Counter for both light and cue 3's
 both4 = 0;
 eventlog = zeros(logInit,3);% empty event log for all events 
 l = 0;% Counter for logged events
+fisrtcueonset = NaN;
 
 % The following variables are declared because they are stored in the
 % buffer until a trial ends. This is done so that the plot can be aligned
@@ -154,7 +155,7 @@ try
 %% Collect data from arduino
     while running
         read = [];
-        if s.BytesAvailable > 0 % is data available to read? This avoids the timeout problemexception
+        if s.BytesAvailable > 0 % is data available to read? This avoids the timeout problem
             read = fscanf(s,'%f'); % scan for data sent only when data is available
         end
         if isempty(read)
@@ -376,47 +377,25 @@ try
                      plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0.97 0.28 0.18],'LineWidth',2);hold on
                  end
             end 
-        elseif code == 18                            % Lick retraction solenoid1 and 2;
-            if (experimentmode == 1 && intervaldistribution<3) || experimentmode == 4 || experimentmode == 6  
-                if itemflag == 0                      % Indicates trial with solenoid
-                    lickretractsolenoid1 = lickretractsolenoid1 + 1;
-                    set(handles.lickretractsolenoid1Edit,'String',num2str(lickretractsolenoid1))
-                    tempsolenoidsct(5) = tempsolenoidsct(5)+1;      % keep track of solenoid4 count
-                    tempsolenoids(tempsolenoidsct(5), 5) = time;   % keep track of solenoid4 timestamp
-                    lickretractsolenoid2 = lickretractsolenoid2 + 1;            
-                    set(handles.lickretractsolenoid2Edit,'String',num2str(lickretractsolenoid2))
-                    tempsolenoidsct(6) = tempsolenoidsct(6)+1;      % keep track of solenoid4 count
-                    tempsolenoids(tempsolenoidsct(6), 6) = time;   % keep track of solenoid4 timestamp
-                end 
-             elseif (experimentmode == 1 && intervaldistribution>2) || experimentmode == 3 || experimentmode == 7
-                 if itemflag == 0
-                     lickretractsolenoid2 = lickretractsolenoid2 + 1;
-                     set(handles.lickretractsolenoid2Edit,'String',num2str(lickretractsolenoid2))
-                     trial = floor(time/durationtrialpartitionnocues);
-                     temptrialdur = trial*durationtrialpartitionnocues;
-                     plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0.97 0.28 0.18],'LineWidth',2);hold on
-                     lickretractsolenoid1 = lickretractsolenoid1 + 1;
-                     set(handles.lickretractsolenoid1Edit,'String',num2str(lickretractsolenoid1))
-                     trial = floor(time/durationtrialpartitionnocues);
-                     temptrialdur = trial*durationtrialpartitionnocues;
-                     plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0.3 0.75 0.93],'LineWidth',2);hold on
-                 end
-            end 
         elseif code == 14                            % Vaccum;            
             if (experimentmode == 1 && intervaldistribution<3) || experimentmode == 4 || experimentmode == 6  
                 tempcuetovacuumdelay = NaN;
                 if ~isnan(tempsecondcue1)
-                    tempsecondcue1 = tempsecondcue1 - templight1;
+                    tempsecondcue1 = tempsecondcue1 - firstcueonset;
                 elseif ~isnan(tempsecondcue2)
-                    tempsecondcue2 = tempsecondcue2 - templight2;
+                    tempsecondcue2 = tempsecondcue2 - firstcueonset;
                 elseif ~isnan(tempsecondcue3)
-                    tempsecondcue3 = tempsecondcue3 - templight3;
+                    tempsecondcue3 = tempsecondcue3 - firstcueonset;
+                elseif ~isnan(tempsecondcue4)
+                    tempsecondcue4 = tempsecondcue4 - firstcueonset;
                 elseif ~isnan(tempsecondlight1)
-                    tempsecondlight1 = tempsecondlight1 - tempcue1;
+                    tempsecondlight1 = tempsecondlight1 - firstcueonset;
                 elseif ~isnan(tempsecondlight2)
-                    tempsecondlight2 = tempsecondlight2 - tempcue2;
+                    tempsecondlight2 = tempsecondlight2 - firstcueonset;
                 elseif ~isnan(tempsecondlight3)
-                    tempsecondlight3 = tempsecondlight3 - tempcue3;
+                    tempsecondlight3 = tempsecondlight3 - firstcueonset;
+                elseif ~isnan(tempsecondlight4)
+                    tempsecondlight4 = tempsecondlight4 - firstcueonset;
                 end
                 if ~isnan(tempcue1)                      % indicates there is cue1
                     tempcuetovacuumdelay = time - tempcue1;      
@@ -436,6 +415,12 @@ try
                         templicksPSTH3(1:length(templicks(:,i)),cs3,i) = templicks(:,i)-time+tempcuetovacuumdelay;
                     end
                     tempcue3 = 0;
+                elseif ~isnan(tempcue4)
+                    tempcuetovacuumdelay = time - tempcue4;
+                    for i=1:3
+                        templicksPSTH4(1:length(templicks(:,i)),cs4,i) = templicks(:,i)-time+tempcuetovacuumdelay;
+                    end
+                    tempcue4 = 0;
                 end
                 if ~isnan(templight1)                      % indicates there is light1
                     tempcuetovacuumdelay = time - templight1;      
@@ -454,14 +439,20 @@ try
                     for i=1:3
                         templicksPSTH3(1:length(templicks(:,i)),light3,i) = templicks(:,i)-time+tempcuetovacuumdelay;
                     end
-                    templight3 = 0;       
+                    templight3 = 0;
+                elseif ~isnan(templight4)
+                    tempcuetovacuumdelay = time - templight4;
+                    for i=1:3
+                        templicksPSTH4(1:length(templicks(:,i)),light4,i) = templicks(:,i)-time+tempcuetovacuumdelay;
+                    end
+                    templight4 = 0;
                 end
 
                 tempsolenoids = tempsolenoids-time+tempcuetovacuumdelay; %find timestamps wrt vacuum         
                 templicks = templicks-time+tempcuetovacuumdelay;
 
                 % Raster plot
-                cs = cs1+cs2+cs3+light1+light2+light3-both1-both2-both3;
+                cs = cs1+cs2+cs3+cs4+light1+light2+light3+light4-both1-both2-both3-both4;
 
                 plot([templicks(:,1) templicks(:,1)],[-(cs-1) -cs],'color',[0.2 0.6 1],'LineWidth',1);hold on    % lick1            
                 plot([templicks(:,2) templicks(:,2)],[-(cs-1) -cs],'Color',0.65*[1, 1, 1],'LineWidth',1);hold on   %lick2            
@@ -477,16 +468,21 @@ try
                 plot([tempcue1 tempcue1],[-(cs-1) -cs],'g','LineWidth',2);hold on       % cue1
                 plot([tempcue2 tempcue2],[-(cs-1) -cs],'r','LineWidth',2);hold on       % cue2
                 plot([tempcue3 tempcue3],[-(cs-1) -cs],'b','LineWidth',2);hold on       % cue3
+                plot([tempcue4 tempcue4],[-(cs-1) -cs],'Color',[0.49 0.18 0.56],'LineWidth',2); hold on       % cue 4
                 plot([templight1 templight1],[-(cs-1) -cs],'Color',[0 0.45 0.74],'LineWidth',2);hold on       % light1
                 plot([templight2 templight2],[-(cs-1) -cs],'Color',[0.93 0.69 0.13],'LineWidth',2);hold on    % light2
                 plot([templight3 templight3],[-(cs-1) -cs],'Color',[0.85 0.33 0.1],'LineWidth',2);hold on     % light3
+                plot([templight4 templight4],[-(cs-1) -cs],'Color',[0.43 0.68 0.1],'LineWidth',2);hold on     % light4
 
-                plot([tempsecondcue1 tempsecondcue1],[-(cs-1) -cs],'g','LineWidth',2);hold on       % cue1
-                plot([tempsecondcue2 tempsecondcue2],[-(cs-1) -cs],'r','LineWidth',2);hold on       % cue2
-                plot([tempsecondcue3 tempsecondcue3],[-(cs-1) -cs],'b','LineWidth',2);hold on       % cue3
-                plot([tempsecondlight1 tempsecondlight1],[-(cs-1) -cs],'Color',[0 0.45 0.74],'LineWidth',2);hold on       % light1
-                plot([tempsecondlight2 tempsecondlight2],[-(cs-1) -cs],'Color',[0.93 0.69 0.13],'LineWidth',2);hold on    % light2
-                plot([tempsecondlight3 tempsecondlight3],[-(cs-1) -cs],'Color',[0.85 0.33 0.1],'LineWidth',2);hold on     % light3
+                plot([tempsecondcue1 tempsecondcue1],[-(cs-1) -cs],'g','LineWidth',2);hold on       % second cue1
+                plot([tempsecondcue2 tempsecondcue2],[-(cs-1) -cs],'r','LineWidth',2);hold on       % second cue2
+                plot([tempsecondcue3 tempsecondcue3],[-(cs-1) -cs],'b','LineWidth',2);hold on       % second cue3
+                plot([tempsecondcue4 tempsecondcue4],[-(cs-1) -cs],'Color',[0.49 0.18 0.56],'LineWidth',2); hold on       % second cue 4
+                plot([tempsecondlight1 tempsecondlight1],[-(cs-1) -cs],'Color',[0 0.45 0.74],'LineWidth',2);hold on       % second light1
+                plot([tempsecondlight2 tempsecondlight2],[-(cs-1) -cs],'Color',[0.93 0.69 0.13],'LineWidth',2);hold on    % second light2
+                plot([tempsecondlight3 tempsecondlight3],[-(cs-1) -cs],'Color',[0.85 0.33 0.1],'LineWidth',2);hold on     % second light3
+                plot([tempsecondlight4 tempsecondlight4],[-(cs-1) -cs],'Color',[0.43 0.68 0.1],'LineWidth',2);hold on     % second light4
+
 
                 % Begin PSTH plotting
                 delete(hPSTH1);delete(hPSTH2);delete(hPSTH3);delete(hPSTH4); %Clear previous PSTH plots  
@@ -619,6 +615,7 @@ try
                 tempsecondlight2 = NaN;
                 tempsecondlight3 = NaN;
                 tempsecondlight4 = NaN;
+                firstcueonset = NaN;
 
             end
         elseif code == 15                            % CS1 cue onset; GREEN
@@ -626,14 +623,15 @@ try
                 cs1 = cs1 + 1;
                 set(handles.cues1Edit,'String',num2str(cs1))
                 tempcue1 = time;
-                if cs1+cs2+cs3+light1+light2+light3-both1-both2-both3<sum(numtrials)
-                    fprintf('Executing trial %d\n',cs1+cs2+cs3+light1+light2+light3-both1-both2-both3);
+                if cs1+cs2+cs3+cs4+light1+light2+light3+light4-both1-both2-both3-both4<sum(numtrials)
+                    fprintf('Executing trial %d\n',cs1+cs2+cs3+cs4+light1+light2+light3+light4-both1-both2-both3-both4);
                 end
                 if (experimentmode == 1 && intervaldistribution>2) || experimentmode == 3  || experimentmode == 7
                     trial = floor(time/durationtrialpartitionnocues);
                     temptrialdur = trial*durationtrialpartitionnocues;
                     plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'g','LineWidth',2);hold on
                 end
+                firstcueonset = time;
             elseif itemflag == 1
                 cs1 = cs1 + 1;
                 both1 = both1 + 1;
@@ -648,14 +646,15 @@ try
                 cs2 = cs2 + 1;
                 set(handles.cues2Edit,'String',num2str(cs2))
                 tempcue2 = time;
-                if cs1+cs2+cs3+light1+light2+light3-both1-both2-both3<sum(numtrials)
-                    fprintf('Executing trial %d\n',cs1+cs2+cs3+light1+light2+light3-both1-both2-both3);
+                if cs1+cs2+cs3+cs4+light1+light2+light3+light4-both1-both2-both3-both4<sum(numtrials)
+                    fprintf('Executing trial %d\n',cs1+cs2+cs3+cs4+light1+light2+light3+light4-both1-both2-both3-both4);
                 end
                 if (experimentmode == 1 && intervaldistribution>2) || experimentmode == 3 || experimentmode == 7
                     trial = floor(time/durationtrialpartitionnocues);
                     temptrialdur = trial*durationtrialpartitionnocues;
                     plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'r','LineWidth',2);hold on
                 end
+                firstcueonset = time;
             elseif itemflag == 1
                 cs2 = cs2 + 1;
                 both2 = both2 +1;
@@ -670,14 +669,15 @@ try
                 cs3 = cs3 + 1;
                 set(handles.cues3Edit,'String',num2str(cs3))
                 tempcue3 = time;
-                if cs1+cs2+cs3+light1+light2+light3-both1-both2-both3<sum(numtrials)
-                    fprintf('Executing trial %d\n',cs1+cs2+cs3+light1+light2+light3-both1-both2-both3);
+                if cs1+cs2+cs3+cs4+light1+light2+light3+light4-both1-both2-both3-both4<sum(numtrials)
+                    fprintf('Executing trial %d\n',cs1+cs2+cs3+cs4+light1+light2+light3+light4-both1-both2-both3-both4);
                 end
                 if (experimentmode == 1 && intervaldistribution>2) || experimentmode == 3 || experimentmode == 7
                     trial = floor(time/durationtrialpartitionnocues);
                     temptrialdur = trial*durationtrialpartitionnocues;
                     plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'b','LineWidth',2);hold on
                 end
+                firstcueonset = time;
             elseif itemflag == 1
                 cs3 = cs3 + 1;
                 both3 = both3 +1;
@@ -687,24 +687,25 @@ try
 %                 temptrialdur = trial*durationtrialpartitionnocues;
 %                 plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'b','LineWidth',2);hold on
             end
-        elseif code == 18                            % CS4 cue onset; 
+        elseif code == 18                            % CS4 cue onset;
             if itemflag == 0
                 cs4 = cs4 + 1;
-                set(handles.cues3Edit,'String',num2str(cs4))
-                tempcue3 = time;
-                if cs1+cs2+cs4+light1+light2+light3-both1-both2-both3<sum(numtrials)
-                    fprintf('Executing trial %d\n',cs1+cs2+cs4+light1+light2+light3-both1-both2-both3-both4);
+                set(handles.cues4Edit,'String',num2str(cs4))
+                tempcue4 = time;
+                if cs1+cs2+cs3+cs4+light1+light2+light3+light4-both1-both2-both3-both4<sum(numtrials)
+                    fprintf('Executing trial %d\n',cs1+cs2+cs3+cs4+light1+light2+light3+light4-both1-both2-both3-both4);
                 end
                 if (experimentmode == 1 && intervaldistribution>2) || experimentmode == 3 || experimentmode == 7
                     trial = floor(time/durationtrialpartitionnocues);
                     temptrialdur = trial*durationtrialpartitionnocues;
                     plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0.49 0.18 0.56],'LineWidth',2);hold on
                 end
+                firstcueonset = time;
             elseif itemflag == 1
                 cs4 = cs4 + 1;
                 both4 = both4 +1;
-                set(handles.cues3Edit,'String',num2str(cs3))
-                tempsecondcue3 = time;
+                set(handles.cues4Edit,'String',num2str(cs4))
+                tempsecondcue4 = time;
 %                 trial = floor(time/durationtrialpartitionnocues);
 %                 temptrialdur = trial*durationtrialpartitionnocues;
 %                 plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'b','LineWidth',2);hold on
@@ -714,14 +715,15 @@ try
                 light1 = light1 + 1;
                 set(handles.light1Edit,'String',num2str(light1))
                 templight1 = time;
-                if cs1+cs2+cs3+light1+light2+light3-both1-both2-both3<sum(numtrials)
-                    fprintf('Executing trial %d\n',cs1+cs2+cs3+light1+light2+light3-both1-both2-both3);
+                if cs1+cs2+cs3+cs4+light1+light2+light3+light4-both1-both2-both3-both4<sum(numtrials)
+                    fprintf('Executing trial %d\n',cs1+cs2+cs3+cs4+light1+light2+light3+light4-both1-both2-both3-both4);
                 end
                 if (experimentmode == 1 && intervaldistribution>2) || experimentmode == 3 || experimentmode == 7
                     trial = floor(time/durationtrialpartitionnocues);
                     temptrialdur = trial*durationtrialpartitionnocues;
                     plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0 0.45 0.74],'LineWidth',2);hold on
                 end
+                firstcueonset = time;
             elseif itemflag == 1
                 light1 = light1 +1;
                 both1 = both1 +1;
@@ -736,14 +738,15 @@ try
                 light2 = light2 + 1;
                 set(handles.light2Edit,'String',num2str(light2))
                 templight2 = time;
-                if cs1+cs2+cs3+light1+light2+light3-both1-both2-both3<sum(numtrials)
-                    fprintf('Executing trial %d\n',cs1+cs2+cs3+light1+light2+light3-both1-both2-both3);
+                if cs1+cs2+cs3+cs4+light1+light2+light3+light4-both1-both2-both3-both4<sum(numtrials)
+                    fprintf('Executing trial %d\n',cs1+cs2+cs3+cs4+light1+light2+light3+light4-both1-both2-both3-both4);
                 end
                 if (experimentmode == 1 && intervaldistribution>2) || experimentmode == 3 || experimentmode == 7
                     trial = floor(time/durationtrialpartitionnocues);
                     temptrialdur = trial*durationtrialpartitionnocues;
                     plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0.93 0.69 0.13],'LineWidth',2);hold on
                 end
+                firstcueonset = time;
             elseif itemflag == 1
                 light2 = light2 + 1;
                 both2 = both2 +1;
@@ -758,14 +761,15 @@ try
                 light3 = light3 + 1;
                 set(handles.light3Edit,'String',num2str(light3))
                 templight3 = time;
-                if cs1+cs2+cs3+light1+light2+light3-both1-both2-both3<sum(numtrials)
-                    fprintf('Executing trial %d\n',cs1+cs2+cs3+light1+light2+light3-both1-both2-both3);
+                if cs1+cs2+cs3+cs4+light1+light2+light3+light4-both1-both2-both3-both4<sum(numtrials)
+                    fprintf('Executing trial %d\n',cs1+cs2+cs3+cs4+light1+light2+light3+light4-both1-both2-both3-both4);
                 end
                 if (experimentmode == 1 && intervaldistribution>2) || experimentmode == 3 || experimentmode == 7
                     trial = floor(time/durationtrialpartitionnocues);
                     temptrialdur = trial*durationtrialpartitionnocues;
                     plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0.85 0.33 0.1],'LineWidth',2);hold on %light cue3
                 end
+                firstcueonset = time;
             elseif itemflag == 1
                 light3 = light3 + 1;
                 both3 = both3 + 1;
@@ -775,80 +779,29 @@ try
 %                 temptrialdur = trial*durationtrialpartitionnocues;
 %                 plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0.85 0.33 0.1],'LineWidth',2);hold on %light cue3
             end
-        elseif code == 24                            % CS3 light onset;
+        elseif code == 24                            % CS4 light onset;
             if itemflag == 0
-                light3 = light3 + 1;
-                set(handles.light3Edit,'String',num2str(light3))
-                templight3 = time;
-                if cs1+cs2+cs3+light1+light2+light3-both1-both2-both3<sum(numtrials)
-                    fprintf('Executing trial %d\n',cs1+cs2+cs3+light1+light2+light3-both1-both2-both3);
+                light4 = light4 + 1;
+                set(handles.light4Edit,'String',num2str(light4))
+                templight4 = time;
+                if cs1+cs2+cs3+cs4+light1+light2+light3+light4-both1-both2-both3-both4<sum(numtrials)
+                    fprintf('Executing trial %d\n',cs1+cs2+cs3+cs4+light1+light2+light3+light4-both1-both2-both3-both4);
                 end
                 if (experimentmode == 1 && intervaldistribution>2) || experimentmode == 3 || experimentmode == 7
                     trial = floor(time/durationtrialpartitionnocues);
                     temptrialdur = trial*durationtrialpartitionnocues;
-                    plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0.43 0.68 0.1],'LineWidth',2);hold on %light cue3
+                    plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0.43 0.68 0.1],'LineWidth',2);hold on %light cue4
                 end
+                firstcueonset = time;
             elseif itemflag == 1
-                light3 = light3 + 1;
-                both3 = both3 + 1;
-                tempsecondlight3 = time;
-                set(handles.light3Edit,'String',num2str(light3))
+                light4 = light4 + 1;
+                both4 = both4 + 1;
+                tempsecondlight4 = time;
+                set(handles.light4Edit,'String',num2str(light4))
 %                 trial = floor(time/durationtrialpartitionnocues);
 %                 temptrialdur = trial*durationtrialpartitionnocues;
 %                 plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0.85 0.33 0.1],'LineWidth',2);hold on %light cue3
             end
-
-
-
-
-%         elseif code == 25                           % both CS1 sound and light onset;
-%             both1 = both1 + 1;
-%             cs1 = cs1 + 1;
-%             set(handles.cues1Edit,'String',num2str(cs1))
-%             tempcue1 = time;
-%             light1 = light1 + 1;
-%             set(handles.light1Edit,'String',num2str(light1))
-%             templight1 = time;
-%             if cs1+cs2+cs3+light1+light2+light3-both1-both2-both3<sum(numtrials)
-%                 fprintf('Executing trial %d\n',cs1+cs2+cs3+light1+light2+light3-both1-both2-both3);
-%             end
-%             if (experimentmode == 1 && intervaldistribution>2) || experimentmode == 3 || experimentmode == 7 
-%                 trial = floor(time/durationtrialpartitionnocues);
-%                 temptrialdur = trial*durationtrialpartitionnocues;
-%                 plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0 0.45 0.74],'LineWidth',2);hold on %light cue1
-%             end
-%         elseif code == 26                           % both CS2 sound and light onset;                     
-%             both2 = both2 + 1;
-%             cs2 = cs2 + 1;
-%             set(handles.cues2Edit,'String',num2str(cs2))
-%             tempcue2 = time;
-%             light2 = light2 + 1;
-%             set(handles.light2Edit,'String',num2str(light2))
-%             templight2 = time;
-%             if cs1+cs2+cs3+light1+light2+light3-both1-both2-both3<sum(numtrials)
-%                 fprintf('Executing trial %d\n',cs1+cs2+cs3+light1+light2+light3-both1-both2-both3);
-%             end
-%             if (experimentmode == 1 && intervaldistribution>2) || experimentmode == 3 || experimentmode == 7
-%                 trial = floor(time/durationtrialpartitionnocues);
-%                 temptrialdur = trial*durationtrialpartitionnocues;
-%                 plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0.93 0.69 0.13],'LineWidth',2);hold on %light cue2
-%             end
-%         elseif code == 27                           % both CS3 sound and light onset;
-%             both3 = both3 + 1;
-%             cs3 = cs3 + 1;
-%             set(handles.cues3Edit,'String',num2str(cs3))
-%             tempcue3 = time;
-%             light3 = light3 + 1;
-%             set(handles.light3Edit,'String',num2str(light3))
-%             templight3 = time;
-%             if cs1+cs2+cs3+light1+light2+light3-both1-both2-both3<sum(numtrials)
-%                 fprintf('Executing trial %d\n',cs1+cs2+cs3+light1+light2+light3-both1-both2-both3);
-%             end
-%             if (experimentmode == 1 && intervaldistribution>2) || experimentmode == 3 || experimentmode == 7
-%                 trial = floor(time/durationtrialpartitionnocues);
-%                 temptrialdur = trial*durationtrialpartitionnocues;
-%                 plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0.85 0.33 0.1],'LineWidth',2);hold on %light cue3
-%             end
         end
     end
     
@@ -908,80 +861,87 @@ try
 %     end
 %     
 %     probstr = ['CSprob' sprintf('_%u', CSprob)];
+
     param = regexprep(params, '+', ' ');
     param = str2num(param);
     
     params = struct();
-    paramnames = string({'numtrials'; 'CSfreq'; 'CSsolenoid'; 'CSprob'; 'CSopentime';...
-                 'CSdur'; 'CS_t_fxd'; 'CSpulse'; 'CSspeaker'; 'golickreq'; 'golicktube'; 'CSsignal';...
-                 'meanITI'; 'maxITI'; 'minITI'; 'intervaldistribution'; 'backgroundsolenoid'; 'T_bgd'; 'r_bgd'; ...
-                 'mindelaybgdtocue'; 'mindelayfxdtobgd'; 'experimentmode'; ...
-                 'trialbytrialbgdsolenoidflag'; 'totPoisssolenoid'; 'reqlicknum';...
-                 'licksolenoid'; 'lickprob'; 'lickopentime'; 'delaytoreward'; 'delaytolick';...
-                 'minrewards'; 'signaltolickreq'; 'soundsignalpulse'; 'soundfreq'; 'sounddur'; 'lickspeaker';...
-                 'laserlatency'; 'laserduration'; 'randlaserflag'; 'laserpulseperiod'; 'laserpulseoffperiod';...
-                 'lasertrialbytrialflag'; 'maxdelaycuetovacuum'; 'CSlight'; 'variableratioflag';...
-                 'variableintervalflag'; 'licklight'; 'CS1lasercheck';...
-                 'CS2lasercheck'; 'CS3lasercheck'; 'fixedsidecheck'; 'Rewardlasercheck'; ...
-                 'CSrampmaxdelay'; 'CSrampexp';'CSincrease'; 'delaybetweensoundandlight'});
+    paramnames = string(["numtrials"; "CSfreq"; "CSsolenoid"; "CSprob"; "CSopentime";...
+                 "CSdur"; "CS_t_fxd"; "CSpulse"; "CSspeaker"; "golickreq"; "golicktube"; "CSsignal";...
+                 "meanITI"; "maxITI"; "minITI"; "intervaldistribution"; "backgroundsolenoid"; "T_bgd"; "r_bgd"; ...
+                 "mindelaybgdtocue"; "mindelayfxdtobgd"; "experimentmode"; ...
+                 "trialbytrialbgdsolenoidflag"; "totPoisssolenoid"; "reqlicknum";...
+                 "licksolenoid"; "lickprob"; "lickopentime"; "delaytoreward"; "delaytolick";...
+                 "minrewards"; "signaltolickreq"; "soundsignalpulse"; "soundfreq"; "sounddur"; "lickspeaker";...
+                 "laserlatency"; "laserduration"; "randlaserflag"; "laserpulseperiod"; "laserpulseoffperiod";...
+                 "lasertrialbytrialflag"; "maxdelaycuetovacuum"; "CSlight"; "variableratioflag";...
+                 "variableintervalflag"; "licklight"; "CS1lasercheck";...
+                 "CS2lasercheck"; "CS3lasercheck"; "CS4lasercheck";"fixedsidecheck"; "Rewardlasercheck";...
+                 "CSrampmaxdelay"; "CSrampexp"; "CSincrease"; "delaybetweensoundandlight";...
+                 "CSsecondcue";"CSsecondcuefreq";"CSsecondcuespeaker";"CSsecondcuelight"]);
 
-        params.(paramnames(1)) = param(1:3);                        % numtrials (3)
-        params.(paramnames(2)) = param(4:6);                        % CS frequency (3)
-        params.(paramnames(3)) = param(7:12);                       % CS solenoids (6)
-        params.(paramnames(4)) = param(13:18);                      % CS probability (6)
-        params.(paramnames(5)) = param(19:24);                      % CS opentime (6)
-        params.(paramnames(6)) = param(25:27);                      % CS duration (6)
-        params.(paramnames(7)) = param(28:33);                      % CS delay to fxd reward (6)
-        params.(paramnames(8)) = param(34:36);                      % CS pulse or not(3)
-        params.(paramnames(9)) = param(37:39);                      % CS speaker number (3)
-        params.(paramnames(10)) = param(40:42);                     % CS go lick requiremet number (3)
-        params.(paramnames(11)) = param(43:45);                     % go lick tube (3)
-        params.(paramnames(12)) = param(46:48);                     % CS signal type (3)
-        params.(paramnames(13)) = param(49);                        % mean ITI
-        params.(paramnames(14)) = param(50);                        % max ITI 
-        params.(paramnames(15)) = param(51);                        % min ITI 
-        params.(paramnames(16)) = param(52);                        % exponential ITI flag
-        params.(paramnames(17)) = param(53);                        % background solenoid number
-        params.(paramnames(18)) = param(54);                        % background solenoid period 
-        params.(paramnames(19)) = param(55);                        % background solenoid magnitude
-        params.(paramnames(20)) = param(56);                        % min delay background solenoid to cue
-        params.(paramnames(21)) = param(57);                        % min delay background solenoid to fixed solenoid
-        params.(paramnames(22)) = param(58);                        % experiment mode
-        params.(paramnames(23)) = param(59);                        % trial by trial bgd solenoid flag
-        params.(paramnames(24)) = param(60);                        % total bgd rewards
-        params.(paramnames(25)) = param(61:62);                     % number of required licks (2)
-        params.(paramnames(26)) = param(63:64);                     % lick solenoid number (2)
-        params.(paramnames(27)) = param(65:66);                     % lick to reward probability (2)
-        params.(paramnames(28)) = param(67:68);                     % lick reward open time (2)
-        params.(paramnames(29)) = param(69:70);                     % lick delay to reward (2)
-        params.(paramnames(30)) = param(71:72);                     % delay to next lick (2)
-        params.(paramnames(31)) = param(73:74);                     % min number of rewards on each lick tube
-        params.(paramnames(32)) = param(75:76);                     % signal type to lick requirement (2)
-        params.(paramnames(33)) = param(77:78);                     % signal pulse or not
-        params.(paramnames(34)) = param(79:80);                     % sound cue frequency (2)
-        params.(paramnames(35)) = param(81:82);                     % signal duration (2)
-        params.(paramnames(36)) = param(83:84);                     % lick speaker number (2)
-        params.(paramnames(37)) = param(85);                        % laser latency wrt cue
-        params.(paramnames(38)) = param(86);                        % laser duration
-        params.(paramnames(39)) = param(87);                        % random laser flag
-        params.(paramnames(40)) = param(88);                        % laser pulse period
-        params.(paramnames(41)) = param(89);                        % laser pulse off period
-        params.(paramnames(42)) = param(90);                        % laser trial by trialflag
-        params.(paramnames(43)) = param(91);                        % max delay cue to vacuum
-        params.(paramnames(43)) = param(92:94);                     % CS light number (3)
-        params.(paramnames(44)) = param(95:96);                     % lick variable ratio flag (2)
-        params.(paramnames(45)) = param(97:98);                     % lick variable interval flag (2)
-        params.(paramnames(46)) = param(99:100);                    % lick light number (2)
-        params.(paramnames(47)) = param(101);                       % CS1 laser check flag
-        params.(paramnames(48)) = param(102);                       % CS2 laser check flag
-        params.(paramnames(49)) = param(103);                       % CS3 laser check flag
-        params.(paramnames(50)) = param(104:105);                   % lick fixed side check (2)
-        params.(paramnames(51)) = param(106);                       % Reward laser check flag
-        params.(paramnames(52)) = param(107:109);                   % CS max ramp delay 
-        params.(paramnames(53)) = param(110:112);                   % CS ramp exponential factor
-        params.(paramnames(54)) = param(113:115);                   % CS increase
-        params.(paramnames(55)) = param(116:118);                   % delay between sound and light cue if both are present 
-
+        params.(paramnames(1)) = param(1:4);                        % numtrials (3)
+        params.(paramnames(2)) = param(5:8);                        % CS frequency (3)
+        params.(paramnames(3)) = param(9:16);                       % CS solenoids (6)
+        params.(paramnames(4)) = param(17:24);                      % CS probability (6)
+        params.(paramnames(5)) = param(25:32);                      % CS opentime (6)
+        params.(paramnames(6)) = param(33:36);                      % CS duration (6)
+        params.(paramnames(7)) = param(37:44);                      % CS delay to fxd reward (6)
+        params.(paramnames(8)) = param(45:48);                      % CS pulse or not(3)
+        params.(paramnames(9)) = param(49:52);                      % CS speaker number (3)
+        params.(paramnames(10)) = param(53:56);                     % CS go lick requiremet number (3)
+        params.(paramnames(11)) = param(57:60);                     % go lick tube (3)
+        params.(paramnames(12)) = param(61:64);                     % CS signal type (3)
+        params.(paramnames(13)) = param(65);                        % mean ITI
+        params.(paramnames(14)) = param(66);                        % max ITI 
+        params.(paramnames(15)) = param(67);                        % min ITI 
+        params.(paramnames(16)) = param(68);                        % exponential ITI flag
+        params.(paramnames(17)) = param(69);                        % background solenoid number
+        params.(paramnames(18)) = param(70);                        % background solenoid period 
+        params.(paramnames(19)) = param(71);                        % background solenoid magnitude
+        params.(paramnames(20)) = param(72);                        % min delay background solenoid to cue
+        params.(paramnames(21)) = param(73);                        % min delay background solenoid to fixed solenoid
+        params.(paramnames(22)) = param(74);                        % experiment mode
+        params.(paramnames(23)) = param(75);                        % trial by trial bgd solenoid flag
+        params.(paramnames(24)) = param(76);                        % total bgd rewards
+        params.(paramnames(25)) = param(77:78);                     % number of required licks (2)
+        params.(paramnames(26)) = param(79:80);                     % lick solenoid number (2)
+        params.(paramnames(27)) = param(81:82);                     % lick to reward probability (2)
+        params.(paramnames(28)) = param(83:84);                     % lick reward open time (2)
+        params.(paramnames(29)) = param(85:86);                     % lick delay to reward (2)
+        params.(paramnames(30)) = param(87:88);                     % delay to next lick (2)
+        params.(paramnames(31)) = param(89:90);                     % min number of rewards on each lick tube
+        params.(paramnames(32)) = param(91:92);                     % signal type to lick requirement (2)
+        params.(paramnames(33)) = param(93:94);                     % signal pulse or not
+        params.(paramnames(34)) = param(95:96);                     % sound cue frequency (2)
+        params.(paramnames(35)) = param(97:98);                     % signal duration (2)
+        params.(paramnames(36)) = param(99:100);                     % lick speaker number (2)
+        params.(paramnames(37)) = param(101);                        % laser latency wrt cue
+        params.(paramnames(38)) = param(102);                        % laser duration
+        params.(paramnames(39)) = param(103);                        % random laser flag
+        params.(paramnames(40)) = param(104);                        % laser pulse period
+        params.(paramnames(41)) = param(105);                        % laser pulse off period
+        params.(paramnames(42)) = param(106);                        % laser trial by trialflag
+        params.(paramnames(43)) = param(107);                        % max delay cue to vacuum
+        params.(paramnames(44)) = param(108:111);                     % CS light number (3)
+        params.(paramnames(45)) = param(112:113);                     % lick variable ratio flag (2)
+        params.(paramnames(46)) = param(114:115);                     % lick variable interval flag (2)
+        params.(paramnames(47)) = param(116:117);                    % lick light number (2)
+        params.(paramnames(48)) = param(118);                       % CS1 laser check flag
+        params.(paramnames(49)) = param(119);                       % CS2 laser check flag
+        params.(paramnames(50)) = param(120);                       % CS3 laser check flag
+        params.(paramnames(51)) = param(121);                       % CS4 laser check flag
+        params.(paramnames(52)) = param(122:123);                   % lick fixed side check (2)
+        params.(paramnames(53)) = param(124);                       % Reward laser check flag
+        params.(paramnames(54)) = param(125:128);                   % CS max ramp delay 
+        params.(paramnames(55)) = param(129:132);                   % CS ramp exponential factor
+        params.(paramnames(56)) = param(133:136);                   % CS increase
+        params.(paramnames(57)) = param(137:140);                   % delay between sound and light cue if both are present 
+        params.(paramnames(58)) = param(141:144);                   % CS second cue typessss
+        params.(paramnames(59)) = param(145:148);                   % CS second cue frequency 
+        params.(paramnames(60)) = param(149:152);                   % CS second cue speaker number
+        params.(paramnames(61)) = param(153:156);                   % CS second cue light number
+  
     assignin('base','eventlog',eventlog);
 %     file = [saveDir fname '_' num2str(r_bgd) '_' num2str(T_bgd) '_'  str probstr laserstr bgdsolenoidstr extinctionstr date '.mat'];
     file = [saveDir fname '_' str date '.mat'];
@@ -1050,79 +1010,84 @@ catch exception
     
 %     file = [saveDir fname '_' num2str(r_bgd) '_' num2str(T_bgd) '_'  str probstr laserstr bgdsolenoidstr extinctionstr date '.mat'];
     file = [saveDir '_error_' fname '_' str date '.mat'];
-    param = regexprep(params, '+', ' ');
+    param = regexprep(params, '+', ' '); 
     param = str2num(param);
-    
+
     params = struct();
-    paramnames = string({'numtrials'; 'CSfreq'; 'CSsolenoid'; 'CSprob'; 'CSopentime';...
-                 'CSdur'; 'CS_t_fxd'; 'CSpulse'; 'CSspeaker'; 'golickreq'; 'golicktube'; 'CSsignal';...
-                 'meanITI'; 'maxITI'; 'minITI'; 'intervaldistribution'; 'backgroundsolenoid'; 'T_bgd'; 'r_bgd'; ...
-                 'mindelaybgdtocue'; 'mindelayfxdtobgd'; 'experimentmode'; ...
-                 'rialbytrialbgdsolenoidflag'; 'totPoisssolenoid'; 'reqlicknum';...
-                 'licksolenoid'; 'lickprob'; 'lickopentime'; 'delaytoreward'; 'delaytolick';...
-                 'minrewards'; 'signaltolickreq'; 'soundsignalpulse'; 'soundfreq'; 'sounddur'; 'lickspeaker';...
-                 'laserlatency'; 'laserduration'; 'randlaserflag'; 'laserpulseperiod'; 'laserpulseoffperiod';...
-                 'lasertrialbytrialflag'; 'maxdelaycuetovacuum'; 'CSlight'; 'variableratioflag';...
-                 'variableintervalflag'; 'licklight'; 'CS1lasercheck';...
-                 'CS2lasercheck'; 'CS3lasercheck'; 'fixedsidecheck'; 'Rewardlasercheck';...
-                 'CSrampmaxdelay'; 'CSrampexp'; 'CSincrease'; 'delaybetweensoundandlight'});
+    paramnames = string(["numtrials"; "CSfreq"; "CSsolenoid"; "CSprob"; "CSopentime";...
+                 "CSdur"; "CS_t_fxd"; "CSpulse"; "CSspeaker"; "golickreq"; "golicktube"; "CSsignal";...
+                 "meanITI"; "maxITI"; "minITI"; "intervaldistribution"; "backgroundsolenoid"; "T_bgd"; "r_bgd"; ...
+                 "mindelaybgdtocue"; "mindelayfxdtobgd"; "experimentmode"; ...
+                 "trialbytrialbgdsolenoidflag"; "totPoisssolenoid"; "reqlicknum";...
+                 "licksolenoid"; "lickprob"; "lickopentime"; "delaytoreward"; "delaytolick";...
+                 "minrewards"; "signaltolickreq"; "soundsignalpulse"; "soundfreq"; "sounddur"; "lickspeaker";...
+                 "laserlatency"; "laserduration"; "randlaserflag"; "laserpulseperiod"; "laserpulseoffperiod";...
+                 "lasertrialbytrialflag"; "maxdelaycuetovacuum"; "CSlight"; "variableratioflag";...
+                 "variableintervalflag"; "licklight"; "CS1lasercheck";...
+                 "CS2lasercheck"; "CS3lasercheck"; "CS4lasercheck";"fixedsidecheck"; "Rewardlasercheck";...
+                 "CSrampmaxdelay"; "CSrampexp"; "CSincrease"; "delaybetweensoundandlight";...
+                 "CSsecondcue";"CSsecondcuefreq";"CSsecondcuespeaker";"CSsecondcuelight"]);
 
-        params.(paramnames(1)) = param(1:3);                        % numtrials (3)
-        params.(paramnames(2)) = param(4:6);                        % CS frequency (3)
-        params.(paramnames(3)) = param(7:12);                       % CS solenoids (6)
-        params.(paramnames(4)) = param(13:18);                      % CS probability (6)
-        params.(paramnames(5)) = param(19:24);                      % CS opentime (6)
-        params.(paramnames(6)) = param(25:27);                      % CS duration (6)
-        params.(paramnames(7)) = param(28:33);                      % CS delay to fxd reward (6)
-        params.(paramnames(8)) = param(34:36);                      % CS pulse or not(3)
-        params.(paramnames(9)) = param(37:39);                      % CS speaker number (3)
-        params.(paramnames(10)) = param(40:42);                     % CS go lick requiremet number (3)
-        params.(paramnames(11)) = param(43:45);                     % go lick tube (3)
-        params.(paramnames(12)) = param(46:48);                     % CS signal type (3)
-        params.(paramnames(13)) = param(49);                        % mean ITI
-        params.(paramnames(14)) = param(50);                        % max ITI 
-        params.(paramnames(15)) = param(51);                        % min ITI 
-        params.(paramnames(16)) = param(52);                        % exponential ITI flag
-        params.(paramnames(17)) = param(53);                        % background solenoid number
-        params.(paramnames(18)) = param(54);                        % background solenoid period 
-        params.(paramnames(19)) = param(55);                        % background solenoid magnitude
-        params.(paramnames(20)) = param(56);                        % min delay background solenoid to cue
-        params.(paramnames(21)) = param(57);                        % min delay background solenoid to fixed solenoid
-        params.(paramnames(22)) = param(58);                        % experiment mode
-        params.(paramnames(23)) = param(59);                        % trial by trial bgd solenoid flag
-        params.(paramnames(24)) = param(60);                        % total bgd rewards
-        params.(paramnames(25)) = param(61:62);                     % number of required licks (2)
-        params.(paramnames(26)) = param(63:64);                     % lick solenoid number (2)
-        params.(paramnames(27)) = param(65:66);                     % lick to reward probability (2)
-        params.(paramnames(28)) = param(67:68);                     % lick reward open time (2)
-        params.(paramnames(29)) = param(69:70);                     % lick delay to reward (2)
-        params.(paramnames(30)) = param(71:72);                     % delay to next lick (2)
-        params.(paramnames(31)) = param(73:74);                     % min number of rewards on each lick tube
-        params.(paramnames(32)) = param(75:76);                     % signal type to lick requirement (2)
-        params.(paramnames(33)) = param(77:78);                     % signal pulse or not
-        params.(paramnames(34)) = param(79:80);                     % sound cue frequency (2)
-        params.(paramnames(35)) = param(81:82);                     % signal duration (2)
-        params.(paramnames(36)) = param(83:84);                     % lick speaker number (2)
-        params.(paramnames(37)) = param(85);                        % laser latency wrt cue
-        params.(paramnames(38)) = param(86);                        % laser duration
-        params.(paramnames(39)) = param(87);                        % random laser flag
-        params.(paramnames(40)) = param(88);                        % laser pulse period
-        params.(paramnames(41)) = param(89);                        % laser pulse off period
-        params.(paramnames(42)) = param(90);                        % laser trial by trialflag
-        params.(paramnames(43)) = param(91);                        % max delay cue to vacuum
-        params.(paramnames(43)) = param(92:94);                     % CS light number (3)
-        params.(paramnames(44)) = param(95:96);                     % lick variable ratio flag (2)
-        params.(paramnames(45)) = param(97:98);                     % lick variable interval flag (2)
-        params.(paramnames(46)) = param(99:100);                    % lick light number (2)
-        params.(paramnames(47)) = param(101);                       % CS1 laser check flag
-        params.(paramnames(48)) = param(102);                       % CS2 laser check flag
-        params.(paramnames(49)) = param(103);                       % CS3 laser check flag
-        params.(paramnames(50)) = param(104:105);                   % lick fixed side check (2)
-        params.(paramnames(51)) = param(106);                       % Reward laser check flag
-        params.(paramnames(52)) = param(107:109);                   % CS max ramp delay 
-        params.(paramnames(53)) = param(110:112);                   % CS ramp exponential factor
-        params.(paramnames(54)) = param(113:115);                   % CS increase
-        params.(paramnames(55)) = param(116:118);                   % delay between sound and light cue if both are present 
-
+        params.(paramnames(1)) = param(1:4);                        % numtrials (3)
+        params.(paramnames(2)) = param(5:8);                        % CS frequency (3)
+        params.(paramnames(3)) = param(9:16);                       % CS solenoids (6)
+        params.(paramnames(4)) = param(17:24);                      % CS probability (6)
+        params.(paramnames(5)) = param(25:32);                      % CS opentime (6)
+        params.(paramnames(6)) = param(33:36);                      % CS duration (6)
+        params.(paramnames(7)) = param(37:44);                      % CS delay to fxd reward (6)
+        params.(paramnames(8)) = param(45:48);                      % CS pulse or not(3)
+        params.(paramnames(9)) = param(49:52);                      % CS speaker number (3)
+        params.(paramnames(10)) = param(53:56);                     % CS go lick requiremet number (3)
+        params.(paramnames(11)) = param(57:60);                     % go lick tube (3)
+        params.(paramnames(12)) = param(61:64);                     % CS signal type (3)
+        params.(paramnames(13)) = param(65);                        % mean ITI
+        params.(paramnames(14)) = param(66);                        % max ITI 
+        params.(paramnames(15)) = param(67);                        % min ITI 
+        params.(paramnames(16)) = param(68);                        % exponential ITI flag
+        params.(paramnames(17)) = param(69);                        % background solenoid number
+        params.(paramnames(18)) = param(70);                        % background solenoid period 
+        params.(paramnames(19)) = param(71);                        % background solenoid magnitude
+        params.(paramnames(20)) = param(72);                        % min delay background solenoid to cue
+        params.(paramnames(21)) = param(73);                        % min delay background solenoid to fixed solenoid
+        params.(paramnames(22)) = param(74);                        % experiment mode
+        params.(paramnames(23)) = param(75);                        % trial by trial bgd solenoid flag
+        params.(paramnames(24)) = param(76);                        % total bgd rewards
+        params.(paramnames(25)) = param(77:78);                     % number of required licks (2)
+        params.(paramnames(26)) = param(79:80);                     % lick solenoid number (2)
+        params.(paramnames(27)) = param(81:82);                     % lick to reward probability (2)
+        params.(paramnames(28)) = param(83:84);                     % lick reward open time (2)
+        params.(paramnames(29)) = param(85:86);                     % lick delay to reward (2)
+        params.(paramnames(30)) = param(87:88);                     % delay to next lick (2)
+        params.(paramnames(31)) = param(89:90);                     % min number of rewards on each lick tube
+        params.(paramnames(32)) = param(91:92);                     % signal type to lick requirement (2)
+        params.(paramnames(33)) = param(93:94);                     % signal pulse or not
+        params.(paramnames(34)) = param(95:96);                     % sound cue frequency (2)
+        params.(paramnames(35)) = param(97:98);                     % signal duration (2)
+        params.(paramnames(36)) = param(99:100);                     % lick speaker number (2)
+        params.(paramnames(37)) = param(101);                        % laser latency wrt cue
+        params.(paramnames(38)) = param(102);                        % laser duration
+        params.(paramnames(39)) = param(103);                        % random laser flag
+        params.(paramnames(40)) = param(104);                        % laser pulse period
+        params.(paramnames(41)) = param(105);                        % laser pulse off period
+        params.(paramnames(42)) = param(106);                        % laser trial by trialflag
+        params.(paramnames(43)) = param(107);                        % max delay cue to vacuum
+        params.(paramnames(44)) = param(108:111);                     % CS light number (3)
+        params.(paramnames(45)) = param(112:113);                     % lick variable ratio flag (2)
+        params.(paramnames(46)) = param(114:115);                     % lick variable interval flag (2)
+        params.(paramnames(47)) = param(116:117);                    % lick light number (2)
+        params.(paramnames(48)) = param(118);                       % CS1 laser check flag
+        params.(paramnames(49)) = param(119);                       % CS2 laser check flag
+        params.(paramnames(50)) = param(120);                       % CS3 laser check flag
+        params.(paramnames(51)) = param(121);                       % CS4 laser check flag
+        params.(paramnames(52)) = param(122:123);                   % lick fixed side check (2)
+        params.(paramnames(53)) = param(124);                       % Reward laser check flag
+        params.(paramnames(54)) = param(125:128);                   % CS max ramp delay 
+        params.(paramnames(55)) = param(129:132);                   % CS ramp exponential factor
+        params.(paramnames(56)) = param(133:136);                   % CS increase
+        params.(paramnames(57)) = param(137:140);                   % delay between sound and light cue if both are present 
+        params.(paramnames(58)) = param(141:144);                   % CS second cue type
+        params.(paramnames(59)) = param(145:148);                   % CS second cue frequency 
+        params.(paramnames(60)) = param(149:152);                   % CS second cue speaker number
+        params.(paramnames(61)) = param(153:156);                   % CS second cue light number
     save(file, 'eventlog', 'params','exception')
 end
