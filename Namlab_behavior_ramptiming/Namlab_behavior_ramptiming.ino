@@ -173,7 +173,7 @@ boolean licktubesactive;         // signal to enter active lick tube state
 boolean framestate;              // state of frame input
 boolean frameon;                 // did frame input turn on?
 
-const int numCS = 3;             // Number of different CSs
+const int numCS = 4;             // Number of different CSs
 unsigned long numtrials[numCS];
 unsigned long CSfreq[numCS];
 unsigned long CSsolenoid[2 * numCS];
@@ -203,14 +203,18 @@ unsigned long CSsolenoidcode[2 * numCS];
 boolean rewardactive;
 unsigned long maxdelaytosolenoid;
 unsigned long cueonset;
-float actualopentime;           // actual open time for solenoid in ramp timing task
+float actualopentime;
 unsigned long timeforfirstlick;
 unsigned long CSrampmaxdelay[numCS];
-unsigned long CSrampexp[numCS];
+float CSrampexp[numCS];
 unsigned long CSincrease[numCS];
-signed long delaybetweensoundandlight[numCS];
+signed long delayforsecondcue[numCS];
 boolean cueover;                  // indicator for cue to be over or not
 unsigned long secondcue;          // for second cue in both cues task
+unsigned long CSsecondcue[numCS];           // for immediate second cue type
+unsigned long CSsecondcuefreq[numCS];       // for immediate second frequency
+unsigned long CSsecondcuespeaker[numCS];    // speaker number for second cue
+unsigned long CSsecondcuelight[numCS];      // light number for second cue
 
 const int numlicktube = 2;       // number of recording lick tubes for lick dependent experiments
 unsigned long reqlicknum[numlicktube];
@@ -1066,7 +1070,7 @@ void loop() {
 
 // Accept parameters from MATLAB
 void getParams() {
-  int pn = 118;                              // number of parameter inputs
+  int pn = 156;                              // number of parameter inputs
   unsigned long param[pn];                  // parameters
 
   for (int p = 0; p < pn; p++) {
@@ -1078,113 +1082,143 @@ void getParams() {
   numtrials[0]           = param[0];
   numtrials[1]           = param[1];
   numtrials[2]           = param[2];
-  CSfreq[0]              = param[3];
-  CSfreq[1]              = param[4];
-  CSfreq[2]              = param[5];
+  numtrials[3]           = param[3];
+  CSfreq[0]              = param[4];
+  CSfreq[1]              = param[5];
+  CSfreq[2]              = param[6];
+  CSfreq[3]              = param[7];
   for (int p = 0; p < 2 * numCS; p++) {
-    CSsolenoid[p]        = param[6 + p];
+    CSsolenoid[p]        = param[8 + p];
   }
   for (int p = 0; p < 2 * numCS; p++) {
-    CSprob[p]            = param[12 + p];
+    CSprob[p]            = param[16 + p];
   }
   for (int p = 0; p < 2 * numCS; p++) {
-    CSopentime[p]        = param[18 + p];
+    CSopentime[p]        = param[24 + p];
   }
-  CSdur[0]               = param[24];
-  CSdur[1]               = param[25];
-  CSdur[2]               = param[26];
+  CSdur[0]               = param[32];
+  CSdur[1]               = param[33];
+  CSdur[2]               = param[34];
+  CSdur[3]               = param[35];
   for (int p = 0; p < 2 * numCS; p++) {
-    CS_t_fxd[p]          = param[27 + p];
+    CS_t_fxd[p]          = param[36 + p];
   }
-  CSpulse[0]             = param[33];
-  CSpulse[1]             = param[34];
-  CSpulse[2]             = param[35];
-  CSspeaker[0]           = param[36];
-  CSspeaker[1]           = param[37];
-  CSspeaker[2]           = param[38];
-  golickreq[0]           = param[39];
-  golickreq[1]           = param[40];
-  golickreq[2]           = param[41];
-  golicktube[0]          = param[42];
-  golicktube[1]          = param[43];
-  golicktube[2]          = param[44];
-  CSsignal[0]            = param[45];
-  CSsignal[1]            = param[46];
-  CSsignal[2]            = param[47];
-  meanITI                = param[48];                   // get meanITI, in ms
-  maxITI                 = param[49];                   // get maxITI, in ms
-  minITI                 = param[50];
-  intervaldistribution   = (int)param[51];
-  backgroundsolenoid     = (int)param[52];
-  T_bgd                  = param[53];                   // get T=1/lambda, in ms
-  r_bgd                  = param[54];                   // get r_bgd, ms open time for the solenoid
-  mindelaybgdtocue       = param[55];                   // get minimum delay between a background solenoid and the next cue, in ms
-  mindelayfxdtobgd       = param[56];                   // get minimum delay between a fixed solenoid and the next background solenoid, in ms
-  experimentmode         = param[57];
-  trialbytrialbgdsolenoidflag = (boolean)param[58];
-  totbgdsolenoid         = param[59];                   // total number of background solenoids to stop the session if the session just has Poisson solenoids, i.e. experimentmode==1
-  reqlicknum[0]          = param[60];
-  reqlicknum[1]          = param[61];
-  licksolenoid[0]        = param[62];
-  licksolenoid[1]        = param[63];
-  lickprob[0]            = param[64];
-  lickprob[1]            = param[65];
-  lickopentime[0]        = param[66];
-  lickopentime[1]        = param[67];
-  delaytoreward[0]       = param[68];
-  delaytoreward[1]       = param[69];
-  delaytolick[0]         = param[70];
-  delaytolick[1]         = param[71];
-  minrewards[0]          = param[72];
-  minrewards[1]          = param[73];
-  signaltolickreq[0]     = param[74];
-  signaltolickreq[1]     = param[75];
-  soundsignalpulse[0]    = param[76];
-  soundsignalpulse[1]    = param[77];
-  soundfreq[0]           = param[78];
-  soundfreq[1]           = param[79];
-  sounddur[0]            = param[80];
-  sounddur[1]            = param[81];
-  lickspeaker[0]         = param[82];
-  lickspeaker[1]         = param[83];
-  laserlatency           = param[84];
-  laserduration          = param[85];
-  randlaserflag          = (boolean)param[86];          // Random laser flag
-  laserpulseperiod       = param[87];
-  laserpulseoffperiod    = param[88];
-  lasertrialbytrialflag  = (boolean)param[89];          // laser on a trial-by-trial basis?
-  maxdelaytovacuumfromcueonset = param[90];
-  CSlight[0]             = param[91];
-  CSlight[1]             = param[92];
-  CSlight[2]             = param[93];
-  variableratioflag[0]   = param[94];
-  variableratioflag[1]   = param[95];
-  variableintervalflag[0] = param[96];
-  variableintervalflag[1] = param[97];
-  licklight[0]           = param[98];
-  licklight[1]           = param[99];
-  CSlasercheck[0]         = param[100];
-  CSlasercheck[1]         = param[101];
-  CSlasercheck[2]         = param[102];
-  fixedsidecheck[0]      = param[103];
-  fixedsidecheck[1]      = param[104];
-  Rewardlasercheck       = param[105];
-  CSrampmaxdelay[0]      = param[106];
-  CSrampmaxdelay[1]      = param[107];
-  CSrampmaxdelay[2]      = param[108];
-  CSrampexp[0]           = param[109];
-  CSrampexp[1]           = param[110];
-  CSrampexp[2]           = param[111];
-  CSincrease[0]          = param[112];
-  CSincrease[1]          = param[113];
-  CSincrease[2]          = param[114];
-  delaybetweensoundandlight[0] = param[115];        // delay between sound cue and light cue if both present
-  delaybetweensoundandlight[1] = param[116];
-  delaybetweensoundandlight[2] = param[117];
-
+  CSpulse[0]             = param[44];
+  CSpulse[1]             = param[45];
+  CSpulse[2]             = param[46];
+  CSpulse[3]             = param[47];
+  CSspeaker[0]           = param[48];
+  CSspeaker[1]           = param[49];
+  CSspeaker[2]           = param[50];
+  CSspeaker[3]           = param[51];
+  golickreq[0]           = param[52];
+  golickreq[1]           = param[53];
+  golickreq[2]           = param[54];
+  golickreq[3]           = param[55];
+  golicktube[0]          = param[56];
+  golicktube[1]          = param[57];
+  golicktube[2]          = param[58];
+  golicktube[3]          = param[59];
+  CSsignal[0]            = param[60];
+  CSsignal[1]            = param[61];
+  CSsignal[2]            = param[62];
+  CSsignal[3]            = param[63];
+  meanITI                = param[64];                   // get meanITI, in ms
+  maxITI                 = param[65];                   // get maxITI, in ms
+  minITI                 = param[66];
+  intervaldistribution   = (int)param[67];
+  backgroundsolenoid     = (int)param[68];
+  T_bgd                  = param[69];                   // get T=1/lambda, in ms
+  r_bgd                  = param[70];                   // get r_bgd, ms open time for the solenoid
+  mindelaybgdtocue       = param[71];                   // get minimum delay between a background solenoid and the next cue, in ms
+  mindelayfxdtobgd       = param[72];                   // get minimum delay between a fixed solenoid and the next background solenoid, in ms
+  experimentmode         = param[73];
+  trialbytrialbgdsolenoidflag = (boolean)param[74];
+  totbgdsolenoid         = param[75];                   // total number of background solenoids to stop the session if the session just has Poisson solenoids, i.e. experimentmode==1
+  reqlicknum[0]          = param[76];
+  reqlicknum[1]          = param[77];
+  licksolenoid[0]        = param[78];
+  licksolenoid[1]        = param[79];
+  lickprob[0]            = param[80];
+  lickprob[1]            = param[81];
+  lickopentime[0]        = param[82];
+  lickopentime[1]        = param[83];
+  delaytoreward[0]       = param[84];
+  delaytoreward[1]       = param[85];
+  delaytolick[0]         = param[86];
+  delaytolick[1]         = param[87];
+  minrewards[0]          = param[88];
+  minrewards[1]          = param[89];
+  signaltolickreq[0]     = param[90];
+  signaltolickreq[1]     = param[91];
+  soundsignalpulse[0]    = param[92];
+  soundsignalpulse[1]    = param[93];
+  soundfreq[0]           = param[94];
+  soundfreq[1]           = param[95];
+  sounddur[0]            = param[96];
+  sounddur[1]            = param[97];
+  lickspeaker[0]        = param[98];
+  lickspeaker[1]        = param[99];
+  laserlatency           = param[100];
+  laserduration          = param[101];
+  randlaserflag          = (boolean)param[102];          // Random laser flag
+  laserpulseperiod       = param[103];
+  laserpulseoffperiod    = param[104];
+  lasertrialbytrialflag  = (boolean)param[105];          // laser on a trial-by-trial basis?
+  maxdelaytovacuumfromcueonset = param[106];
+  CSlight[0]             = param[107];
+  CSlight[1]             = param[108];
+  CSlight[2]             = param[109];
+  CSlight[3]             = param[110];
+  variableratioflag[0]      = param[111];
+  variableratioflag[1]      = param[112];
+  variableintervalflag[0]   = param[113];
+  variableintervalflag[1]   = param[114];
+  licklight[0]           = param[115];
+  licklight[1]           = param[116];
+  CSlasercheck[0]         = param[117];
+  CSlasercheck[1]         = param[118];
+  CSlasercheck[2]         = param[119];
+  CSlasercheck[3]         = param[120];
+  fixedsidecheck[0]      = param[121];
+  fixedsidecheck[1]      = param[122];
+  Rewardlasercheck       = param[123];
+  CSrampmaxdelay[0]      = param[124];
+  CSrampmaxdelay[1]      = param[125];
+  CSrampmaxdelay[2]      = param[126];
+  CSrampmaxdelay[3]      = param[127];
+  CSrampexp[0]           = param[128];
+  CSrampexp[1]           = param[129];
+  CSrampexp[2]           = param[130];
+  CSrampexp[3]           = param[131];
+  CSincrease[0]          = param[132];
+  CSincrease[1]          = param[133];
+  CSincrease[2]          = param[134];
+  CSincrease[3]          = param[135];
+  delayforsecondcue[0]   = param[136];        // delay between sound cue and light cue if both present
+  delayforsecondcue[1]   = param[137];
+  delayforsecondcue[2]   = param[138];
+  delayforsecondcue[3]   = param[139];
+  CSsecondcue[0]             = param[140];
+  CSsecondcue[1]             = param[141];
+  CSsecondcue[2]             = param[142];
+  CSsecondcue[3]             = param[143];
+  CSsecondcuefreq[0]         = param[144];
+  CSsecondcuefreq[1]         = param[145];
+  CSsecondcuefreq[2]         = param[146];
+  CSsecondcuefreq[3]         = param[147];
+  CSsecondcuespeaker[0]          = param[148];
+  CSsecondcuespeaker[1]          = param[149];
+  CSsecondcuespeaker[2]          = param[150];
+  CSsecondcuespeaker[3]          = param[151];
+  CSsecondcuelight[0]            = param[152];
+  CSsecondcuelight[1]            = param[153];
+  CSsecondcuelight[2]            = param[154];
+  CSsecondcuelight[3]            = param[155];
 
   for (int p = 0; p < numCS; p++) {
     CSfreq[p] = CSfreq[p] * 1000;         // convert frequency from kHz to Hz
+    CSsecondcuefreq[p] = CSsecondcuefreq[p] * 1000;
     golicktube[p]--;                      // Make go lick tube into a zero index for indexing lickctforreq
     if (CSspeaker[p] == 1) {
       CSspeaker[p] = speaker1;
@@ -1198,8 +1232,17 @@ void getParams() {
     else if (CSlight[p] == 2) {
       CSlight[p] = light2;
     }
-    if (CSrampexp[p] == 0) {              // define exp factor as 0.5 when passed in 0
-      CSrampexp[p] = 0.5;
+    if (CSsecondcuespeaker[p] == 1) {
+      CSsecondcuespeaker[p] = speaker1;
+    }
+    else if (CSsecondcuespeaker[p] == 2) {
+      CSsecondcuespeaker[p] = speaker2;
+    }
+    if (CSsecondcuelight[p] == 1) {
+      CSsecondcuelight[p] = light1;
+    }
+    else if (CSsecondcuelight[p] == 2) {
+      CSsecondcuelight[p] = light2;
     }
   }
   for (int p = 0; p < 2 * numCS; p++) {
@@ -1236,6 +1279,7 @@ void getParams() {
     //      CSsolenoidcode[p] = 19;
     //    }
   }
+
 
   if (backgroundsolenoid == 1) {
     backgroundsolenoid = solenoid1;
@@ -1337,10 +1381,6 @@ void licking() {
     Serial.print(0);
     Serial.print('\n');
     lickctforreq[2]++;
-    if (lickctforreq[2] == 1) {
-      timeforfirstlick = ts - cueonset;
-      nextfxdsolenoid = ts;
-    }
   }
 
   if (lickwithdrawn) {                     // if lick withdrawn
@@ -1371,14 +1411,13 @@ void frametimestamp() {
 
 // DELIVER CUE //////////////
 void cues() {
-  //  Serial.print(15 + cueList[CSct]);         // code data as CS1, CS2 or CS3 timestamp
-  //  Serial.print(" ");
-  //  Serial.print(ts);                         // send timestamp of cue
-  //  Serial.print(" ");
-  //  Serial.print(0);
-  //  Serial.print('\n');
   if (CSdur[cueList[CSct]] > 0) {
-    tone(CSspeaker[cueList[CSct]], CSfreq[cueList[CSct]]);               // turn on tone only when the CSdur is bigger than 0
+    if (secondcue == 0) {
+      tone(CSspeaker[cueList[CSct]], CSfreq[cueList[CSct]]);               // turn on tone only when the CSdur is bigger than 0
+    }
+    else {
+      tone(CSsecondcuespeaker[cueList[CSct]], CSsecondcuefreq[cueList[CSct]]);
+    }
   }
 
   if (CSpulse[cueList[CSct]] == 1) {
@@ -1389,8 +1428,7 @@ void cues() {
     cuePulseOff = 0;                         // No cue pulsing
     cuePulseOn = 0;                          // No cue pulsing
   }
-
-  numfxdsolenoids = 0;                                   // Zero fixed solenoids given till now
+  // Zero fixed solenoids given till now
   if (CSdur[cueList[CSct]] > 0) {
     cueOff  = ts + CSdur[cueList[CSct]];                   // set timestamp of cue cessation
   }
@@ -1400,11 +1438,6 @@ void cues() {
   lickctforreq[0] = 0;                 // reset lick1 count to zero at cue onset
   lickctforreq[1] = 0;                 // reset lick2 count to zero at cue onset
   lickctforreq[2] = 0;                 // reset lick3 count to zero at cue onset
-
-  nextfxdsolenoid = 0;
-  timeforfirstlick = 0;
-  nextvacuum = ts + CS_t_fxd[2 * cueList[CSct] + 1] + maxdelaytovacuumfromcueonset;
-
   // Sync with fiber photometry
   digitalWrite(ttloutstoppin, HIGH);
 }
@@ -1428,17 +1461,17 @@ void lights() {
   //  Serial.print(0);
   //  Serial.print('\n');
   if (CSdur[cueList[CSct]] > 0) {
-    digitalWrite(CSlight[cueList[CSct]], HIGH);           // Turn on light when CSdur is bigger than 0
+    if (secondcue == 0) {
+      digitalWrite(CSlight[cueList[CSct]], HIGH);           // Turn on light when CSdur is bigger than 0
+    }
+    else {
+      digitalWrite(CSsecondcuelight[cueList[CSct]], HIGH);
+    }
   }
-
-  numfxdsolenoids = 0;
   lightOff = ts + lightdur;
   lickctforreq[0] = 0;
   lickctforreq[1] = 0;
   lickctforreq[2] = 0;
-  nextfxdsolenoid = 0;
-  timeforfirstlick = 0;
-  nextvacuum = ts + CS_t_fxd[2 * cueList[CSct] + 1] + maxdelaytovacuumfromcueonset;
 }
 
 void software_Reboot()
@@ -1452,9 +1485,15 @@ void software_Reboot()
 
 // End session //////////////
 void endSession() {
-  //digitalWrite(ttloutstoppin, HIGH);
-  //delay(100);
-  //digitalWrite(ttloutstoppin, LOW);
+
+  // TURN OFF 2P IMAGING
+  //  digitalWrite(ttloutstoppin, HIGH);
+  //  delay(100);
+  //  digitalWrite(ttloutstoppin, LOW);
+
+  //TURN OFF PHOTOMETRY
+  digitalWrite(ttloutpin, LOW);
+
   Serial.print(0);                       //   code data as end of session
   Serial.print(" ");
   Serial.print(ts);                      //   send timestamp
