@@ -1325,7 +1325,6 @@ void getParams() {
 
   for (int p = 0; p < numCS; p++) {
     CSfreq[p] = CSfreq[p] * 1000;         // convert frequency from kHz to Hz
-    CSsecondcuefreq[p] = CSsecondcuefreq[p] * 1000;
     golicktube[p]--;                      // Make go lick tube into a zero index for indexing lickctforreq
     if (CSspeaker[p] == 1) {
       CSspeaker[p] = speaker1;
@@ -1338,18 +1337,6 @@ void getParams() {
     }
     else if (CSlight[p] == 2) {
       CSlight[p] = light2;
-    }
-    if (CSsecondcuespeaker[p] == 1) {
-      CSsecondcuespeaker[p] = speaker1;
-    }
-    else if (CSsecondcuespeaker[p] == 2) {
-      CSsecondcuespeaker[p] = speaker2;
-    }
-    if (CSsecondcuelight[p] == 1) {
-      CSsecondcuelight[p] = light1;
-    }
-    else if (CSsecondcuelight[p] == 2) {
-      CSsecondcuelight[p] = light2;
     }
   }
   for (int p = 0; p < 2 * numCS; p++) {
@@ -1377,16 +1364,15 @@ void getParams() {
       CSsolenoid[p] = lickretractsolenoid2;
       CSsolenoidcode[p] = 13;
     }
-    //    else if (CSsolenoid[p] == 56) {
-    //      CSsolenoid[p] = lickretractsolenoid1and2;
-    //      CSsolenoidcode[p] = 18;
-    //    }
-    //    else if (CSsolenoid[p] == 55) {
-    //      CSsolenoid[p] = lickretractsolenoid1or2;
-    //      CSsolenoidcode[p] = 19;
-    //    }
+    else if (CSsolenoid[p] == 56) {
+      CSsolenoid[p] = lickretractsolenoid1and2;
+      CSsolenoidcode[p] = 18;
+    }
+    else if (CSsolenoid[p] == 55) {
+      CSsolenoid[p] = lickretractsolenoid1or2;
+      CSsolenoidcode[p] = 19;
+    }
   }
-
 
   if (backgroundsolenoid == 1) {
     backgroundsolenoid = solenoid1;
@@ -1440,6 +1426,11 @@ void licking() {
     Serial.print(0);
     Serial.print('\n');
     lickctforreq[0]++;
+
+    if (lickctforreq[0] >= golickreq[0] && licktubesactive) {  // Check if lick requirement met
+      licktubethatmetlickreq = 1;
+      licktubesactive = false;
+    }
   }
 
   if (lickwithdrawn) {                     // if lick withdrawn
@@ -1464,6 +1455,11 @@ void licking() {
     Serial.print(0);
     Serial.print('\n');
     lickctforreq[1]++;
+
+    if (lickctforreq[1] >= golickreq[1] && licktubesactive) {  // Check if lick requirement met
+      licktubethatmetlickreq = 2;
+      licktubesactive = false;
+    }
   }
 
   if (lickwithdrawn) {                     // if lick withdrawn
@@ -1488,6 +1484,11 @@ void licking() {
     Serial.print(0);
     Serial.print('\n');
     lickctforreq[2]++;
+
+    if (lickctforreq[2] >= golickreq[2] && licktubesactive) {  // Check if lick requirement met
+      licktubethatmetlickreq = 3;
+      licktubesactive = false;
+    }
   }
 
   if (lickwithdrawn) {                     // if lick withdrawn
@@ -1500,7 +1501,7 @@ void licking() {
   }
 }
 
-void frametimestamp() {
+void FrameTimeStamp() {
   boolean prevframe;
   prevframe = framestate;
   framestate = digitalRead(framein);
@@ -1518,15 +1519,15 @@ void frametimestamp() {
 
 // DELIVER CUE //////////////
 void cues() {
+  //  Serial.print(15 + cueList[CSct]);         // code data as CS1, CS2 or CS3 timestamp
+  //  Serial.print(" ");
+  //  Serial.print(ts);                         // send timestamp of cue
+  //  Serial.print(" ");
+  //  Serial.print(0);
+  //  Serial.print('\n');
   if (CSdur[cueList[CSct]] > 0) {
-    if (secondcue == 0) {
-      tone(CSspeaker[cueList[CSct]], CSfreq[cueList[CSct]]);               // turn on tone only when the CSdur is bigger than 0
-    }
-    else {
-      tone(CSsecondcuespeaker[cueList[CSct]], CSsecondcuefreq[cueList[CSct]]);
-    }
+    tone(CSspeaker[cueList[CSct]], CSfreq[cueList[CSct]]);               // turn on tone
   }
-
   if (CSpulse[cueList[CSct]] == 1) {
     cuePulseOff = ts + 200;                  // Cue pulsing
     cuePulseOn = 0;
@@ -1535,18 +1536,15 @@ void cues() {
     cuePulseOff = 0;                         // No cue pulsing
     cuePulseOn = 0;                          // No cue pulsing
   }
-  // Zero fixed solenoids given till now
-  if (CSdur[cueList[CSct]] > 0) {
-    cueOff  = ts + CSdur[cueList[CSct]];                   // set timestamp of cue cessation
-  }
-  else {
-    cueOff = ts + 100;                  // just for the sync with fiber photometry
-  }
+
+  nextfxdsolenoid = ts + CS_t_fxd[2 * cueList[CSct]];    // next fixed solenoid comes at a fixed delay following cue onset
+  numfxdsolenoids = 0;                                   // Zero fixed solenoids given till now
+  cueOff  = ts + CSdur[cueList[CSct]];                   // set timestamp of cue cessation
   lickctforreq[0] = 0;                 // reset lick1 count to zero at cue onset
   lickctforreq[1] = 0;                 // reset lick2 count to zero at cue onset
   lickctforreq[2] = 0;                 // reset lick3 count to zero at cue onset
-  // Sync with fiber photometry
-  digitalWrite(ttloutstoppin, HIGH);
+  licktubesactive = true;              // reset licktubesactive to be true at cue onset
+
 }
 
 void deliverlasertocues() {
@@ -1568,17 +1566,16 @@ void lights() {
   //  Serial.print(0);
   //  Serial.print('\n');
   if (CSdur[cueList[CSct]] > 0) {
-    if (secondcue == 0) {
-      digitalWrite(CSlight[cueList[CSct]], HIGH);           // Turn on light when CSdur is bigger than 0
-    }
-    else {
-      digitalWrite(CSsecondcuelight[cueList[CSct]], HIGH);
-    }
+    digitalWrite(CSlight[cueList[CSct]], HIGH);
   }
+
+  nextfxdsolenoid = ts + CS_t_fxd[2 * cueList[CSct]];
+  numfxdsolenoids = 0;
   lightOff = ts + lightdur;
   lickctforreq[0] = 0;
   lickctforreq[1] = 0;
   lickctforreq[2] = 0;
+  licktubesactive = true;              // reset licktubesactive to be true at cue onset
 }
 
 void software_Reboot()
@@ -1592,15 +1589,9 @@ void software_Reboot()
 
 // End session //////////////
 void endSession() {
-
-  // TURN OFF 2P IMAGING
-  //  digitalWrite(ttloutstoppin, HIGH);
-  //  delay(100);
-  //  digitalWrite(ttloutstoppin, LOW);
-
-  //TURN OFF PHOTOMETRY
-  digitalWrite(ttloutpin, LOW);
-
+  digitalWrite(ttloutstoppin, HIGH);
+  delay(100);
+  digitalWrite(ttloutstoppin, LOW);
   Serial.print(0);                       //   code data as end of session
   Serial.print(" ");
   Serial.print(ts);                      //   send timestamp
