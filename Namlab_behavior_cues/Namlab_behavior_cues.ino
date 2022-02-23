@@ -838,11 +838,11 @@ void loop() {
       }
 
       if (intervaldistribution < 3) {
-      nextfxdsolenoid = ts + CS_t_fxd[2 * cueList[CSct]];    // next fixed solenoid comes at a fixed delay following cue onset
-      numfxdsolenoids = 0;
+        nextfxdsolenoid = ts + CS_t_fxd[2 * cueList[CSct]];    // next fixed solenoid comes at a fixed delay following cue onset
+        numfxdsolenoids = 0;
       }
       else if (intervaldistribution == 3) {
-      fxdrwtime[CSct] = ts + CS_t_fxd[2 * cueList[CSct] + 1];
+        fxdrwtime[CSct] = ts + CS_t_fxd[2 * cueList[CSct] + 1];
         if (nextfxdsolenoid == 0) {
           nextfxdsolenoid = fxdrwtime[fxdrwct];
         }
@@ -1031,8 +1031,13 @@ void loop() {
       else {
         temp2 = 0;
       }
-
-      if (CSopentime[2 * cueList[CSct] + numfxdsolenoids] > 0 && u < CSprob[2 * cueList[CSct] + numfxdsolenoids] && lickctforreq[golicktube[cueList[CSct]]] >= temp2 && temp2 != -1) {
+      if (CSsolenoidcode[2 * cueList[CSct] + numfxdsolenoids] == 35 && CSopentime[2 * cueList[CSct] + numfxdsolenoids] > 0 && u < CSprob[2 * cueList[CSct] + numfxdsolenoids]) {
+        digitalWrite(lickretractsolenoid1, HIGH);
+        digitalWrite(lickretractsolenoid2, HIGH);
+        Serial.print(0);
+        Serial.print('\n');
+      }
+      else if (CSopentime[2 * cueList[CSct] + numfxdsolenoids] > 0 && u < CSprob[2 * cueList[CSct] + numfxdsolenoids] && lickctforreq[golicktube[cueList[CSct]]] >= temp2 && temp2 != -1) {
         digitalWrite(CSsolenoid[2 * cueList[CSct] + numfxdsolenoids], HIGH);      // turn on solenoid
         Serial.print(0);                       //   this indicates that the solenoid was actually given
         Serial.print('\n');
@@ -1483,10 +1488,9 @@ void getParams() {
       CSsolenoid[p] = lickretractsolenoid2;
       CSsolenoidcode[p] = 13;
     }
-    //    else if (CSsolenoid[p] == 56) {
-    //      CSsolenoid[p] = lickretractsolenoid1and2;
-    //      CSsolenoidcode[p] = 18;
-    //    }
+    else if (CSsolenoid[p] == 56) {
+      CSsolenoidcode[p] = 35;
+    }
     //    else if (CSsolenoid[p] == 55) {
     //      CSsolenoid[p] = lickretractsolenoid1or2;
     //      CSsolenoidcode[p] = 19;

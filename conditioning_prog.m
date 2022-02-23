@@ -205,7 +205,7 @@ try
         %   32 = solenoid off time
         %   33 = reward indicator 1, for CS1 or lick 1
         %   34 = reward indicator 2, for CS2 or lick 2
-        
+        %   35 = lick retract solenoid 1 and 2
         
         
         if code == 1                                % Lick1 onset; BLUE
@@ -374,6 +374,30 @@ try
                      set(handles.lickretractsolenoid2Edit,'String',num2str(lickretractsolenoid2))
                      trial = floor(time/durationtrialpartitionnocues);
                      temptrialdur = trial*durationtrialpartitionnocues;
+                     plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0.97 0.28 0.18],'LineWidth',2);hold on
+                 end
+            end 
+        elseif code == 35                            % Lick retraction solenoid1 and 2; [0.3 0.75 0.93], [0.97 0.28 0.18]
+            if (experimentmode == 1 && intervaldistribution<3) || experimentmode == 4 || experimentmode == 6   
+                if itemflag == 0                      % Indicates trial with solenoid
+                    lickretractsolenoid1 = lickretractsolenoid1 + 1;
+                    lickretractsolenoid2 = lickretractsolenoid2 + 1;     
+                    set(handles.lickretractsolenoid1Edit,'String',num2str(lickretractsolenoid1))
+                    set(handles.lickretractsolenoid2Edit,'String',num2str(lickretractsolenoid2))
+                    tempsolenoidsct(5) = tempsolenoidsct(5)+1;      % keep track of solenoid4 count
+                    tempsolenoids(tempsolenoidsct(5), 5) = time;   % keep track of solenoid4 timestamp                   
+                    tempsolenoidsct(6) = tempsolenoidsct(6)+1;      % keep track of solenoid4 count
+                    tempsolenoids(tempsolenoidsct(6), 6) = time;   % keep track of solenoid4 timestamp
+                end 
+             elseif (experimentmode == 1 && intervaldistribution>2) || experimentmode == 3 || experimentmode == 7
+                 if itemflag == 0
+                     lickretractsolenoid1 = lickretractsolenoid1 + 1;
+                     lickretractsolenoid2 = lickretractsolenoid2 + 1;
+                     set(handles.lickretractsolenoid1Edit,'String',num2str(lickretractsolenoid1))
+                     set(handles.lickretractsolenoid2Edit,'String',num2str(lickretractsolenoid2))
+                     trial = floor(time/durationtrialpartitionnocues);
+                     temptrialdur = trial*durationtrialpartitionnocues;
+                     plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0.3 0.75 0.93],'LineWidth',2);hold on
                      plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0.97 0.28 0.18],'LineWidth',2);hold on
                  end
             end 
