@@ -1550,6 +1550,9 @@ void licking() {
     Serial.print(0);
     Serial.print('\n');
     lickctforreq[0]++;
+
+    digitalWrite(lickretractsolenoid1, LOW);
+    digitalWrite(lickretractsolenoid2, LOW);
   }
 
   if (lickwithdrawn) {                     // if lick withdrawn
@@ -1574,6 +1577,10 @@ void licking() {
     Serial.print(0);
     Serial.print('\n');
     lickctforreq[1]++;
+
+    digitalWrite(lickretractsolenoid1, LOW);
+    digitalWrite(lickretractsolenoid2, LOW);
+
   }
 
   if (lickwithdrawn) {                     // if lick withdrawn
