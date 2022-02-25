@@ -1553,6 +1553,10 @@ void licking() {
 
     digitalWrite(lickretractsolenoid1, LOW);
     digitalWrite(lickretractsolenoid2, LOW);
+    if (golickreq[cueList[CSct]] == 1 && licktubesactive) {
+      nextfxdsolenoid = ts;
+      licktubesactive = false;
+    }
   }
 
   if (lickwithdrawn) {                     // if lick withdrawn
@@ -1580,6 +1584,10 @@ void licking() {
 
     digitalWrite(lickretractsolenoid1, LOW);
     digitalWrite(lickretractsolenoid2, LOW);
+    if (golickreq[cueList[CSct]] == 2 && licktubesactive) {
+      nextfxdsolenoid = ts;
+      licktubesactive = false;
+    }
 
   }
 
@@ -1662,6 +1670,7 @@ void cues() {
   lickctforreq[0] = 0;                 // reset lick1 count to zero at cue onset
   lickctforreq[1] = 0;                 // reset lick2 count to zero at cue onset
   lickctforreq[2] = 0;                 // reset lick3 count to zero at cue onset
+  licktubesactive = true;
   // Sync with fiber photometry
   digitalWrite(ttloutstoppin, HIGH);
 }
@@ -1696,6 +1705,7 @@ void lights() {
   lickctforreq[0] = 0;
   lickctforreq[1] = 0;
   lickctforreq[2] = 0;
+  licktubesactive = true;
 }
 
 void software_Reboot()
