@@ -1549,14 +1549,16 @@ void licking() {
     Serial.print(" ");
     Serial.print(0);
     Serial.print('\n');
-    lickctforreq[0]++;
+    if (licktubesactive) {
+      lickctforreq[0]++;
+    }
 
     digitalWrite(lickretractsolenoid1, LOW);
     digitalWrite(lickretractsolenoid2, LOW);
-    if (golicktube[cueList[CSct]] == 1 && licktubesactive) {
+    if (golicktube[cueList[CSct]] == 0 && licktubesactive) {
       nextfxdsolenoid = ts;
-      licktubesactive = false;
     }
+    licktubesactive = false;
   }
 
   if (lickwithdrawn) {                     // if lick withdrawn
@@ -1580,14 +1582,16 @@ void licking() {
     Serial.print(" ");
     Serial.print(0);
     Serial.print('\n');
-    lickctforreq[1]++;
+    if (licktubesactive) {
+      lickctforreq[1]++;
+    }
 
     digitalWrite(lickretractsolenoid1, LOW);
     digitalWrite(lickretractsolenoid2, LOW);
-    if (golicktube[cueList[CSct]] == 2 && licktubesactive) {
+    if (golicktube[cueList[CSct]] == 1 && licktubesactive) {
       nextfxdsolenoid = ts;
-      licktubesactive = false;
     }
+    licktubesactive = false;
   }
 
   if (lickwithdrawn) {                     // if lick withdrawn
