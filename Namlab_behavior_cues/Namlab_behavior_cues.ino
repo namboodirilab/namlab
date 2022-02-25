@@ -1553,7 +1553,7 @@ void licking() {
 
     digitalWrite(lickretractsolenoid1, LOW);
     digitalWrite(lickretractsolenoid2, LOW);
-    if (golickreq[cueList[CSct]] == 1 && licktubesactive) {
+    if (golicktube[cueList[CSct]] == 1 && licktubesactive) {
       nextfxdsolenoid = ts;
       licktubesactive = false;
     }
@@ -1584,11 +1584,10 @@ void licking() {
 
     digitalWrite(lickretractsolenoid1, LOW);
     digitalWrite(lickretractsolenoid2, LOW);
-    if (golickreq[cueList[CSct]] == 2 && licktubesactive) {
+    if (golicktube[cueList[CSct]] == 2 && licktubesactive) {
       nextfxdsolenoid = ts;
       licktubesactive = false;
     }
-
   }
 
   if (lickwithdrawn) {                     // if lick withdrawn
