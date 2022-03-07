@@ -23,7 +23,6 @@ labelsStr = cellstr(num2str(labels));     % convert to cell of strings
 
 durationtrialpartitionnocues = 20E3;      % When experimentmode=2 or 3, how long should a single row for raster plot be?
 %% Prep work
-
 % initialize arrays for licks and cues
 lickct = [0, 0, 0];% Counter for licks
 bgdus = 0;% Counter for background solenoids
@@ -197,14 +196,8 @@ try
         %   22 = light 2
         %   23 = light 3
         %   24 = light 4
-        %   25 = both CSsound1 and CSlight1
-        %   26 = both CSsound2 and CSlight2
-        %   27 = both CSsound3 and CSlight3
         %   30 = frame
         %   31 = laser
-        %   32 = solenoid off time
-        %   33 = reward indicator 1, for CS1 or lick 1
-        %   34 = reward indicator 2, for CS2 or lick 2
         %   35 = lick retract solenoid 1 and 2
         
         
