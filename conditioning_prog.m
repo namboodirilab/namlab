@@ -166,7 +166,7 @@ try
         eventlog(l,:) = read;                      % maps three things from read (code/time/nosolenoidflag)
         time = read(2);                             % record timestamp
         
-        itemflag = read(3);                     % if =1, no solenoid was actually given. Indicates solenoid omission; or for both cues with delay, 1 means the second cue delivered
+        itemflag = read(3);                     % Indicates solenoid omission: if =1, no solenoid was actually given. Or cue identity: 0=first cue, 1=second cue
         
         code = read(1);                             % read identifier for data
         if code == 0                                % signifies "end of session"
