@@ -12,128 +12,163 @@
 // Program will wait for signal from MATLAB containing paramenters for experiment. Following parameters need to be in the format xxx+xxx+xxx+xxx+xxx+xxx+xxx+xxx+xxx+xxx+xxx+xxx+xxx
 // Every temporal parameter is expressed in units of milliseconds. Parameters to be set in MATLAB include
 
-// FOR THIS PROGRAM, CS+ IS DEFINED AS THE 12KhZ TONE INDEPENDENT OF ITS ASSOCIATION WITH solenoid. THIS IS CONFUSING BUT WAS WRITTEN BEFORE THE PROBABILITY FOR EACH CUE WAS
-// ADDED. SO VIJAY DIDN'T WANT TO GO BACK AND CHANGE EVERY VARIABLE NAME.
-
 //0) number of CS1 trials
 //1) number of CS2 trials
 //2) number of CS3 trials
-//3) frequency(kHz) of CS1 tone
-//4) frequency(kHz) of CS2 tone
-//5) frequency(kHz) of CS3 tone
-//6) predicted 1st fixed solenoid of CS1
-//7) predicted 2nd fixed solenoid of CS1
-//8) predicted 1st fixed solenoid of CS2
-//9) predicted 2nd fixed solenoid of CS2
-//10) predicted 1st fixed solenoid of CS3
-//11) predicted 2nd fixed solenoid of CS3
-//12) probability of 1st fixed solenoid openning of CS1
-//13) probability of 2nd fixed solenoid openning of CS1
-//14) probability of 1st fixed solenoid openning of CS2
-//15) probability of 2nd fixed solenoid openning of CS2
-//16) probability of 1st fixed solenoid openning of CS3
-//17) probability of 2nd fixed solenoid openning of CS3
-//18) openning time(ms) for 1st fixed solenoid of CS1
-//19) openning time(ms) for 2nd fixed solenoid of CS1
-//20) openning time(ms) for 1st fixed solenoid of CS2
-//21) openning time(ms) for 2nd fixed solenoid of CS2
-//22) openning time(ms) for 1st fixed solenoid of CS3
-//23) openning time(ms) for 2nd fixed solenoid of CS3
-//24) cue duration(ms) for CS1
-//25) cue duration(ms) for CS2
-//26) cue duration(ms) for CS3
-//27) delay(ms) to 1st fixed solenoid of CS1
-//28) delay(ms) to 2nd fixed solenoid of CS1
-//29) delay(ms) to 1st fixed solenoid of CS2
-//30) delay(ms) to 2nd fixed solenoid of CS2
-//31) delay(ms) to 1st fixed solenoid of CS3
-//32) delay(ms) to 2nd fixed solenoid of CS3
-//33) flag to signal pulse tone (if==1) or not(if==0) for CS1
-//34) flag to signal pulse tone (if==1) or not(if==0) for CS2
-//35) flag to signal pulse tone (if==1) or not(if==0) for CS3
-//36) speaker for CS1
-//37) speaker for CS2
-//38) speaker for CS3
-//39) number of licks required on the first fixed solenoid in order to get reward on the second fixed solenoid of CS1
-//40) number of licks required on the first fixed solenoid in order to get reward on the second fixed solenoid of CS2
-//41) number of licks requried on the first fixed solenoid in order to get reward on the second fixed solenoid of CS3
-//42) appropriate licktube or solenoid for golickreq of CS1
-//43) appropriate licktube or solenoid for golickreq of CS2
-//44) appropriate licktube or solenoid for golickreq of CS3
-//45) signal for golickreq met of CS1
-//46) signal for golickreq met of CS2
-//47) signal for golickreq met of CS3
-//48) mean intertrial interval (ITI) in ms from fixed solenoid to next tone based on exponential distirbution, min ITI for uniform distribution
-//49) max ITI, truncation for exponential distribution is set at minimum of maximum ITI or 3*meanITI
-//50) min ITI
-//51) flag to set ITI distribution. If==1, draw from exponential, if==0 draw from uniform
-//52) which solenoid set to be the background solenoid
-//53) background solenoid period, 1/lambda, in ms
-//54) background solenoid openning time, in ms
-//55) minimum delay between a background solenoid and the next cue, in ms
-//56) minimum delay between fixed solenoid to the next background solenoid
-//57) signal which experiment mode to run: if==1, run with cues; if==2, give only background poisson solenoids, if==3, give lick dependent rewards
-//58) flag to run experiment with background solenoid rates changing on a trial-by-trial basis if==1
-//59) total number of background solenoids to stop the session if experimentmode==2, only Poisson session
-//60) required number of licks on lick tube 1 to get reward
-//61) required number of licks on lick tube 2 to get reward
-//62) predicted fixed solenoid for reward after licking lick tube 1
-//63) predicted fixed solenoid for reward after licking lick tube 2
-//64) probability of fixed solenoid for reward after licking lick tube 1
-//65) probability of fixed solenoid for reward after licking lick tube 2
-//66) opening time of fixed solenoid for reward after licking lick tube 1
-//67) opening time of fixed solenoid for reward after licking lick tube 2
-//68) delay time (ms) to fixed solenoid
-//69) delay time (ms) to fixed solenoid
-//70) delay time (ms) to activate lick tube 1
-//71) delay time (ms) to activate lick tube 2
-//72) minimum number of rewards delivered to lick tube 1
-//73) minimum number of rewards delivered to lick tube 2
-//74）signal to meet number of lick requirements of tube 1
-//75) signal to meet number of lick requirements of tube 2
-//76) sound signal of 70) to pulse or not
-//77) sound signal of 71) to pulse or not
-//78) sound signal frequency (kHz) of lick tube 1
-//79) sound signal frequency (kHz) of lick tube 2
-//80) sound signal duration (ms) of lick tube 1
-//81) sound signal duration (ms) of lick tube 2
-//82) sound signal speaker of lick tube 1
-//83) sound signal speaker of lick tube 2
-//84) value of the latency wrt the cue at which the laser turns on (0 for cue start; t_fxd for solenoid start)
-//85) value of the duration for which the laser remains on. It can pulse within this duration
-//86) flag to run sessions with laser turning on randomly if==1
-//87) period for which laser is on in a cycle (ms)
-//88) period for which laser is off in a cycle (ms); If equal to laserpulseperiod, duty cycle is 50%
-//89) flag to turn laser on a trial-by-trial basis
-//90) maximum delay to vacuum after cue turns on. Change this if different cues have different delays to reward
-// to be such that it is longer than the longest delay to reward. Basically, this quantity measures duration of trial.
-//91) light number for CS1
-//92) light number for CS2
-//93) light number for CS3
-//94) variable ratio check for lick 1s. 1==variable, 0==fixed
-//95) variable ratio check for lick 2s. 1==variable, 0==fixed
-//96) variable interval flag for lick 1s. 1==variable, 0==fixed
-//97) variable interval flag for lick 2s. 1==variable, 0==fixed
-//98) light number for lick 1
-//99) light number for lick 2
-//100) laser on flag for CS1, 1==laser on, 0==laser off
-//101) laser on flag for CS2, 1==laser on, 0==laser off
-//102) laser on flag for CS3, 1==laser on, 0==laser off
-//103) fixed reward check for left lick tube (lick tube 1) for delay discounting task
-//104) fixed reward check for right lick tube (lick tube 2) for delay discounting task
-//105) reward laser check flag 1==laser, 0==no laser
-//106) ramp max delay to CS1 for ramp timing task
-//107) ramp max delay to CS2 for ramp timing task 
-//108) ramp max delay to CS3 for ramp timing task 
-//109) exponent factor for ramp function for CS1
-//110) exponent factor for ramp function for CS2
-//111) exponent factor for ramp function for CS3
-//112) frequency increasing or decreasing for CS1
-//113) frequency increasing or decreasing for CS2
-//114) frequency increasing or decreasing for CS3
-//115) delay between sound cue and light cue if both are delivered for CS1, if>0, sound precedes light, if==0, occur at the same time, if<0 light precedes sound
-//116) delay between sound cue and light cue if both are delivered for CS2, if>0, sound precedes light, if==0, occur at the same time, if<0 light precedes sound
-//117) delay between sound cue and light cue if both are delivered for CS3, if>0, sound precedes light, if==0, occur at the same time, if<0 light precedes sound
+//3) number of CS4 trials
+//4) frequency(kHz) of CS1 tone
+//5) frequency(kHz) of CS2 tone
+//6) frequency(kHz) of CS3 tone
+//7) frequency(kHz) of CS4 tone
+//8) predicted 1st fixed solenoid of CS1
+//9) predicted 2nd fixed solenoid of CS1
+//10) predicted 1st fixed solenoid of CS2
+//11) predicted 2nd fixed solenoid of CS2
+//12) predicted 1st fixed solenoid of CS3
+//13) predicted 2nd fixed solenoid of CS3
+//14) predicted 1st fixed solenoid of CS4
+//15) predicted 2nd fixed solenoid of CS4
+//16) probability of 1st fixed solenoid openning of CS1
+//17) probability of 2nd fixed solenoid openning of CS1
+//18) probability of 1st fixed solenoid openning of CS2
+//19) probability of 2nd fixed solenoid openning of CS2
+//20) probability of 1st fixed solenoid openning of CS3
+//21) probability of 2nd fixed solenoid openning of CS3
+//22) probability of 1st fixed solenoid openning of CS4
+//23) probability of 2nd fixed solenoid openning of CS4
+//24) openning time(ms) for 1st fixed solenoid of CS1
+//25) openning time(ms) for 2nd fixed solenoid of CS1
+//26) openning time(ms) for 1st fixed solenoid of CS2
+//27) openning time(ms) for 2nd fixed solenoid of CS2
+//28) openning time(ms) for 1st fixed solenoid of CS3
+//29) openning time(ms) for 2nd fixed solenoid of CS3
+//30) openning time(ms) for 1st fixed solenoid of CS4
+//31) openning time(ms) for 2nd fixed solenoid of CS4
+//32) cue duration(ms) for CS1
+//33) cue duration(ms) for CS2
+//34) cue duration(ms) for CS3
+//35) cue duration(ms) for CS4
+//36) delay(ms) to 1st fixed solenoid of CS1
+//37) delay(ms) to 2nd fixed solenoid of CS1
+//38) delay(ms) to 1st fixed solenoid of CS2
+//39) delay(ms) to 2nd fixed solenoid of CS2
+//40) delay(ms) to 1st fixed solenoid of CS3
+//41) delay(ms) to 2nd fixed solenoid of CS3
+//42) delay(ms) to 1st fixed solenoid of CS4
+//43) delay(ms) to 2nd fixed solenoid of CS4
+//44) flag to signal pulse tone (if==1) or not(if==0) for CS1
+//45) flag to signal pulse tone (if==1) or not(if==0) for CS2
+//46) flag to signal pulse tone (if==1) or not(if==0) for CS3
+//47) flag to signal pulse tone (if==1) or not(if==0) for CS4
+//48) speaker for CS1
+//49) speaker for CS2
+//50) speaker for CS3
+//51) speaker for CS4
+//52) number of licks required on the first fixed solenoid in order to get reward on the second fixed solenoid of CS1
+//53) number of licks required on the first fixed solenoid in order to get reward on the second fixed solenoid of CS2
+//54) number of licks requried on the first fixed solenoid in order to get reward on the second fixed solenoid of CS3
+//55) number of licks requried on the first fixed solenoid in order to get reward on the second fixed solenoid of CS4
+//56) appropriate licktube or solenoid for golickreq of CS1
+//57) appropriate licktube or solenoid for golickreq of CS2
+//58) appropriate licktube or solenoid for golickreq of CS3
+//59) appropriate licktube or solenoid for golickreq of CS4
+//60) signal for golickreq met of CS1
+//61) signal for golickreq met of CS2
+//62) signal for golickreq met of CS3
+//63) signal for golickreq met of CS4
+//64) mean intertrial interval (ITI) in ms from fixed solenoid to next tone based on exponential distirbution
+//65) max ITI; truncation for exponential distribution is set at minimum of maximum ITI or 3*meanITI; if maxITI==meanITI, use fixed ITI
+//66) min ITI
+//67) flag to set ITI distribution. If==1, draw from exponential, if==0 draw from uniform
+//68) which solenoid set to be the background solenoid
+//69) background solenoid period, 1/lambda, in ms
+//70) background solenoid openning time, in ms
+//71) minimum delay between a background solenoid and the next cue, in ms
+//72) minimum delay between fixed solenoid to the next background solenoid
+//73) signal which experiment mode to run: if==1, run with cues; if==2, give only background poisson solenoids, if==3, give lick dependent rewards
+//74) flag to run experiment with background solenoid rates changing on a trial-by-trial basis if==1
+//75) total number of background solenoids to stop the session if experimentmode==2, only Poisson session
+//76) required number of licks on lick tube 1 to get reward
+//77) required number of licks on lick tube 2 to get reward
+//78) predicted fixed solenoid for reward after licking lick tube 1
+//79) predicted fixed solenoid for reward after licking lick tube 2
+//80) probability of fixed solenoid for reward after licking lick tube 1
+//81) probability of fixed solenoid for reward after licking lick tube 2
+//82) opening time of fixed solenoid for reward after licking lick tube 1
+//83) opening time of fixed solenoid for reward after licking lick tube 2
+//84) delay time (ms) to fixed solenoid
+//85) delay time (ms) to fixed solenoid
+//86) delay time (ms) to activate lick tube 1
+//87) delay time (ms) to activate lick tube 2
+//88) minimum number of rewards delivered to lick tube 1
+//89) minimum number of rewards delivered to lick tube 2
+//90）signal to meet number of lick requirements of tube 1
+//91) signal to meet number of lick requirements of tube 2
+//92) sound signal of 70) to pulse or not
+//93) sound signal of 71) to pulse or not
+//94) sound signal frequency (kHz) of lick tube 1
+//95) sound signal frequency (kHz) of lick tube 2
+//96) sound signal duration (ms) of lick tube 1
+//97) sound signal duration (ms) of lick tube 2
+//98) sound signal speaker of lick tube 1
+//99) sound signal speaker of lick tube 2
+//100) value of the latency wrt the cue at which the laser turns on (0 for cue start; t_fxd for solenoid start)
+//101) value of the duration for which the laser remains on. It can pulse within this duration
+//102) flag to run sessions with laser turning on randomly if==1
+//103) period for which laser is on in a cycle (ms)
+//104) period for which laser is off in a cycle (ms); If equal to laserpulseperiod, duty cycle is 50%
+//105) flag to turn laser on a trial-by-trial basis
+//106) maximum delay to vacuum after cue turns on. Change this if different cues have different delays to reward
+//107)to be such that it is longer than the longest delay to reward. Basically, this quantity measures duration of trial.
+//108) light number for CS1
+//109) light number for CS2
+//110) light number for CS3
+//111) light number for CS4
+//112) variable ratio check for lick 1s. 1==variable, 0==fixed
+//113) variable ratio check for lick 2s. 1==variable, 0==fixed
+//114) variable interval flag for lick 1s. 1==variable, 0==fixed
+//115) variable interval flag for lick 2s. 1==variable, 0==fixed
+//116) light number for lick 1
+//117) light number for lick 2
+//118) laser on flag for CS1, 1==laser on, 0==laser off
+//119) laser on flag for CS2, 1==laser on, 0==laser off
+//120) laser on flag for CS3, 1==laser on, 0==laser off
+//121) laser on flag for CS4, 1==laser on, 0==laser off
+//122) fixed reward check for left lick tube (lick tube 1) for delay discounting task
+//123) fixed reward check for right lick tube (lick tube 2) for delay discounting task
+//124) reward laser check flag 1==laser, 0==no laser
+//125) ramp max delay to CS1 for ramp timing task
+//126) ramp max delay to CS2 for ramp timing task
+//127) ramp max delay to CS3 for ramp timing task
+//128) ramp max delay to CS4 for ramp timing task
+//129) exponent factor for ramp function for CS1
+//130) exponent factor for ramp function for CS2
+//131) exponent factor for ramp function for CS3
+//132) exponent factor for ramp function for CS4
+//133) frequency increasing or decreasing for CS1
+//134) frequency increasing or decreasing for CS2
+//135) frequency increasing or decreasing for CS3
+//136) frequency increasing or decreasing for CS4
+//137) delay between first cue and second cue onset for CS1
+//138) delay between first cue and second cue onset for CS2
+//139) delay between first cue and second cue onset for CS3
+//140) delay between first cue and second cue onset for CS4
+//141) second cue type for CS1, 1=sound, 2=light, 0=no second cue
+//142) second cue type for CS2, 1=sound, 2=light, 0=no second cue
+//143) second cue type for CS3, 1=sound, 2=light, 0=no second cue
+//144) second cue type for CS4, 1=sound, 2=light, 0=no second cue
+//145) second cue frequency for CS1 if it's sound 
+//146) second cue frequency for CS2 if it's sound 
+//147) second cue frequency for CS3 if it's sound 
+//148) second cue frequency for CS4 if it's sound 
+//149) second cue speaker number for CS1 
+//150) second cue speaker number for CS2
+//151) second cue speaker number for CS3
+//152) second cue speaker number for CS4
+//153) second cue light number for CS1 
+//154) second cue light number for CS2
+//155) second cue light number for CS3
+//156) second cue light number for CS4
 
 #include <math.h>
 #include <avr/wdt.h>
