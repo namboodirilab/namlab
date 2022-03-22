@@ -67,7 +67,7 @@ guidata(hObject, handles);
 
 global actvAx saveDir
 
-mainPath = 'C:\Users\mzhou9\OneDrive - University of California, San Francisco\Behavioral_acquisition_and_analysis';
+mainPath = 'D:\namboodirilab\OneDrive - University of California, San Francisco\Behavioral_acquisition_and_analysis';
 addpath(mainPath)
 saveDir = [mainPath '\data\'];          % where to save data
 
@@ -301,19 +301,19 @@ basecmd = strcat('"C:\Program Files (x86)\Arduino\hardware\tools\avr/bin/avrdude
 selectedmode = get(handles.experimentmode,'Value');
 
 if selectedmode == 1
-    [status,cmdout] = dos(strcat(basecmd,'C:\Users\mzhou9\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_cues.ino.hex',':i'));
+    [status,cmdout] = dos(strcat(basecmd,'D:\uploads\Namlab_behavior_cues.ino.hex',':i'));
 elseif selectedmode == 2
-    [status,cmdout] = dos(strcat(basecmd,'C:\Users\mzhou9\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_randomrewards.ino.hex',':i'));
+    [status,cmdout] = dos(strcat(basecmd,'D:\uploads\Namlab_behavior_randomrewards.ino.hex',':i'));
 elseif selectedmode == 3
-    [status,cmdout] = dos(strcat(basecmd,'C:\Users\mzhou9\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_lickforreward.ino.hex',':i'));
+    [status,cmdout] = dos(strcat(basecmd,'D:\uploads\Namlab_behavior_lickforreward.ino.hex',':i'));
 elseif selectedmode == 4
-    [status,cmdout] = dos(strcat(basecmd,'C:\Users\mzhou9\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_decisionmaking.ino.hex',':i'));
+    [status,cmdout] = dos(strcat(basecmd,'D:\uploads\Namlab_behavior_decisionmaking.ino.hex',':i'));
 elseif selectedmode == 5
-    [status,cmdout] = dos(strcat(basecmd,'C:\Users\mzhou9\Desktop\Behavioral_acquisition_and_analysis\uploads\Serial_port_testing.ino.hex',':i'));
+    [status,cmdout] = dos(strcat(basecmd,'D:\uploads\Serial_port_testing.ino.hex',':i'));
 elseif selectedmode == 6
-    [status,cmdout] = dos(strcat(basecmd,'C:\Users\mzhou9\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_ramptiming.ino.hex',':i'));    
+    [status,cmdout] = dos(strcat(basecmd,'D:\uploads\Namlab_behavior_ramptiming.ino.hex',':i'));    
 elseif selectedmode == 7
-    [status,cmdout] = dos(strcat(basecmd,'C:\Users\mzhou9\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_delaydiscounting_automated.ino.hex',':i'));    
+    [status,cmdout] = dos(strcat(basecmd,'D:\uploads\Namlab_behavior_delaydiscounting_automated.ino.hex',':i'));    
 end
 
 
