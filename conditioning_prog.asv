@@ -963,16 +963,16 @@ try
         params.(paramnames(61)) = param(153:156);                   % CS second cue light number
   
     assignin('base','eventlog',eventlog);
-%     file = [saveDir fname '_' num2str(r_bgd) '_' num2str(T_bgd) '_'  str probstr laserstr bgdsolenoidstr extinctionstr date '.mat'];
-    file = [saveDir fname '_' str date '.mat'];
-%     save(file, 'eventlog', 'params')
-
+    
     % camera
     [frames,time] = getdata(cam, get(cam,'FramesAvailable'));
     video.frames = squeeze(frames);
-    video.times = time;
-    save(file, 'eventlog', 'params','video')
+    video.times = times;
     
+%     file = [saveDir fname '_' num2str(r_bgd) '_' num2str(T_bgd) '_'  str probstr laserstr bgdsolenoidstr extinctionstr date '.mat'];
+    file = [saveDir fname '_' str date '.mat'];
+    save(file, 'eventlog', 'params','video')
+
 catch exception
     if l < logInit
         eventlog = eventlog(1:l,:);
@@ -1117,12 +1117,10 @@ catch exception
         params.(paramnames(60)) = param(149:152);                   % CS second cue speaker number
         params.(paramnames(61)) = param(153:156);                   % CS second cue light number
     end
-    
-%     save(file, 'eventlog', 'params','exception')
-    
     % camera
     [frames,time] = getdata(cam, get(cam,'FramesAvailable'));
     video.frames = squeeze(frames);
-    video.times = time;
-    save(file, 'eventlog', 'params','exception','video')
+    video.times = times;
+    
+        save(file, 'eventlog', 'params','exception','video')
 end
