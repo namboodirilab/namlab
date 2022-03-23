@@ -965,13 +965,13 @@ try
     assignin('base','eventlog',eventlog);
 %     file = [saveDir fname '_' num2str(r_bgd) '_' num2str(T_bgd) '_'  str probstr laserstr bgdsolenoidstr extinctionstr date '.mat'];
     file = [saveDir fname '_' str date '.mat'];
-%     save(file, 'eventlog', 'params')
+    save(file, 'eventlog', 'params')
 
-    % camera
+    % camera: make this part unable if you don't use a camera
     [frames,time] = getdata(cam, get(cam,'FramesAvailable'));
     video.frames = squeeze(frames);
     video.times = time;
-    save(file, 'eventlog', 'params','video')
+    save(file,'video','-append')
     
 catch exception
     if l < logInit
@@ -1118,11 +1118,11 @@ catch exception
         params.(paramnames(61)) = param(153:156);                   % CS second cue light number
     end
     
-%     save(file, 'eventlog', 'params','exception')
+    save(file, 'eventlog', 'params','exception')
     
-    % camera
+    % make this part unable if you don't use camera
     [frames,time] = getdata(cam, get(cam,'FramesAvailable'));
     video.frames = squeeze(frames);
     video.times = time;
-    save(file, 'eventlog', 'params','exception','video')
+    save(file, 'video','-append')
 end
