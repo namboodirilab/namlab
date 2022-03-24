@@ -39,15 +39,15 @@ vacuum = 0;% Counter for vacuums
 cs1 = 0;% Counter for cue 1's
 cs2 = 0;% Counter for cue 2's
 cs3 = 0;% Counter for cue 3's
-cs4 = 0;
+cs4 = 0;% Counter for cue 4's
 light1 = 0;% Counter for light 1's
 light2 = 0;% Counter for light 2's
 light3 = 0;% Counter for light 3's
-light4 = 0;
+light4 = 0;% Counter for light 4's
 both1 = 0;% Counter for both light and cue 1's
 both2 = 0;% Counter for both light and cue 2's
 both3 = 0;% Counter for both light and cue 3's
-both4 = 0;
+both4 = 0;% Counter for both light and cue 4's
 eventlog = zeros(logInit,3);% empty event log for all events 
 l = 0;% Counter for logged events
 fisrtcueonset = NaN;
@@ -370,30 +370,6 @@ try
                      set(handles.lickretractsolenoid2Edit,'String',num2str(lickretractsolenoid2))
                      trial = floor(time/durationtrialpartitionnocues);
                      temptrialdur = trial*durationtrialpartitionnocues;
-                     plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0.97 0.28 0.18],'LineWidth',2);hold on
-                 end
-            end 
-        elseif code == 35                            % Lick retraction solenoid1 and 2; [0.3 0.75 0.93], [0.97 0.28 0.18]
-            if (experimentmode == 1 && intervaldistribution<3) || experimentmode == 4 || experimentmode == 6   
-                if itemflag == 0                      % Indicates trial with solenoid
-                    lickretractsolenoid1 = lickretractsolenoid1 + 1;
-                    lickretractsolenoid2 = lickretractsolenoid2 + 1;     
-                    set(handles.lickretractsolenoid1Edit,'String',num2str(lickretractsolenoid1))
-                    set(handles.lickretractsolenoid2Edit,'String',num2str(lickretractsolenoid2))
-                    tempsolenoidsct(5) = tempsolenoidsct(5)+1;      % keep track of solenoid4 count
-                    tempsolenoids(tempsolenoidsct(5), 5) = time;   % keep track of solenoid4 timestamp                   
-                    tempsolenoidsct(6) = tempsolenoidsct(6)+1;      % keep track of solenoid4 count
-                    tempsolenoids(tempsolenoidsct(6), 6) = time;   % keep track of solenoid4 timestamp
-                end 
-             elseif (experimentmode == 1 && intervaldistribution>2) || experimentmode == 3 || experimentmode == 7
-                 if itemflag == 0
-                     lickretractsolenoid1 = lickretractsolenoid1 + 1;
-                     lickretractsolenoid2 = lickretractsolenoid2 + 1;
-                     set(handles.lickretractsolenoid1Edit,'String',num2str(lickretractsolenoid1))
-                     set(handles.lickretractsolenoid2Edit,'String',num2str(lickretractsolenoid2))
-                     trial = floor(time/durationtrialpartitionnocues);
-                     temptrialdur = trial*durationtrialpartitionnocues;
-                     plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0.3 0.75 0.93],'LineWidth',2);hold on
                      plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0.97 0.28 0.18],'LineWidth',2);hold on
                  end
             end 
