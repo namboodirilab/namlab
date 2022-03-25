@@ -177,6 +177,7 @@ try
         end
 
         % Inputs from Arduino along with their "code" (defined below)
+        %   0 = session end time
         %   1 = Lick1 onset
         %   2 = Lick1 offset
         %   3 = Lick2 onset
