@@ -1013,7 +1013,7 @@ catch exception
     
 %     file = [saveDir fname '_' num2str(r_bgd) '_' num2str(T_bgd) '_'  str probstr laserstr bgdsolenoidstr extinctionstr date '.mat'];
     file = [saveDir '_error_' fname '_' str date '.mat'];
-    if ~isstructure(params)
+%     if ~isstructure(params)
     param = regexprep(params, '+', ' '); 
     param = str2num(param);
 
@@ -1093,7 +1093,6 @@ catch exception
         params.(paramnames(59)) = param(145:148);                   % CS second cue frequency 
         params.(paramnames(60)) = param(149:152);                   % CS second cue speaker number
         params.(paramnames(61)) = param(153:156);                   % CS second cue light number
-    end
     
     save(file, 'eventlog', 'params','exception')
     
