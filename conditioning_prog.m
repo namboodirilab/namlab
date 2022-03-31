@@ -945,10 +945,10 @@ try
     save(file, 'eventlog', 'params')
 
     % camera: make this part unable if you don't use a camera
-    [frames,time] = getdata(cam, get(cam,'FramesAvailable'));
-    video.frames = squeeze(frames);
-    video.times = time;
-    save(file,'video','-append')
+%     [frames,time] = getdata(cam, get(cam,'FramesAvailable'));
+%     video.frames = squeeze(frames);
+%     video.times = time;
+%     save(file,'video','-append')
     
 catch exception
     if l < logInit
@@ -1013,7 +1013,7 @@ catch exception
     
 %     file = [saveDir fname '_' num2str(r_bgd) '_' num2str(T_bgd) '_'  str probstr laserstr bgdsolenoidstr extinctionstr date '.mat'];
     file = [saveDir '_error_' fname '_' str date '.mat'];
-%     if ~isstructure(params)
+    if ~isstruct(params)
     param = regexprep(params, '+', ' '); 
     param = str2num(param);
 
@@ -1095,10 +1095,10 @@ catch exception
         params.(paramnames(61)) = param(153:156);                   % CS second cue light number
     
     save(file, 'eventlog', 'params','exception')
-    
+    end 
     % make this part unable if you don't use camera
-    [frames,time] = getdata(cam, get(cam,'FramesAvailable'));
-    video.frames = squeeze(frames);
-    video.times = time;
-    save(file, 'video','-append')
+%     [frames,time] = getdata(cam, get(cam,'FramesAvailable'));
+%     video.frames = squeeze(frames);
+%     video.times = time;
+%     save(file, 'video','-append')
 end
