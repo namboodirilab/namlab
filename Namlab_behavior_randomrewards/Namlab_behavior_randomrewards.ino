@@ -687,12 +687,12 @@ void setup() {
 
   u = random(0, 10000);
   temp = (float)u / 10000;
-  temp1 = 1-exp(-3); // truncate inter-reward-interval at 3 times the T_bgd
-  temp = temp * temp1;
-  temp = log(1-temp);
+  //temp1 = 1-exp(-3); // truncate inter-reward-interval at 3 times the T_bgd
+  //temp = temp * temp1;
+  //temp = log(1-temp);
   
   if (trialbytrialbgdsolenoidflag == 0) {
-    nextbgdsolenoid = 0 - T_bgd * temp;
+    nextbgdsolenoid = 0 - min(T_bgd * temp,300000); // truncate inter-reward-interval at 5 min (300 s)
   }
   else if (trialbytrialbgdsolenoidflag == 1) {
     nextbgdsolenoid = 0 - T_bgdvec[0] * temp;
@@ -852,10 +852,10 @@ void loop() {
       numbgdsolenoid = numbgdsolenoid + 1;            // Count background solenoids
       u = random(0, 10000);
       temp = (float)u / 10000;
-      temp1 = 1 - exp(-3); // truncate inter-reward-interval at 3 times the T_bgd
-      temp = temp * temp1;
-      temp = log(1-temp);
-      nextbgdsolenoid = ts - T_bgd * temp;
+      //temp1 = 1 - exp(-3); // truncate inter-reward-interval at 3 times the T_bgd
+      //temp = temp * temp1;
+      //temp = log(1-temp);
+      nextbgdsolenoid = ts - min(T_bgd * temp,300000); // truncate inter-reward-interval at 5 min (300 s)
     }
   }
 }
