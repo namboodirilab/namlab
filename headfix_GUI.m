@@ -65,13 +65,10 @@ guidata(hObject, handles);
 %     plot(rand(5));
 % end
 
-global actvAx saveDir cam
+% global actvAx saveDir cam             % to use camera uncomment this
+global actvAx saveDir                   % to use camera comment this
 
-<<<<<<< HEAD
-mainPath = 'C:\Users\namboodirilab\OneDrive - University of California, San Francisco\Behavioral_acquisition_and_analysis';
-=======
 mainPath = 'D:\namboodirilab\OneDrive - University of California, San Francisco\Behavioral_acquisition_and_analysis';
->>>>>>> b0bc5b801c24181be516a0cca9eec053d723a4a0
 addpath(mainPath)
 saveDir = [mainPath '\data\'];          % where to save data
 
@@ -84,14 +81,15 @@ if ~isempty(port)
     set(handles.availablePorts,'String',port)
 end
 
-% Cam
-imaqreset;
-cam = videoinput('winvideo',1, 'YUY2_320x240');
-cam.FramesPerTrigger = Inf;
-cam.ReturnedColorSpace = 'grayscale';
-cam.FrameGrabInterval = 3; % reduce the sampling rate, 30/3 = 10Hz
-preview(cam)
+%% To use camera uncomment this
+% imaqreset;
+% cam = videoinput('winvideo',1, 'YUY2_320x240');
+% cam.FramesPerTrigger = Inf;
+% cam.ReturnedColorSpace = 'grayscale';
+% cam.FrameGrabInterval = 3; % reduce the sampling rate, 30/3 = 10Hz
+% preview(cam)
 
+%%
 % Change window title
 set(gcf,'name','Head-fixed behavior')
 
@@ -313,21 +311,6 @@ basecmd = strcat('"C:\Program Files (x86)\Arduino\hardware\tools\avr/bin/avrdude
 selectedmode = get(handles.experimentmode,'Value');
 
 if selectedmode == 1
-<<<<<<< HEAD
-    [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_cues.ino.hex',':i'));
-elseif selectedmode == 2
-    [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_randomrewards.ino.hex',':i'));
-elseif selectedmode == 3
-    [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_lickforreward.ino.hex',':i'));
-elseif selectedmode == 4
-    [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_decisionmaking.ino.hex',':i'));
-elseif selectedmode == 5
-    [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis\uploads\Serial_port_testing.ino.hex',':i'));
-elseif selectedmode == 6
-    [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_ramptiming.ino.hex',':i'));    
-elseif selectedmode == 7
-    [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_delaydiscounting_automated.ino.hex',':i'));    
-=======
     [status,cmdout] = dos(strcat(basecmd,'D:\uploads\Namlab_behavior_cues.ino.hex',':i'));
 elseif selectedmode == 2
     [status,cmdout] = dos(strcat(basecmd,'D:\uploads\Namlab_behavior_randomrewards.ino.hex',':i'));
@@ -341,7 +324,6 @@ elseif selectedmode == 6
     [status,cmdout] = dos(strcat(basecmd,'D:\uploads\Namlab_behavior_ramptiming.ino.hex',':i'));    
 elseif selectedmode == 7
     [status,cmdout] = dos(strcat(basecmd,'D:\uploads\Namlab_behavior_delaydiscounting_automated.ino.hex',':i'));    
->>>>>>> b0bc5b801c24181be516a0cca9eec053d723a4a0
 end
 
 
@@ -1015,7 +997,7 @@ flushinput(s)
 function startButton_Callback(hObject, eventdata, handles)
 
 % global s running actvAx saveDir
-global s running actvAx saveDir intervaldistribution>2
+global s running actvAx saveDir 
 % Retrieve inputs
 
 % Experiment mode 
@@ -1232,7 +1214,7 @@ params = params(1:end-1);
 disp(params)
 % Run arduino code
 fprintf(s,'0');                          % Signals to Arduino to start the experiment
-start(cam)
+% start(cam)                             % to use camera, uncomment this
 conditioning_prog
 
 % Reset GUI
@@ -1269,11 +1251,12 @@ flushinput(s);                                  % clear serial input buffer
 % --- Executes on button press in stopButton.
 function stopButton_Callback(hObject, eventdata, handles)
 
-% global s running
-global s running cam
+
+global s running 
+% global s running cam      % to use camera comment above line and uncomment this
 running = false;            % Stop running MATLAB code for monitoring arduino
 fprintf(s,'1');              % Send stop signal to arduino; 49 in the Arduino is the ASCII code for 1
-stop(cam);
+% stop(cam);                 % to use camera uncomment this
 
 set(handles.stopButton,'Visible','off')
 % set(handles.stopButton,'Enable','off')             % disable 'start' button
