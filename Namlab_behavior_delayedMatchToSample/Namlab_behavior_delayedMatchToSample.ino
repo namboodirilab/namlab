@@ -337,7 +337,7 @@ unsigned long *cuetime = 0;        // save cue times for poisson reward conditio
 float trialCount[numCS];
 boolean currentTrialCorrect;                 // Is this a correct trial?
 float correctTrial[numCS];
-
+boolean punishFlag = false;               // Is this trial punished?
 
 
 // SETUP code ////////////////
@@ -1132,6 +1132,8 @@ void loop() {
     }
   }
 
+
+
   if (ITIflag && ts >= nextbgdsolenoid && nextbgdsolenoid != 0) { // give background solenoid if you are in ITI
     if (r_bgd > 0) {
       digitalWrite(backgroundsolenoid, HIGH);          // turn on solenoid
@@ -1268,7 +1270,7 @@ void loop() {
             nextcue    = (unsigned long)ts + tempITI; // set timestamp of next cue
           }
           else {
-            nextcue    = (unsigned long)ts + tempITI + maxITI/3; // set timestamp of next cue
+            nextcue    = (unsigned long)ts + tempITI + maxITI / 3; // set timestamp of next cue
           }
         }
         else if (intervaldistribution == 2) {
@@ -1279,7 +1281,7 @@ void loop() {
             nextcue = ts + minITI + tempu; // set timestamp of first cue
           }
           else {
-            nextcue = ts + minITI + tempu + maxITI/3; // set timestamp of first cue
+            nextcue = ts + minITI + tempu + maxITI / 3; // set timestamp of first cue
           }
         }
       }
@@ -1298,7 +1300,7 @@ void loop() {
       // 2543–2560 (2009).
 
 
-      float alpha = 0.5;
+      float alpha = 0.3;
       float wrongFrac[numCS];
       float minProb = 0.1;
       float sumWrongFrac = 0.0;
@@ -1360,6 +1362,22 @@ void loop() {
 
 
       if (CSct > 20) {
+        Serial.print(trialCount[0] + 1);
+        Serial.print(" ");
+        Serial.print(trialCount[1] + 1);
+        Serial.print(" ");
+        Serial.print(trialCount[2] + 1);
+        Serial.print(" ");
+        Serial.print('\n');
+
+        Serial.print(trialCount[3] + 1);
+        Serial.print(" ");
+        Serial.print("NAN");
+        Serial.print(" ");
+        Serial.print("NAN");
+        Serial.print(" ");
+        Serial.print('\n');
+        
         Serial.print(correctTrial[0] + 1);
         Serial.print(" ");
         Serial.print(correctTrial[1] + 1);
@@ -1430,6 +1448,7 @@ void loop() {
       }
     }
   }
+  if (punishFlag) lights_punish();
 }
 
 
@@ -1705,6 +1724,9 @@ void licking() {
     if (golicktube[cueList[CSct]] == 0 && licktubesactive) {
       nextfxdsolenoid = ts;
     }
+    else if (golicktube[cueList[CSct]] == 1 && licktubesactive) {
+      punishFlag = true;
+    }
     licktubesactive = false;
   }
 
@@ -1737,6 +1759,9 @@ void licking() {
     digitalWrite(lickretractsolenoid2, LOW);
     if (golicktube[cueList[CSct]] == 1 && licktubesactive) {
       nextfxdsolenoid = ts;
+    }
+    else if (golicktube[cueList[CSct]] == 0 && licktubesactive) {
+      punishFlag = true;
     }
     licktubesactive = false;
   }
@@ -1774,6 +1799,7 @@ void licking() {
     Serial.print('\n');
   }
 }
+
 
 void frametimestamp() {
   boolean prevframe;
@@ -1856,6 +1882,20 @@ void lights() {
   lickctforreq[1] = 0;
   lickctforreq[2] = 0;
   licktubesactive = true;
+}
+
+void lights_punish() {
+  //  Serial.print(21 + cueList[CSct]);           // code data as light1 ot light2 timestamp
+  //  Serial.print(" ");
+  //  Serial.print(ts);                         // send timestamp of light cue
+  //  Serial.print(" ");
+  //  Serial.print(0);
+  //  Serial.print('\n');
+
+  digitalWrite(light1, HIGH);           // Turn on light when CSdur is bigger than 0
+  digitalWrite(light2, HIGH);           // Turn on light when CSdur is bigger than 0
+  lightOff = ts + maxITI / 3;
+  punishFlag = false;
 }
 
 void software_Reboot()
