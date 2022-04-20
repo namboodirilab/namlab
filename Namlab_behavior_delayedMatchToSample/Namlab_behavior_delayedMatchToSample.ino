@@ -843,6 +843,7 @@ void loop() {
   // 27 = both CSsound3 and CSlight3
   // 30 = frame
   // 31 = laser
+  // 35 = lick retract solenoid 1 and 2
 
 
   // End Session
@@ -862,9 +863,9 @@ void loop() {
   // Deliver cues
 
   if (ts >= nextcue && ((ITIflag && intervaldistribution < 3) || intervaldistribution > 2) && nextcue != 0) {
-    trialCount[cueList[CSct]] += 1.0;
     currentTrialCorrect = false;
     if (secondcue == 0) {
+          trialCount[cueList[CSct]] += 1.0;
       if (CSsignal[cueList[CSct]] == 1) {
         Serial.print(15 + cueList[CSct]);         // code data as CS1, CS2 or CS3 timestamp
         Serial.print(" ");
