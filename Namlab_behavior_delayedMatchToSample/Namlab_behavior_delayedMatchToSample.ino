@@ -338,7 +338,7 @@ float trialCount[numCS];
 boolean currentTrialCorrect;                 // Is this a correct trial?
 float correctTrial[numCS];
 boolean punishFlag = false;               // Is this trial punished?
-
+int biasCorrection = 0;               // Use ERADE?
 
 // SETUP code ////////////////
 void setup() {
@@ -374,7 +374,7 @@ void setup() {
   }
 
 
-  trialCount[0] = 0; trialCount[1] = 0; trialCount[2] = 0; trialCount[3] = 0;
+  trialCount[0] = 1; trialCount[1] = 1; trialCount[2] = 1; trialCount[3] = 1;
   correctTrial[0] = 0; correctTrial[1] = 0; correctTrial[2] = 0; correctTrial[3] = 0;
 
 
@@ -865,7 +865,7 @@ void loop() {
   if (ts >= nextcue && ((ITIflag && intervaldistribution < 3) || intervaldistribution > 2) && nextcue != 0) {
     currentTrialCorrect = false;
     if (secondcue == 0) {
-          trialCount[cueList[CSct]] += 1.0;
+      trialCount[cueList[CSct]] += 1.0;
       if (CSsignal[cueList[CSct]] == 1) {
         Serial.print(15 + cueList[CSct]);         // code data as CS1, CS2 or CS3 timestamp
         Serial.print(" ");
@@ -1311,7 +1311,8 @@ void loop() {
       float sumCorrect = 0.0;
       float trialProb[numCS];
       float correctFraction[numCS];
-      trialProb[0] = 0.25; trialProb[1] = 0.25; trialProb[2] = 0.25; trialProb[3] = 0.25;
+      trialProb[0] = numtrials[0] / totalnumtrials; trialProb[1] = numtrials[1] / totalnumtrials ;
+      trialProb[2] = numtrials[2] / totalnumtrials; trialProb[3] = numtrials[3] / totalnumtrials;
       correctFraction[0] = 0; correctFraction[1] = 0; correctFraction[2] = 0; correctFraction[3] = 0;
 
 
@@ -1362,7 +1363,7 @@ void loop() {
       lickctforreq[2] = 0;                 // reset lick3 count to zero at end of trial
 
 
-      if (CSct > 20) {
+      if (CSct > 5) {
         Serial.print(trialCount[0] + 1);
         Serial.print(" ");
         Serial.print(trialCount[1] + 1);
@@ -1378,7 +1379,7 @@ void loop() {
         Serial.print("NAN");
         Serial.print(" ");
         Serial.print('\n');
-        
+
         Serial.print(correctTrial[0] + 1);
         Serial.print(" ");
         Serial.print(correctTrial[1] + 1);
@@ -1404,27 +1405,37 @@ void loop() {
         Serial.print(" ");
         Serial.print('\n');
 
-        Serial.print(sumCorrect);
+        Serial.print(randlaserflag);
         Serial.print(" ");
         Serial.print(CSct);
         Serial.print(" ");
-        Serial.print(sumWrongFrac);
+        Serial.print(biasCorrection);
         Serial.print(" ");
         Serial.print('\n');
 
+        if (biasCorrection==1) {
 
-        u = random(0, 100);
-        if (u < trialProb[0]) {
-          cueList[CSct] = 0;
-        }
-        else if  (u > trialProb[0] && u < trialProb[0] + trialProb[1]) {
-          cueList[CSct] = 1;
-        }
-        else if  (u > trialProb[0] + trialProb[1] && u < trialProb[0] + trialProb[1] + trialProb[2]) {
-          cueList[CSct] = 2;
-        }
-        else {
-          cueList[CSct] = 3;
+          Serial.print(biasCorrection);
+          Serial.print(" ");
+          Serial.print(biasCorrection);
+          Serial.print(" ");
+          Serial.print(biasCorrection);
+          Serial.print(" ");
+          Serial.print('\n');
+
+          u = random(0, 100);
+          if (u < trialProb[0]) {
+            cueList[CSct] = 0;
+          }
+          else if  (u > trialProb[0] && u < trialProb[0] + trialProb[1]) {
+            cueList[CSct] = 1;
+          }
+          else if  (u > trialProb[0] + trialProb[1] && u < trialProb[0] + trialProb[1] + trialProb[2]) {
+            cueList[CSct] = 2;
+          }
+          else {
+            cueList[CSct] = 3;
+          }
         }
       }
 
@@ -1455,7 +1466,7 @@ void loop() {
 
 // Accept parameters from MATLAB
 void getParams() {
-  int pn = 156;                              // number of parameter inputs
+  int pn = 157;                              // number of parameter inputs
   unsigned long param[pn];                  // parameters
 
   for (int p = 0; p < pn; p++) {
@@ -1600,6 +1611,7 @@ void getParams() {
   CSsecondcuelight[1]            = param[153];
   CSsecondcuelight[2]            = param[154];
   CSsecondcuelight[3]            = param[155];
+  biasCorrection                 = param[156];          // Apply ERADE?
 
   for (int p = 0; p < numCS; p++) {
     CSfreq[p] = CSfreq[p] * 1000;         // convert frequency from kHz to Hz
