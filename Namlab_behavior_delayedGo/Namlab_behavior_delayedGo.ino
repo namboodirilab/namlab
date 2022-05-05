@@ -1350,7 +1350,7 @@ void loop() {
       }
 
       for (int temp = 0; temp < numCS; temp++) {
-        if (numtrials[temp] == 0) {
+        if (numtrials[temp] = 0) {
           trialProb[temp] = 0;
         }
       }
@@ -1370,22 +1370,6 @@ void loop() {
 
 
       if (CSct > 5) {
-        Serial.print(numtrials[0] + 1);
-        Serial.print(" ");
-        Serial.print(numtrials[1] + 1);
-        Serial.print(" ");
-        Serial.print(numtrials[2] + 1);
-        Serial.print(" ");
-        Serial.print('\n');
-
-        Serial.print(numtrials[3] + 1);
-        Serial.print(" ");
-        Serial.print("NAN");
-        Serial.print(" ");
-        Serial.print("NAN");
-        Serial.print(" ");
-        Serial.print('\n');
-
         Serial.print(trialCount[0] + 1);
         Serial.print(" ");
         Serial.print(trialCount[1] + 1);
