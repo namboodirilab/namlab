@@ -1350,6 +1350,12 @@ void loop() {
       }
 
       for (int temp = 0; temp < numCS; temp++) {
+        if (numtrials[temp] = 0) {
+          trialProb[temp] = 0;
+        }
+      }
+
+      for (int temp = 0; temp < numCS; temp++) {
         sumProb += trialProb[temp];
       }
 
@@ -1405,21 +1411,15 @@ void loop() {
         Serial.print(" ");
         Serial.print('\n');
 
-        Serial.print(randlaserflag);
-        Serial.print(" ");
-        Serial.print(CSct);
-        Serial.print(" ");
-        Serial.print(biasCorrection);
-        Serial.print(" ");
-        Serial.print('\n');
 
-        if (biasCorrection==1) {
 
-          Serial.print(biasCorrection);
+        if (biasCorrection == 1) {
+
+          Serial.print(biasCorrection + 1);
           Serial.print(" ");
-          Serial.print(biasCorrection);
+          Serial.print(biasCorrection + 1);
           Serial.print(" ");
-          Serial.print(biasCorrection);
+          Serial.print(biasCorrection + 1);
           Serial.print(" ");
           Serial.print('\n');
 
@@ -1460,7 +1460,7 @@ void loop() {
       }
     }
   }
-  if (punishFlag) lights_punish();
+  //if (punishFlag) lights_punish();
 }
 
 
