@@ -1101,13 +1101,6 @@ void loop() {
         Serial.print('\n');
         correctTrial[cueList[CSct]] += 1.0;
         currentTrialCorrect = true;
-        Serial.print(correctTrial[cueList[CSct]]);
-        Serial.print(" ");
-        Serial.print(correctTrial[cueList[CSct]]);
-        Serial.print(" ");
-        Serial.print(correctTrial[cueList[CSct]]);
-        Serial.print(" ");
-        Serial.print('\n');
       }
       else if (CSopentime[2 * cueList[CSct] + numfxdsolenoids] > 0 && lickctforreq[golicktube[cueList[CSct]]] == 0 && temp2 == -1) {  // -1 on golickreq indicates no-go cue, no licks on the lick tube gives a reward
         digitalWrite(CSsolenoid[2 * cueList[CSct] + numfxdsolenoids], HIGH);      // turn on solenoid
@@ -1369,16 +1362,16 @@ void loop() {
       lickctforreq[2] = 0;                 // reset lick3 count to zero at end of trial
 
 
-      if (CSct > 5) {
-        Serial.print(numtrials[0] + 1);
+      if (CSct > 30) {
+        Serial.print(numtrials[0] +  0.01);
         Serial.print(" ");
-        Serial.print(numtrials[1] + 1);
+        Serial.print(numtrials[1] +  0.01);
         Serial.print(" ");
-        Serial.print(numtrials[2] + 1);
+        Serial.print(numtrials[2] +  0.01);
         Serial.print(" ");
         Serial.print('\n');
 
-        Serial.print(numtrials[3] + 1);
+        Serial.print(numtrials[3] +  0.01);
         Serial.print(" ");
         Serial.print("NAN");
         Serial.print(" ");
@@ -1386,15 +1379,15 @@ void loop() {
         Serial.print(" ");
         Serial.print('\n');
 
-        Serial.print(trialCount[0] + 1);
+        Serial.print(trialCount[0] +  0.01);
         Serial.print(" ");
-        Serial.print(trialCount[1] + 1);
+        Serial.print(trialCount[1] +  0.01);
         Serial.print(" ");
-        Serial.print(trialCount[2] + 1);
+        Serial.print(trialCount[2] +  0.01);
         Serial.print(" ");
         Serial.print('\n');
 
-        Serial.print(trialCount[3] + 1);
+        Serial.print(trialCount[3] + 0.01);
         Serial.print(" ");
         Serial.print("NAN");
         Serial.print(" ");
@@ -1402,26 +1395,26 @@ void loop() {
         Serial.print(" ");
         Serial.print('\n');
 
-        Serial.print(correctTrial[0] + 1);
+        Serial.print(correctTrial[0] + +.01);
         Serial.print(" ");
-        Serial.print(correctTrial[1] + 1);
+        Serial.print(correctTrial[1] + +.01);
         Serial.print(" ");
-        Serial.print(correctTrial[2] + 1);
-        Serial.print(" ");
-        Serial.print('\n');
-
-        Serial.print(correctTrial[3] + 1);
-        Serial.print(" ");
-        Serial.print(trialProb[0]);
-        Serial.print(" ");
-        Serial.print(trialProb[1]);
+        Serial.print(correctTrial[2] + +.01);
         Serial.print(" ");
         Serial.print('\n');
 
-
-        Serial.print(trialProb[2]);
+        Serial.print(correctTrial[3] + +.01);
         Serial.print(" ");
-        Serial.print(trialProb[3]);
+        Serial.print(trialProb[0]+.01);
+        Serial.print(" ");
+        Serial.print(trialProb[1]+.01);
+        Serial.print(" ");
+        Serial.print('\n');
+
+
+        Serial.print(trialProb[2]+.01);
+        Serial.print(" ");
+        Serial.print(trialProb[3]+.01);
         Serial.print(" ");
         Serial.print(sumProb);
         Serial.print(" ");
