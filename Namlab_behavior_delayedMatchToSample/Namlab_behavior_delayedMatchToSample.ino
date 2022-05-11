@@ -1395,15 +1395,15 @@ void loop() {
         Serial.print(" ");
         Serial.print('\n');
 
-        Serial.print(correctTrial[0] + +.01);
+        Serial.print(correctTrial[0] +.01);
         Serial.print(" ");
-        Serial.print(correctTrial[1] + +.01);
+        Serial.print(correctTrial[1] +.01);
         Serial.print(" ");
-        Serial.print(correctTrial[2] + +.01);
+        Serial.print(correctTrial[2] +.01);
         Serial.print(" ");
         Serial.print('\n');
 
-        Serial.print(correctTrial[3] + +.01);
+        Serial.print(correctTrial[3] +.01);
         Serial.print(" ");
         Serial.print(trialProb[0]+.01);
         Serial.print(" ");
@@ -1442,7 +1442,7 @@ void loop() {
           else if  (u > trialProb[0] + trialProb[1] && u < trialProb[0] + trialProb[1] + trialProb[2]) {
             cueList[CSct] = 2;
           }
-          else {
+          else if (u > trialProb[0] + trialProb[1]+trialProb[2]){
             cueList[CSct] = 3;
           }
         }
