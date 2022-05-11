@@ -1369,7 +1369,7 @@ void loop() {
       lickctforreq[2] = 0;                 // reset lick3 count to zero at end of trial
 
 
-      if (CSct > 5) {
+      if (CSct > 30) {
         Serial.print(numtrials[0] + 1);
         Serial.print(" ");
         Serial.print(numtrials[1] + 1);
