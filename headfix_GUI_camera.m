@@ -1,28 +1,28 @@
-function varargout = headfix_GUI(varargin)
-% HEADFIX_GUI MATLAB code for headfix_GUI.fig
-%      HEADFIX_GUI, by itself, creates a new HEADFIX_GUI or raises the existing
+function varargout = headfix_GUI_camera(varargin)
+% HEADFIX_GUI_CAMERA MATLAB code for headfix_GUI_camera.fig
+%      HEADFIX_GUI_CAMERA, by itself, creates a new HEADFIX_GUI_CAMERA or raises the existing
 %      singleton*.
 %
-%      H = HEADFIX_GUI returns the handle to a new HEADFIX_GUI or the handle to
+%      H = HEADFIX_GUI_CAMERA returns the handle to a new HEADFIX_GUI_CAMERA or the handle to
 %      the existing singleton*.
 %
-%      HEADFIX_GUI('CALLBACK',hObject,eventData,handles,...) calls the local
-%      function named CALLBACK in HEADFIX_GUI.M with the given input arguments.
+%      HEADFIX_GUI_CAMERA('CALLBACK',hObject,eventData,handles,...) calls the local
+%      function named CALLBACK in HEADFIX_GUI_CAMERA.M with the given input arguments.
 %
-%      HEADFIX_GUI('Property','Value',...) creates a new HEADFIX_GUI or raises the
+%      HEADFIX_GUI_CAMERA('Property','Value',...) creates a new HEADFIX_GUI_CAMERA or raises the
 %      existing singleton*.  Starting from the left, property value pairs are
-%      applied to the GUI before headfix_GUI_OpeningFcn gets called.  An
+%      applied to the GUI before headfix_GUI_camera_OpeningFcn gets called.  An
 %      unrecognized property name or invalid value makes property application
-%      stop.  All inputs are passed to headfix_GUI_OpeningFcn via varargin.
+%      stop.  All inputs are passed to headfix_GUI_camera_OpeningFcn via varargin.
 %
 %      *See GUI Options on GUIDE's Tools menu.  Choose "GUI allows only one
 %      instance to run (singleton)".
 %
 % See also: GUIDE, GUIDATA, GUIHANDLES
 
-% Edit the above text to modify the response to help headfix_GUI
+% Edit the above text to modify the response to help headfix_GUI_camera
 
-% Last Modified by GUIDE v2.5 07-Feb-2022 12:28:43
+% Last Modified by GUIDE v2.5 10-May-2022 18:58:28
 
 % cd 'F:\acads\Stuber lab\headfix'; %Change to directory
 
@@ -30,8 +30,8 @@ function varargout = headfix_GUI(varargin)
 gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
                    'gui_Singleton',  gui_Singleton, ...
-                   'gui_OpeningFcn', @headfix_GUI_OpeningFcn, ...
-                   'gui_OutputFcn',  @headfix_GUI_OutputFcn, ...
+                   'gui_OpeningFcn', @headfix_GUI_camera_OpeningFcn, ...
+                   'gui_OutputFcn',  @headfix_GUI_camera_OutputFcn, ...
                    'gui_LayoutFcn',  [] , ...
                    'gui_Callback',   []);
 if nargin && ischar(varargin{1})
@@ -45,22 +45,22 @@ else
 end
 % End initialization code - DO NOT EDIT
 
-% --- Executes just before headfix_GUI is made visible.
-function headfix_GUI_OpeningFcn(hObject, eventdata, handles, varargin)
+% --- Executes just before headfix_GUI_camera is made visible.
+function headfix_GUI_camera_OpeningFcn(hObject, eventdata, handles, varargin)
 % This function has no output args, see OutputFcn.
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-% varargin   command line arguments to headfix_GUI (see VARARGIN)
+% varargin   command line arguments to headfix_GUI_camera (see VARARGIN)
 
-% Choose default command line output for headfix_GUI
+% Choose default command line output for headfix_GUI_camera
 handles.output = hObject;
 
 % Update handles structure
 guidata(hObject, handles);
 
 % This sets up the initial plot - only do when we are invisible
-% so window can get raised using headfix_GUI.
+% so window can get raised using headfix_GUI_camera.
 % if strcmp(get(hObject,'Visible'),'off')
 %     plot(rand(5));
 % end
@@ -81,13 +81,13 @@ if ~isempty(port)
     set(handles.availablePorts,'String',port)
 end
 
-% % To use camera uncomment this
-% imaqreset;
-% cam = videoinput('winvideo',1, 'YUY2_320x240');
-% cam.FramesPerTrigger = Inf;
-% cam.ReturnedColorSpace = 'grayscale';
-% cam.FrameGrabInterval = 3; % reduce the sampling rate, 30/3 = 10Hz
-% preview(cam)
+% To use camera uncomment this
+imaqreset;
+cam = videoinput('winvideo',1, 'YUY2_640x480');
+cam.FramesPerTrigger = Inf;
+cam.ReturnedColorSpace = 'grayscale';
+cam.FrameGrabInterval = 3; % reduce the sampling rate, 30/3 = 10Hz
+preview(cam);
 
 %%
 % Change window title
@@ -141,7 +141,7 @@ set(handles.clearlick1rewards, 'Enable','off');
 set(handles.clearlick2rewards, 'Enable','off');
 
 
-% UIWAIT makes headfix_GUI wait for user response (see UIRESUME)
+% UIWAIT makes headfix_GUI_camera wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
 
 % --- Executes during object creation, after setting all properties.
@@ -153,7 +153,7 @@ function figure1_CreateFcn(hObject, eventdata, handles)
 set(hObject,'Units','pixels','Position',[60 80 1500 870])
 
 % --- Outputs from this function are returned to the command line.
-function varargout = headfix_GUI_OutputFcn(hObject, eventdata, handles)
+function varargout = headfix_GUI_camera_OutputFcn(hObject, eventdata, handles)
 % varargout  cell array for returning output args (see VARARGOUT);
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -996,8 +996,8 @@ flushinput(s)
 % --- Executes on button press in startButton.
 function startButton_Callback(hObject, eventdata, handles)
 
-% global s running actvAx saveDir
-global s running actvAx saveDir 
+global s running actvAx saveDir
+% global s running actvAx saveDir cam
 % Retrieve inputs
 
 % Experiment mode 
@@ -1215,7 +1215,7 @@ params = params(1:end-1);
 % Run arduino code
 fprintf(s,'0');                          % Signals to Arduino to start the experiment
 % start(cam)                             % to use camera, uncomment this
-conditioning_prog
+conditioning_prog_camera
 
 % Reset GUI
 set(handles.stopButton,'Visible','off')
@@ -1257,7 +1257,8 @@ global s running
 running = false;            % Stop running MATLAB code for monitoring arduino
 fprintf(s,'1');              % Send stop signal to arduino; 49 in the Arduino is the ASCII code for 1
 % stop(cam);                 % to use camera uncomment this
-
+% preview(cam);
+% 
 set(handles.stopButton,'Visible','off')
 % set(handles.stopButton,'Enable','off')             % disable 'start' button
 set(handles.startButton,'Enable','off')             % disable 'start' button
