@@ -65,8 +65,8 @@ guidata(hObject, handles);
 %     plot(rand(5));
 % end
 
-% global actvAx saveDir cam             % to use camera uncomment this
-global actvAx saveDir                   % to use camera comment this
+global actvAx saveDir cam             % to use camera uncomment this
+% global actvAx saveDir                   % to use camera comment this
 
 mainPath = 'D:\namboodirilab\OneDrive - University of California, San Francisco\Behavioral_acquisition_and_analysis';
 addpath(mainPath)
@@ -87,6 +87,9 @@ cam = videoinput('winvideo',1, 'YUY2_640x480');
 cam.FramesPerTrigger = Inf;
 cam.ReturnedColorSpace = 'grayscale';
 cam.FrameGrabInterval = 3; % reduce the sampling rate, 30/3 = 10Hz
+cam.LoggingMode = 'disk';
+logfile = VideoWriter([saveDir fname '_' str date '.avi'];
+cam.DiskLogger = logfile;
 preview(cam);
 
 %%
@@ -996,8 +999,8 @@ flushinput(s)
 % --- Executes on button press in startButton.
 function startButton_Callback(hObject, eventdata, handles)
 
-global s running actvAx saveDir
-% global s running actvAx saveDir cam
+% global s running actvAx saveDir
+global s running actvAx saveDir cam
 % Retrieve inputs
 
 % Experiment mode 
@@ -1214,7 +1217,7 @@ params = params(1:end-1);
 % disp(params)
 % Run arduino code
 fprintf(s,'0');                          % Signals to Arduino to start the experiment
-% start(cam)                             % to use camera, uncomment this
+start(cam)                             % to use camera, uncomment this
 conditioning_prog_camera
 
 % Reset GUI
@@ -1252,12 +1255,12 @@ flushinput(s);                                  % clear serial input buffer
 function stopButton_Callback(hObject, eventdata, handles)
 
 
-global s running 
-% global s running cam      % to use camera comment above line and uncomment this
+% global s running 
+global s running cam      % to use camera comment above line and uncomment this
 running = false;            % Stop running MATLAB code for monitoring arduino
 fprintf(s,'1');              % Send stop signal to arduino; 49 in the Arduino is the ASCII code for 1
-% stop(cam);                 % to use camera uncomment this
-% preview(cam);
+stop(cam);                 % to use camera uncomment this
+preview(cam);
 % 
 set(handles.stopButton,'Visible','off')
 % set(handles.stopButton,'Enable','off')             % disable 'start' button

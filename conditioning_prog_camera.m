@@ -948,10 +948,10 @@ try
     save(file, 'eventlog', 'params')
 
 %     camera: make this part unable if you don't use a camera
-    [frames,time] = getdata(cam, get(cam,'FramesAvailable'));
-    video.frames = squeeze(frames);
-    video.times = time;
-    save(file,'video','-append')
+%     [frames,time] = getdata(cam, get(cam,'FramesAvailable'));
+%     video.frames = squeeze(frames);
+%     video.times = time;
+%     save(file,'video','-append')
     
 catch exception
     if l < logInit
@@ -1100,8 +1100,8 @@ catch exception
     save(file, 'eventlog', 'params','exception')
     end 
     % make this part unable if you don't use camera
-    [frames,time] = getdata(cam, get(cam,'FramesAvailable'));
-    video.frames = squeeze(frames);
-    video.times = time;
-    save(file, 'video','-append')
+%     [frames,time] = getdata(cam, get(cam,'FramesAvailable'));
+%     video.frames = squeeze(frames);
+%     video.times = time;
+%     save(file, 'video','-append')
 end
