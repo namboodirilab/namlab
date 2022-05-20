@@ -151,7 +151,7 @@ wID = 'MATLAB:serial:fscanf:unsuccessfulRead';      % warning id for serial read
 warning('off',wID)                                  % suppress warning
 
 running = true;                                     % variable to control program
-start(cam);
+% start(cam);
 
 %%
 try
@@ -804,7 +804,7 @@ try
         end
     end
     stop(cam)
-    peview(cam)
+    preview(cam)
     if l < logInit
         eventlog = eventlog(1:l,:);   % smaller eventlog
     end

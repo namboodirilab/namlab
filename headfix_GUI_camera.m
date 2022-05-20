@@ -83,14 +83,21 @@ end
 
 % To use camera uncomment this
 imaqreset;
-cam = videoinput('winvideo',1, 'YUY2_640x480');
+cam = videoinput('winvideo',1, 'YUY2_960x720');
 cam.FramesPerTrigger = Inf;
 cam.ReturnedColorSpace = 'grayscale';
-cam.FrameGrabInterval = 3; % reduce the sampling rate, 30/3 = 10Hz
+cam.FrameGrabInterval = 1; % reduce the sampling rate, 30/1 = 30Hz
 cam.LoggingMode = 'disk';
-logfile = VideoWriter([saveDir fname '_' str date '.avi'];
-cam.DiskLogger = logfile;
+% cam.ROIposition = [100 50 600 500];
 preview(cam);
+
+satisfy = 0;
+while satisfy==0
+    roi = input('roi?');
+    cam.ROIposition = roi;
+    preview(cam);
+    satisfy = input('satisfied? 1:yes, 0:no');
+end
 
 %%
 % Change window title
@@ -174,7 +181,7 @@ function FileMenu_Callback(~, eventdata, handles)
 
 
 % --------------------------------------------------------------------
-function prefs_Callback(hObject, eventdata, handles)
+function prefs_Callback(~, eventdata, handles)
 % hObject    handle to prefs (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
@@ -1198,6 +1205,8 @@ if experimentmode==3 || experimentmode==7
 end
 
 fname = get(handles.fileName,'String');
+format = 'yymmdd-HHMMSS';
+date = datestr(now,format);
 
 params = sprintf('%G+', numtrials, CSfreq, CSsolenoid, CSprob, CSopentime,...
                  CSdur, CS_t_fxd, CSpulse, CSspeaker, golickreq, golicktube, CSsignal,...
@@ -1217,6 +1226,8 @@ params = params(1:end-1);
 % disp(params)
 % Run arduino code
 fprintf(s,'0');                          % Signals to Arduino to start the experiment
+logfile = VideoWriter([saveDir fname '_' date '.avi']);
+cam.DiskLogger = logfile;
 start(cam)                             % to use camera, uncomment this
 conditioning_prog_camera
 
