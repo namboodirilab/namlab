@@ -22,7 +22,7 @@ function varargout = headfix_GUI_camera(varargin)
 
 % Edit the above text to modify the response to help headfix_GUI_camera
 
-% Last Modified by GUIDE v2.5 10-May-2022 18:58:28
+% Last Modified by GUIDE v2.5 20-May-2022 13:48:56
 
 % cd 'F:\acads\Stuber lab\headfix'; %Change to directory
 
@@ -65,8 +65,7 @@ guidata(hObject, handles);
 %     plot(rand(5));
 % end
 
-global actvAx saveDir cam             % to use camera uncomment this
-% global actvAx saveDir                   % to use camera comment this
+global actvAx saveDir cam
 
 mainPath = 'D:\namboodirilab\OneDrive - University of California, San Francisco\Behavioral_acquisition_and_analysis';
 addpath(mainPath)
@@ -81,22 +80,24 @@ if ~isempty(port)
     set(handles.availablePorts,'String',port)
 end
 
-% To use camera uncomment this
-imaqreset;
-cam = videoinput('winvideo',1, 'YUY2_960x720');
-cam.FramesPerTrigger = Inf;
-cam.ReturnedColorSpace = 'grayscale';
-cam.FrameGrabInterval = 1; % reduce the sampling rate, 30/1 = 30Hz
-cam.LoggingMode = 'disk';
-% cam.ROIposition = [100 50 600 500];
-preview(cam);
-
-satisfy = 0;
-while satisfy==0
-    roi = input('roi?');
-    cam.ROIposition = roi;
+% checkboxcamera
+if get(handles.checkboxcamera,'Value')==1
+    imaqreset;
+    cam = videoinput('winvideo',1, 'YUY2_960x720');
+    cam.FramesPerTrigger = Inf;
+    cam.ReturnedColorSpace = 'grayscale';
+    cam.FrameGrabInterval = 1; % reduce the sampling rate by x
+    cam.LoggingMode = 'disk';
+    % cam.ROIposition = [100 50 600 500];
     preview(cam);
-    satisfy = input('satisfied? 1:yes, 0:no');
+    
+    satisfy = 0;
+    while satisfy==0
+        roi = input('roi?');
+        cam.ROIposition = roi;
+        preview(cam);
+        satisfy = input('satisfied? 1:yes, 0:no');
+    end
 end
 
 %%
@@ -1226,9 +1227,12 @@ params = params(1:end-1);
 % disp(params)
 % Run arduino code
 fprintf(s,'0');                          % Signals to Arduino to start the experiment
-logfile = VideoWriter([saveDir fname '_' date '.avi']);
-cam.DiskLogger = logfile;
-start(cam)                             % to use camera, uncomment this
+
+if get(handles.checkboxcamera,'Value')==1
+    logfile = VideoWriter([saveDir fname '_' date '.avi']);
+    logfile.FrameRate = 15;
+    cam.DiskLogger = logfile;
+end
 conditioning_prog_camera
 
 % Reset GUI
@@ -1266,13 +1270,10 @@ flushinput(s);                                  % clear serial input buffer
 function stopButton_Callback(hObject, eventdata, handles)
 
 
-% global s running 
-global s running cam      % to use camera comment above line and uncomment this
+global s running     
 running = false;            % Stop running MATLAB code for monitoring arduino
 fprintf(s,'1');              % Send stop signal to arduino; 49 in the Arduino is the ASCII code for 1
-stop(cam);                 % to use camera uncomment this
-preview(cam);
-% 
+
 set(handles.stopButton,'Visible','off')
 % set(handles.stopButton,'Enable','off')             % disable 'start' button
 set(handles.startButton,'Enable','off')             % disable 'start' button
@@ -1317,3 +1318,12 @@ function minITI_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+
+% --- Executes on button press in checkboxcamera.
+function checkboxcamera_Callback(hObject, eventdata, handles)
+% hObject    handle to checkboxcamera (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of checkboxcamera
