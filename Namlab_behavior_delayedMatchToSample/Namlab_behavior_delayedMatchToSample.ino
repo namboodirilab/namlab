@@ -1099,15 +1099,17 @@ void loop() {
         digitalWrite(CSsolenoid[2 * cueList[CSct] + numfxdsolenoids], HIGH);      // turn on solenoid
         Serial.print(0);                       //   this indicates that the solenoid was actually given
         Serial.print('\n');
-        correctTrial[cueList[CSct]] += 1.0;
-        currentTrialCorrect = true;
-        Serial.print(correctTrial[cueList[CSct]]);
-        Serial.print(" ");
-        Serial.print(correctTrial[cueList[CSct]]);
-        Serial.print(" ");
-        Serial.print(correctTrial[cueList[CSct]]);
-        Serial.print(" ");
-        Serial.print('\n');
+        if (CSsolenoidcode[2 * cueList[CSct] + numfxdsolenoids] == 10) {
+          correctTrial[cueList[CSct]] += 1.0;
+          currentTrialCorrect = true;
+          Serial.print(correctTrial[cueList[CSct]]);
+          Serial.print(" ");
+          Serial.print(correctTrial[cueList[CSct]]);
+          Serial.print(" ");
+          Serial.print(correctTrial[cueList[CSct]]);
+          Serial.print(" ");
+          Serial.print('\n');
+        }
       }
       else if (CSopentime[2 * cueList[CSct] + numfxdsolenoids] > 0 && lickctforreq[golicktube[cueList[CSct]]] == 0 && temp2 == -1) {  // -1 on golickreq indicates no-go cue, no licks on the lick tube gives a reward
         digitalWrite(CSsolenoid[2 * cueList[CSct] + numfxdsolenoids], HIGH);      // turn on solenoid
