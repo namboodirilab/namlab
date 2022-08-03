@@ -1254,8 +1254,8 @@ function stopButton_Callback(hObject, eventdata, handles)
 
 global s running 
 % global s running cam      % to use camera comment above line and uncomment this
-running = false;            % Stop running MATLAB code for monitoring arduino
 fprintf(s,'1');              % Send stop signal to arduino; 49 in the Arduino is the ASCII code for 1
+running = false;            % Stop running MATLAB code for monitoring arduino
 % stop(cam);                 % to use camera uncomment this
 
 set(handles.stopButton,'Visible','off')
