@@ -638,14 +638,6 @@ void loop() {
 
   if ((rewardct[0] >= minrewards[0]) && (rewardct[1] >= minrewards[1]) && (sessionendtime==0)) {
     sessionendtime = ts + 5000;
-    // testing
-    Serial.print(100);
-    Serial.print(" ");
-    Serial.print(ts);
-    Serial.print(" ");
-    Serial.print(sessionendtime);
-    Serial.print('\n');
-    //
   }
 
   if (((ts >= sessionendtime) && (sessionendtime != 0)) || reading == 49) {
