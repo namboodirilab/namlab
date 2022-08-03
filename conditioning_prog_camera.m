@@ -166,7 +166,7 @@ try
         if s.BytesAvailable > 0 % is data available to read? This avoids the timeout problem
             read = fscanf(s,'%f'); % scan for data sent only when data is available
             if cameraon
-                [~,t] = getsnapshot(cam);
+                [f,t] = getsnapshot(cam);
             end
         end
         if isempty(read)
@@ -816,7 +816,7 @@ try
     end
     if cameraon
         stop(cam)
-        preview(cam)
+%         preview(cam)
     end
     if l < logInit
         eventlog = eventlog(1:l,:);   % smaller eventlog
@@ -1119,6 +1119,10 @@ catch exception
         save(file, 'eventlog', 'params', 'exception')
 
         if cameraon
+        stop(cam)
+        reltime = abstime(:,1)*60^2+abstime(:,2)*60+abstime(:,3);
+        reltime = reltime-reltime(1); % convert absolute time to relative time from the first reference frame (unit:s)
+    
          videoframe.framenumber = framenumber;
          videoframe.relativetime = reltime;
          videoframe.absolutetime = abstime;

@@ -80,26 +80,6 @@ if ~isempty(port)
     set(handles.availablePorts,'String',port)
 end
 
-% checkboxcamera
-if get(handles.checkboxcamera,'Value')==1
-    imaqreset;
-    cam = videoinput('winvideo',1, 'YUY2_960x720');
-    cam.FramesPerTrigger = Inf;
-    cam.ReturnedColorSpace = 'grayscale';
-    cam.FrameGrabInterval = 1; % reduce the sampling rate by x
-    cam.LoggingMode = 'disk';
-    % cam.ROIposition = [100 50 600 500];
-    preview(cam);
-    
-    satisfy = 0;
-    while satisfy==0
-        roi = input('roi?');
-        cam.ROIposition = roi;
-        preview(cam);
-        satisfy = input('satisfied? 1:yes, 0:no');
-    end
-end
-
 %%
 % Change window title
 set(gcf,'name','Head-fixed behavior')
@@ -235,7 +215,8 @@ end
 function openButton_Callback(hObject, eventdata, handles)
 % opens serial port (identified by user) for communication with arduino
 
-global s
+global s cam
+
 
 portList = get(handles.availablePorts,'String');    % get list from popup menu
 selected = get(handles.availablePorts,'Value');     % find which is selected
@@ -778,7 +759,30 @@ function sendButton_Callback(hObject, eventdata, handles)
 % hObject    handle to sendButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global s;
+global s cam;
+
+
+% checkboxcamera
+if get(handles.checkboxcamera,'Value')==1
+    imaqreset;
+    cam = videoinput('winvideo',1, 'YUY2_960x720');
+    cam.FramesPerTrigger = Inf;
+    cam.ReturnedColorSpace = 'grayscale';
+    cam.FrameGrabInterval = 1; % reduce the sampling rate by x
+    cam.LoggingMode = 'disk';
+    cam.ROIposition = [400 150 450 400];
+    preview(cam);
+%     
+%     satisfy = 0;
+%     while satisfy==0
+%         satisfy = input('satisfied? 1:yes, 0:no');
+%         if satisfy==1
+%             break;
+%         end
+%         roi = input('roi?');
+%         cam.ROIposition = roi;
+%     end
+end
 
 % Retrieve inputs
 
