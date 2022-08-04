@@ -1738,7 +1738,7 @@ void lights() {
       digitalWrite(CSsecondcuelight[cueList[CSct]], HIGH);
     }
   }
-  lightOff = ts + lightdur;
+  lightOff = ts + CSdur[cueList[CSct]];
   lickctforreq[0] = 0;
   lickctforreq[1] = 0;
   lickctforreq[2] = 0;
