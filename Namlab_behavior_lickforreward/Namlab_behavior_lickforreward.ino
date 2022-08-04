@@ -586,9 +586,13 @@ void setup() {
   lickctforreq[1] = 0;                 // Number of licks2 during cue for first trial is initialized to 0
 
   // UNCOMMENT THESE LINES FOR TRIGGERING IMAGE COLLECTION AT BEGINNING
+  // digitalWrite(ttloutpin, HIGH);
+  // delay(100);
+  // digitalWrite(ttloutpin, LOW);
+  // TILL HERE
+  
+ // UNCOMMENT THESE LINES FOR TRIGGERING PHOTOMETRY IMAGE COLLECTION AT BEGINNING
   digitalWrite(ttloutpin, HIGH);
-  delay(100);
-  digitalWrite(ttloutpin, LOW);
   // TILL HERE
 
   // start session
@@ -632,11 +636,11 @@ void loop() {
   licking();                           // record licking
   frametimestamp();                    // store timestamps of frames
 
-  if (rewardct[0] >= minrewards[0] && rewardct[1] >= minrewards[1] && sessionendtime == 0) {
+  if ((rewardct[0] >= minrewards[0]) && (rewardct[1] >= minrewards[1]) && (sessionendtime==0)) {
     sessionendtime = ts + 5000;
   }
 
-  if ((ts >= sessionendtime && sessionendtime != 0) || reading == 49) {
+  if (((ts >= sessionendtime) && (sessionendtime != 0)) || reading == 49) {
     endSession();
   }
 
@@ -697,6 +701,7 @@ void loop() {
 
     if (lickopentime[licktubethatmetlickreq] > 0 && u < lickprob[licktubethatmetlickreq] && minrewards[licktubethatmetlickreq] > 0) {          // set lick solenoid high
       digitalWrite(licksolenoid[licktubethatmetlickreq], HIGH);
+      digitalWrite(ttloutstoppin, HIGH);
       Serial.print(0);                                // indicates the reward is given
       Serial.print('\n');
     }
@@ -724,6 +729,7 @@ void loop() {
   if (ts >= solenoidOff && solenoidOff != 0) {
     digitalWrite(licksolenoid[licktubethatmetlickreq], LOW);
     solenoidOff = 0;
+    digitalWrite(ttloutstoppin, LOW);
   }
 
   if (ts >= nextvacuum && nextvacuum != 0) {             // set vacuum high
@@ -1252,9 +1258,10 @@ void software_Reboot()
 
 // End session //////////////
 void endSession() {
-  digitalWrite(ttloutstoppin, HIGH);
-  delay(100);
-  digitalWrite(ttloutstoppin, LOW);
+//  digitalWrite(ttloutstoppin, HIGH);
+//  delay(100);
+ // digitalWrite(ttloutstoppin, LOW);
+  digitalWrite(ttloutpin, LOW);
   Serial.print(0);                       //   code data as end of session
   Serial.print(" ");
   Serial.print(ts);                      //   send timestamp

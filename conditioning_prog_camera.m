@@ -48,7 +48,8 @@ both1 = 0;% Counter for both light and cue 1's
 both2 = 0;% Counter for both light and cue 2's
 both3 = 0;% Counter for both light and cue 3's
 both4 = 0;% Counter for both light and cue 4's
-eventlog = zeros(logInit,3);% empty event log for all events 
+[eventlog,abstime] = deal(zeros(logInit,3));% empty event log for all events 
+framenumber = zeros(logInit,1);
 l = 0;% Counter for logged events
 fisrtcueonset = NaN;
 
@@ -150,8 +151,11 @@ drawnow
 wID = 'MATLAB:serial:fscanf:unsuccessfulRead';      % warning id for serial read timeout
 warning('off',wID)                                  % suppress warning
 
+cameraon = get(handles.checkboxcamera,'Value')==1;
+if cameraon
+    start(cam);                                         % start video recording
+end
 running = true;                                     % variable to control program
-start(cam);
 
 %%
 try
@@ -161,6 +165,9 @@ try
         read = [];
         if s.BytesAvailable > 0 % is data available to read? This avoids the timeout problem
             read = fscanf(s,'%f'); % scan for data sent only when data is available
+            if cameraon
+                [f,t] = getsnapshot(cam);
+            end
         end
         if isempty(read)
             drawnow
@@ -168,10 +175,14 @@ try
         end
 
         l = l + 1;
+        if cameraon
+            abstime(l,:) = t.AbsTime(4:6); % absoulte time (hour-minute-second) of reference frame
+            framenumber(l) = t.FrameNumber; % frame number of reference frame
+        end
         eventlog(l,:) = read;                      % maps three things from read (code/time/nosolenoidflag)
         time = read(2);                             % record timestamp
-        
         itemflag = read(3);                     % Indicates solenoid omission: if =1, no solenoid was actually given. Or cue identity: 0=first cue, 1=second cue
+        
         
         code = read(1);                             % read identifier for data
         if code == 0                                % signifies "end of session"
@@ -803,14 +814,22 @@ try
             end
         end
     end
-    stop(cam)
-    peview(cam)
+    if cameraon
+        stop(cam)
+%         preview(cam)
+    end
     if l < logInit
         eventlog = eventlog(1:l,:);   % smaller eventlog
+        if cameraon
+            abstime = abstime(1:l,:);
+            framenumber = framenumber(1:l);
+        end
     end
-    
-
-%% Save data
+    if cameraon
+        reltime = abstime(:,1)*60^2+abstime(:,2)*60+abstime(:,3);
+        reltime = reltime-reltime(1); % convert absolute time to relative time from the first reference frame (unit:s)
+    end
+    %% Save data
 
     format = 'yymmdd-HHMMSS';
     date = datestr(now,format);
@@ -945,13 +964,14 @@ try
     assignin('base','eventlog',eventlog);
 %     file = [saveDir fname '_' num2str(r_bgd) '_' num2str(T_bgd) '_'  str probstr laserstr bgdsolenoidstr extinctionstr date '.mat'];
     file = [saveDir fname '_' str date '.mat'];
-    save(file, 'eventlog', 'params')
+     save(file, 'eventlog', 'params')
 
-%     camera: make this part unable if you don't use a camera
-    [frames,time] = getdata(cam, get(cam,'FramesAvailable'));
-    video.frames = squeeze(frames);
-    video.times = time;
-    save(file,'video','-append')
+     if cameraon
+         videoframe.framenumber = framenumber;
+         videoframe.relativetime = reltime;
+         videoframe.absolutetime = abstime;
+         save(file, 'videoframe', '-append')
+    end
     
 catch exception
     if l < logInit
@@ -1096,12 +1116,17 @@ catch exception
         params.(paramnames(59)) = param(145:148);                   % CS second cue frequency 
         params.(paramnames(60)) = param(149:152);                   % CS second cue speaker number
         params.(paramnames(61)) = param(153:156);                   % CS second cue light number
+        save(file, 'eventlog', 'params', 'exception')
+
+        if cameraon
+        stop(cam)
+        reltime = abstime(:,1)*60^2+abstime(:,2)*60+abstime(:,3);
+        reltime = reltime-reltime(1); % convert absolute time to relative time from the first reference frame (unit:s)
     
-    save(file, 'eventlog', 'params','exception')
+         videoframe.framenumber = framenumber;
+         videoframe.relativetime = reltime;
+         videoframe.absolutetime = abstime;
+         save(file, 'videoframe', '-append')
+        end
     end 
-    % make this part unable if you don't use camera
-    [frames,time] = getdata(cam, get(cam,'FramesAvailable'));
-    video.frames = squeeze(frames);
-    video.times = time;
-    save(file, 'video','-append')
 end
