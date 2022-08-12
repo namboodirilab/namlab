@@ -1100,6 +1100,9 @@ void licking() {
       if (lickctforreq[0] >= 1 && temp <= rewardprobforlick[0] && licktubesactive) {  // Check if lick requirement met
         LickReqMet(0);
       }
+      else if (lickctforreq[0] >= 2*reqlicknum[0] && licktubesactive) {
+        LickReqMet(0);
+      }
     }
   }
 
@@ -1137,6 +1140,9 @@ void licking() {
       if (lickctforreq[1] >= 1 && temp <= rewardprobforlick[1] && licktubesactive) {  // Check if lick requirement met
         LickReqMet(1);
       }
+      else if (lickctforreq[1] >= 2*reqlicknum[1] && licktubesactive) {
+        LickReqMet(1);
+      }
     }
   }
 
@@ -1172,6 +1178,9 @@ void licking() {
       u = random(0, 10000);
       temp = (float)u / 10000;
       if (lickctforreq[2] >= 1 && temp <= rewardprobforlick[2] && licktubesactive) {  // Check if lick requirement met
+        LickReqMet(2);
+      }
+      else if (lickctforreq[2] >= 2*reqlicknum[2] && licktubesactive) {
         LickReqMet(2);
       }
     }
