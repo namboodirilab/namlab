@@ -460,7 +460,7 @@ global s
 fprintf(s, 'P');       % Send lickretractsolenoid signal to arduino; 80 in Arduino is teh ASCII code for P
 
 
-% --- Executes on button press in vacuumButton.
+% --- Executes on button press in Button.
 function vacuumButton_Callback(hObject, eventdata, handles)
 % hObject    handle to vacuumButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -1267,6 +1267,7 @@ set(handles.refreshButton,'Enable','off')           % disable 'refresh' button
 
 set(handles.testcs1, 'Enable', 'off');
 set(handles.testcs2, 'Enable', 'off');
+
 set(handles.testcs3, 'Enable', 'off')
 set(handles.testlaser, 'Enable', 'off');
 set(handles.testserialport, 'Enable', 'off');
