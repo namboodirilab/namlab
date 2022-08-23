@@ -881,6 +881,9 @@ void loop() {
           nextfxdsolenoid = fxdrwtime[fxdrwct];
         }
       }
+      if (CSlasercheck[cueList[CSct]]) {
+        deliverlasertocues();              // check whether to and deliver laser if needed; relative to the first cue of each trial
+        } 
     }
     else if (secondcue == 1) {
       if (CSsecondcue[cueList[CSct]] == 1) {               // if second cue is sound cue, deliver sound
@@ -905,10 +908,7 @@ void loop() {
       nextcue = 0;
       cueover = true;
     }
-
-    if (CSlasercheck[cueList[CSct]]) {
-      deliverlasertocues();              // check whether to and deliver laser if needed
-    }
+    
 
     if (intervaldistribution > 2 && cueover) {
       CSct++;

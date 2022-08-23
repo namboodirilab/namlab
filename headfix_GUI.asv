@@ -905,15 +905,15 @@ if (inputs(37)>0 && inputs(37) < inputs(137)) || inputs(38) < inputs(137)
     errordlg('Invalid inputs')
     error('Invalid inputs: delay to solenoids must be bigger or same with delay to second cue')
 end
-if (inputs(39)>0 && inputs(39) < inputs(138)) || inputs(40) < inputs(138)
+if (inputs(39)>0 && inputs(39) < inputs(138) || inputs(40) < inputs(138)
     errordlg('Invalid inputs')
     error('Invalid inputs: delay to solenoids must be bigger or same with delay to second cue')
 end
-if (inputs(41)>0 && inputs(41) < inputs(139)) || inputs(42) < inputs(139)
+if (inputs(41)>0 && inputs(41) < inputs(139) || inputs(42) < inputs(139)
     errordlg('Invalid inputs')
     error('Invalid inputs: delay to solenoids must be bigger or same with delay to second cue')
 end
-if (inputs(43)>0 && inputs(43) < inputs(140)) || inputs(44) < inputs(140)
+if (inputs(43)>0 && inputs(43) < inputs(140) || inputs(44) < inputs(140)
     errordlg('Invalid inputs')
     error('Invalid inputs: delay to solenoids must be bigger or same with delay to second cue')
 end
