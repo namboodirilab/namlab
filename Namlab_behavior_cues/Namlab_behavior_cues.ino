@@ -1,6 +1,7 @@
 // The original script sets trial-by-trial LASER randomly on 50% of the trials (shuffled) without consideration of whether a trial is CS+ or CS-
 // Here, there are going to be 0.8*numCSminus (=40) CS+ laser trials and 0.8*numCSminus (=40) CS- laser trials with 10 each being laser off.
 // Added on 8/22/2016
+//8/25/22 above 0.8 comment now changed to 0.5
 
 // Records event from pin 'lick' and sends it
 // through serial port as the time of event from the
@@ -633,7 +634,7 @@ void setup() {
     if (a < numtrials[0]) {
       cueList[a] = 0;
       if (lasertrialbytrialflag == 1) {
-        if (a < 0.8 * numtrials[0]) {
+        if (a < 0.5 * numtrials[0]) {
           Laserontrial[a] = 1;
         }
         else {
@@ -644,7 +645,7 @@ void setup() {
     else if (a < numtrials[0] + numtrials[1]) {
       cueList[a] = 1;
       if (lasertrialbytrialflag == 1) {
-        if (a < numtrials[0] + 0.8 * numtrials[1]) {
+        if (a < numtrials[0] + 0.5 * numtrials[1]) {
           Laserontrial[a] = 1;
         }
         else {
@@ -655,7 +656,7 @@ void setup() {
     else if (a < numtrials[0] + numtrials[1] + numtrials[2]) {
       cueList[a] = 2;
       if (lasertrialbytrialflag == 1) {
-        if (a < numtrials[0] + numtrials[1] + 0.8 * numtrials[2]) {
+        if (a < numtrials[0] + numtrials[1] + 0.5 * numtrials[2]) {
           Laserontrial[a] = 1;
         }
         else {
@@ -666,7 +667,7 @@ void setup() {
     else {
       cueList[a] = 3;
       if (lasertrialbytrialflag == 1) {
-        if (a < numtrials[0] + numtrials[1] + 0.8 * numtrials[2] + 0.8 * numtrials[3]) {
+        if (a < numtrials[0] + numtrials[1] + 0.5 * numtrials[2] + 0.5 * numtrials[3]) {
           Laserontrial[a] = 1;
         }
         else {
