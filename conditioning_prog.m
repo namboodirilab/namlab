@@ -160,7 +160,7 @@ try
         if s.BytesAvailable > 0 % is data available to read? This avoids the timeout problem
             read = fscanf(s,'%f'); % scan for data sent only when data is available
         end
-        if isempty(read)
+        if isempty(read) | length(read)<3
             drawnow
             continue
         end
