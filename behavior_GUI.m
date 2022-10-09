@@ -56,7 +56,6 @@ experimentmode.Position = [12 50 170 24];
 % uploadfield = uieditfield(fig,'text','Editable','off','Position', [100 170 150 22]);
 uploadbutton = uibutton('Parent', experiments,'Text', 'Upload','FontSize', 11,...
     'Position', [30 18 140 24], 'ButtonPushedFcn', {@pushUpload,availablePorts,experimentmode,connectbutton});
-%     ,experimentmode,availablePorts,connectbutton});
 
 % unittetx = uilabel(fig, 'Text', '* All time values are in units of ms', 'FontSize',11, 'Position', [570 830 190 30]);
 
@@ -108,7 +107,8 @@ lickproperties = {'Number of licks required',  5, 5;
             'Sound Duration (ms)' 0 1000;
             'Speaker number' 1 2;
             'Light number' 1 2;
-            'Fixed side check', 0, 0};
+            'Fixed side check', 0, 0;
+            'Progressive multiplier', 2, 2};
 lickcolnames = {'Variables', 'Lick1', 'Lick2'};      
 licktable = uitable(fig, 'Data', lickproperties);
 set(licktable, 'columnname', lickcolnames);
@@ -186,46 +186,48 @@ trialbytrialbgdsolenoidflag = uicheckbox('Parent',bgdrpanel, 'Text', 'Run trial-
 
 
 % Test buttons 
-testCS1 = uibutton(fig, 'Text', 'Test CS1', 'FontSize',11, 'Position',[840 610 100 40], 'ButtonPushedFcn', {@testCS1_fcn});
-testCS2 = uibutton(fig, 'Text', 'Test CS2', 'FontSize',11, 'Position',[950 610 100 40], 'ButtonPushedFcn', {@testCS2_fcn});
-testCS3 = uibutton(fig, 'Text', 'Test CS3', 'FontSize',11, 'Position',[1060 610 100 40], 'ButtonPushedFcn', {@testCS3_fcn});
-testCS4 = uibutton(fig, 'Text', 'Test CS4', 'FontSize',11, 'Position',[1170 610 100 40], 'ButtonPushedFcn', {@testCS4_fcn});
-testlaser = uibutton(fig, 'Text', 'Test Laser', 'FontSize',11, 'Position',[1280 610 100 40], 'ButtonPushedFcn', {@testlaser_fcn});
-testvacuum = uibutton(fig, 'Text', 'Test Vacuum', 'FontSize',11, 'Position',[1390 610 100 40], 'ButtonPushedFcn', {@testvacuum_fcn});
+testCS1 = uibutton(fig, 'Text', 'Test CS1', 'FontSize',11, 'Position',[840 610 100 40], 'Enable','off','ButtonPushedFcn', {@testCS1_fcn});
+testCS2 = uibutton(fig, 'Text', 'Test CS2', 'FontSize',11, 'Position',[950 610 100 40], 'Enable','off','ButtonPushedFcn', {@testCS2_fcn});
+testCS3 = uibutton(fig, 'Text', 'Test CS3', 'FontSize',11, 'Position',[1060 610 100 40], 'Enable','off','ButtonPushedFcn', {@testCS3_fcn});
+testCS4 = uibutton(fig, 'Text', 'Test CS4', 'FontSize',11, 'Position',[1170 610 100 40], 'Enable','off','ButtonPushedFcn', {@testCS4_fcn});
+testlaser = uibutton(fig, 'Text', 'Test Laser', 'FontSize',11, 'Position',[1280 610 100 40], 'Enable','off','ButtonPushedFcn', {@testlaser_fcn});
+testvacuum = uibutton(fig, 'Text', 'Test Vacuum', 'FontSize',11, 'Position',[1390 610 100 40], 'Enable','off','ButtonPushedFcn', {@testvacuum_fcn});
 
 solenoid1panel = uipanel(fig, 'Title', 'Solenoid 1','Units','normalized', 'Position', [0.56 0.58 0.105 0.08]);
-manualsolenoid1 = uibutton(solenoid1panel, 'Text','Manual', 'FontSize', 11, 'Position', [15 28 120 20],'ButtonPushedFcn', {@manualsolenoid1_fcn});
-primesolenoid1 = uibutton(solenoid1panel, 'state', 'Text','Prime', 'Value', false, 'FontSize',11, 'Position',[15 5 120 20], 'ValueChangedFcn', {@primesolenoid1_fcn});
-
+manualsolenoid1 = uibutton(solenoid1panel, 'Text','Manual', 'FontSize', 11, 'Enable','off','Position', [15 28 120 20],'ButtonPushedFcn', {@manualsolenoid1_fcn});
+primesolenoid1 = uibutton(solenoid1panel, 'state', 'Text','Prime', 'Value', false, 'FontSize',11, 'Enable','off','Position',[15 5 120 20], 'ValueChangedFcn', {@primesolenoid1_fcn});
 solenoid2panel = uipanel(fig, 'Title', 'Solenoid 2','Units','normalized','Position', [0.56 0.48 0.105 0.08]);
-manualsolenoid2 = uibutton('Parent', solenoid2panel, 'Text','Manual', 'FontSize', 11, 'Position', [15 28 120 20],'ButtonPushedFcn', {@manualsolenoid2_fcn});
-primesolenoid2 = uibutton(solenoid2panel, 'state','Text','prime', 'Value', false, 'FontSize',11, 'Position',[15 5 120 20], 'ValueChangedFcn', {@primesolenoid2_fcn});
-
+manualsolenoid2 = uibutton('Parent', solenoid2panel, 'Text','Manual', 'FontSize', 11, 'Enable','off','Position', [15 28 120 20],'ButtonPushedFcn', {@manualsolenoid2_fcn});
+primesolenoid2 = uibutton(solenoid2panel, 'state','Text','prime', 'Value', false, 'FontSize',11, 'Enable','off','Position',[15 5 120 20], 'ValueChangedFcn', {@primesolenoid2_fcn});
 solenoid3panel = uipanel(fig, 'Title', 'Solenoid 3','Units','normalized','Position', [0.675 0.58 0.105 0.08]);
-manualsolenoid3 = uibutton('Parent', solenoid3panel, 'Text','Manual', 'FontSize', 11, 'Position', [15 28 120 20],'ButtonPushedFcn', {@manualsolenoid3_fcn});
-primesolenoid3 = uibutton(solenoid3panel, 'state','Text','prime', 'Value', false, 'FontSize',11, 'Position',[15 5 120 20], 'ValueChangedFcn', {@primesolenoid3_fcn});
-
+manualsolenoid3 = uibutton('Parent', solenoid3panel, 'Text','Manual', 'FontSize', 11, 'Enable','off','Position', [15 28 120 20],'ButtonPushedFcn', {@manualsolenoid3_fcn});
+primesolenoid3 = uibutton(solenoid3panel, 'state','Text','prime', 'Value', false, 'FontSize',11, 'Enable','off','Position',[15 5 120 20], 'ValueChangedFcn', {@primesolenoid3_fcn});
 solenoid4panel = uipanel(fig, 'Title', 'Solenoid 4','Units','normalized','Position', [0.675 0.48 0.105 0.08]);
-manualsolenoid4 = uibutton('Parent', solenoid4panel, 'Text','Manual', 'FontSize', 11, 'Position', [15 28 120 20],'ButtonPushedFcn', {@manualsolenoid4_fcn});
-primesolenoid4 = uibutton(solenoid4panel, 'state','Text','prime', 'Value', false, 'FontSize',11, 'Position',[15 5 120 20], 'ValueChangedFcn', {@primesolenoid4_fcn});
+manualsolenoid4 = uibutton('Parent', solenoid4panel, 'Text','Manual', 'FontSize', 11, 'Enable','off','Position', [15 28 120 20],'ButtonPushedFcn', {@manualsolenoid4_fcn});
+primesolenoid4 = uibutton(solenoid4panel, 'state','Text','prime', 'Value', false, 'FontSize',11, 'Enable','off','Position',[15 5 120 20], 'ValueChangedFcn', {@primesolenoid4_fcn});
 
 lickretractsolenoid1panel = uipanel(fig, 'Title', 'Lick retract solenoid 1','Units','normalized','Position', [0.79 0.58 0.105 0.08]);
-manuallickretractsolenoid1 = uibutton('Parent', lickretractsolenoid1panel, 'Text','Manual', 'FontSize', 11, 'Position', [15 28 120 20],'ButtonPushedFcn', {@manuallickretractsolenoid1_fcn});
-primelickretractsolenoid1 = uibutton(lickretractsolenoid1panel,'state', 'Text','prime', 'Value', false, 'FontSize',11,'Position',[15 5 120 20], 'ValueChangedFcn', {@primelickretractsolenoid1_fcn});
-
+manuallickretractsolenoid1 = uibutton('Parent', lickretractsolenoid1panel, 'Text','Manual', 'FontSize', 11, 'Enable','off','Position', [15 28 120 20],'ButtonPushedFcn', {@manuallickretractsolenoid1_fcn});
+primelickretractsolenoid1 = uibutton(lickretractsolenoid1panel,'state', 'Text','prime', 'Value', false, 'Enable','off','FontSize',11,'Position',[15 5 120 20], 'ValueChangedFcn', {@primelickretractsolenoid1_fcn});
 lickretractsolenoid2panel = uipanel(fig, 'Title', 'Lick retract solenoid 2','Units','normalized','Position', [0.79 0.48 0.105 0.08]);
-manuallickretractsolenoid2 = uibutton('Parent', lickretractsolenoid2panel, 'Text','Manual', 'FontSize', 11, 'Position', [15 28 120 20],'ButtonPushedFcn', {@manuallickretractsolenoid2_fcn});
-primelickretractsolenoid2 = uibutton(lickretractsolenoid2panel, 'state','Text','prime', 'Enable','on', 'Value', 0, 'FontSize',11, 'Position',[15 5 120 20], 'ValueChangedFcn', {@primelickretractsolenoid2_fcn});
+manuallickretractsolenoid2 = uibutton('Parent', lickretractsolenoid2panel, 'Text','Manual', 'FontSize', 11, 'Enable','off','Position', [15 28 120 20],'ButtonPushedFcn', {@manuallickretractsolenoid2_fcn});
+primelickretractsolenoid2 = uibutton(lickretractsolenoid2panel, 'state','Text','prime', 'Enable','off', 'Value', false, 'FontSize',11, 'Position',[15 5 120 20], 'ValueChangedFcn', {@primelickretractsolenoid2_fcn});
 
 vacuumpanel = uipanel(fig, 'Title', 'Vacuum','Units','normalized','Position', [0.90 0.58 0.095 0.08]);
-manualvacuum = uibutton(vacuumpanel, 'Text', 'Manual', 'FontSize', 11, 'Position', [15 12 120 30]);
+manualvacuum = uibutton(vacuumpanel, 'Text', 'Manual', 'FontSize', 11, 'Enable','off','Position', [15 12 120 30]);
+
+
+% Test buttons
+testbuttons = [testCS1,testCS2,testCS3,testCS4,testlaser,testvacuum,manualsolenoid1,manualsolenoid2,manualsolenoid3,manualsolenoid4,...
+    primesolenoid1,primesolenoid2,primesolenoid3,primesolenoid4,manuallickretractsolenoid1,manuallickretractsolenoid2,...
+    primelickretractsolenoid1, primelickretractsolenoid2, manualvacuum];
 
 % Make plot
 ax = uiaxes(fig, 'Units','normalized','Position', [0.01 0.02 0.55 0.45]);
 actvAx = ax;    % set as global so conditiong_prog can plot
 
 lick1text = uilabel(fig, 'Text', 'Lick1s', 'FontColor', [0.2 0.6 1],'FontWeight','bold', 'FontSize', 12, 'Position', [870 280 40 20]);
-lick1s = uieditfield(fig, 'Position', [920 280 60 30]);
+lick1s = uieditfield(fig, 'numeric','Position', [920 280 60 30], 'Value',0);
 lick2text = uilabel(fig, 'Text', 'Lick2s', 'FontColor', 0.65*[1, 1, 1],'FontWeight','bold', 'FontSize', 12, 'Position', [870 240 40 20]);
 lick2s = uieditfield(fig, 'Position', [920 240 60 30]);
 lick3text = uilabel(fig, 'Text', 'Lick3s', 'FontColor', [0.3 0 0],'FontWeight','bold', 'FontSize', 12, 'Position', [870 200 40 20]);
@@ -258,31 +260,37 @@ solenoid2s = uieditfield(fig, 'Position', [1340 240 60 30]);
 solenoid3text = uilabel(fig, 'Text', 'Solenoid 3', 'FontColor', [1 0.5 0], 'FontWeight','bold', 'FontSize', 12, 'Position', [1270 200 80 20]);
 solenoid3s = uieditfield(fig, 'Position', [1340 200 60 30]);
 solenoid4text = uilabel(fig, 'Text', 'Solenoid 4', 'FontColor', [0.72 0.27 1],'FontWeight','bold', 'FontSize', 12, 'Position', [1270 160 80 20]);
-solenoid5s = uieditfield(fig, 'Position', [1340 160 60 30]);
+solenoid4s = uieditfield(fig, 'Position', [1340 160 60 30]);
 lickretractsolenoid1s = uilabel(fig, 'Text', 'Lick retract solenoid 1', 'FontColor', [0.3 0.75 0.93], 'FontWeight','bold', 'FontSize', 12, 'Position', [930 120 130 20]);
 lickretractsolenoid1text = uieditfield(fig, 'Position', [1060 120 60 30]);  
 lickretractsolenoid2s = uilabel(fig, 'Text', 'Lick retract solenoid 2', 'FontColor',[0.97 0.28 0.18], 'FontWeight','bold', 'FontSize', 12, 'Position', [1210 120 130 20]);
 lickretractsolenoid2text = uieditfield(fig, 'Position', [1340 120 60 30]);
 
 % Send, Start and Stop buttons
-sendbutton = uibutton(fig,'Text','Send','FontSize', 12,'Position',[900 350 120 50],'Enable','off','ButtonPushedFcn', {@pushSend,connectbutton,connectfield,disconnectbutton,refreshbutton});
-startbutton = uibutton(fig,'Text','Start','FontSize', 12,'Position',[1040 350 120 50],'Enable','off','ButtonPushedFcn', {@pushStart,filenamefield});
 stopbutton = uibutton(fig,'Text','Stop','FontSize', 12,'Position',[1180 350 120 50],'Enable','off','ButtonPushedFcn', {@pushStop});
+startbutton = uibutton(fig,'Text','Start','FontSize', 12,'Position',[1040 350 120 50],'Enable','off','ButtonPushedFcn', {@pushStart, ...
+    testbuttons,stopbutton,filenamefield,csproperties, lickproperties,experimentmode,...
+    randomlaser,trialbytriallaser,laserwrtcue,laserduration,laserpulseon,laserpulseoff,Rewardlasercheck,...
+    CS1lasercheck,CS2lasercheck,CS3lasercheck,CS4lasercheck,intervaldistribution,maxdelaycuetobacuum,meanITI,minITI,maxITI,...
+    bgdsolenoid,r_bgd,T_bgd,mindelaybgdtocue,mindelayfxdtobgd,totPoisssolenoid,trialbytrialbgdsolenoidflag});
+sendbutton = uibutton(fig,'Text','Send','FontSize', 12,'Position',[900 350 120 50],'Enable','off','ButtonPushedFcn', {@pushSend,connectbutton,...
+    connectfield,disconnectbutton,refreshbutton,startbutton,cstable, licktable, csproperties, lickproperties,experimentmode,...
+    randomlaser,trialbytriallaser,laserwrtcue,laserduration,laserpulseon,laserpulseoff,Rewardlasercheck,...
+    CS1lasercheck,CS2lasercheck,CS3lasercheck,CS4lasercheck,intervaldistribution,maxdelaycuetobacuum,meanITI,minITI,maxITI,...
+    bgdsolenoid,r_bgd,T_bgd,mindelaybgdtocue,mindelayfxdtobgd,totPoisssolenoid,trialbytrialbgdsolenoidflag});
 
-set(stopbutton,'ButtonPushedFcn', {@pushStop,startbutton,filenamefield});
 set(uploadbutton,'ButtonPushedFcn', {@pushUpload,availablePorts,uploadbutton,experimentmode,connectbutton});
 set(connectbutton,'ButtonPushedFcn', {@pushConnect,connectbutton,availablePorts,connectfield,disconnectbutton,refreshbutton,sendbutton,experimentmode,...
-    cstable,licktable,bgdrpanel});
-set(disconnectbutton,'ButtonPushedFcn', {@pushDisconnect,connectbutton,connectfield,refreshbutton,availablePorts,sendbutton,disconnectbutton});
+    cstable,licktable});
+set(disconnectbutton,'ButtonPushedFcn', {@pushDisconnect,connectbutton,connectfield,uploadbutton,refreshbutton,availablePorts});
 
 end
 
-
-function pushUpload(source,events,availablePorts,uploadbutton,experimentmode,connectbutton)%,pushSolenoid3,primeSolenoid3on,primeSolenoid3off,testVacuum,testLaser,testSerialPort,testCue1,testCue2,testCue3,testCue4,testCue5)    port = get(availablePorts,'Value');        % find which is selected
+function pushUpload(source,availablePorts,uploadbutton,experimentmode,connectbutton)%,pushSolenoid3,primeSolenoid3on,primeSolenoid3off,testVacuum,testLaser,testSerialPort,testCue1,testCue2,testCue3,testCue4,testCue5)    port = get(availablePorts,'Value');        % find which is selected
     
     port = get(availablePorts,'Value');        % find which is selected
     basecmd = strcat('"C:\Program Files (x86)\Arduino\hardware\tools\avr/bin/avrdude" -C"C:\Program Files (x86)\Arduino\hardware\tools\avr/etc/avrdude.conf" -v -patmega2560 -cwiring -P',port,' -b115200 -D -Uflash:w:');
-    selectedmode = 1;
+    selectedmode = get(experimentmode, 'Value');
     
     if selectedmode == 1
         [status,cmdout] = dos(strcat(basecmd,'C:\Users\mzhou9\Desktop\Behavioral_acquisition_and_analysis_old\uploads\Namlab_behavior_cues.ino.hex',':i'));
@@ -293,11 +301,11 @@ function pushUpload(source,events,availablePorts,uploadbutton,experimentmode,con
     elseif selectedmode == 4
         [status,cmdout] = dos(strcat(basecmd, 'C:\Users\mzhou9\Desktop\Behavioral_acquisition_and_analysis_old\uploads\Namlab_behavior_decisionmaking.ino.hex',':i'));
     elseif selectedmode == 5
-        [status,cmdout] = dos(strcat(basecmd,'C:\Users\mzhou9\Desktop\Behavioral_acquisition_and_analysis_old\uploads\Serial_port_testing.ino.hex',':i'));
+        [status,cmdout] = dos(strcat(basecmd,'C:\Users\mzhou9\Desktop\Behavioral_acquisition_and_analysis_old\uploads\Namlab_behavior_delaydiscounting_automated.ino.hex',':i'));    
+%     elseif selectedmode == 5
+%         [status,cmdout] = dos(strcat(basecmd,'C:\Users\mzhou9\Desktop\Behavioral_acquisition_and_analysis_old\uploads\Serial_port_testing.ino.hex',':i'));
     elseif selectedmode == 6
         [status,cmdout] = dos(strcat(basecmd,'C:\Users\mzhou9\Desktop\Behavioral_acquisition_and_analysis_old\uploads\Namlab_behavior_ramptiming.ino.hex',':i'));    
-    elseif selectedmode == 7
-        [status,cmdout] = dos(strcat(basecmd,'C:\Users\mzhou9\Desktop\Behavioral_acquisition_and_analysis_old\uploads\Namlab_behavior_delaydiscounting_automated.ino.hex',':i'));    
     end
 
     if contains(cmdout, 'avrdude done.') && status==0
@@ -308,12 +316,16 @@ function pushUpload(source,events,availablePorts,uploadbutton,experimentmode,con
     else
         set(uploadbutton, 'Text', 'Unable to upload');
         pause(5);
-        set(uploadButton, 'Text', 'Upload');
+        set(uploadbutton, 'Text', 'Upload');
     end
 end
 
-function pushConnect(source,eventdata,connectbutton,availablePorts,connectfield,disconnectbutton,refreshbutton,sendbutton,experimentmode,cstable,...
-    licktable,bgdrpanel)
+function pushConnect(source,connectbutton,availablePorts,connectfield, ...
+    disconnectbutton,refreshbutton,sendbutton,cstable, licktable,experimentmode,...
+    randomlaser,trialbytriallaser,laserwrtcue,laserduration,laserpulseon,laserpulseoff,Rewardlasercheck,...
+    CS1lasercheck,CS2lasercheck,CS3lasercheck,CS4lasercheck,intervaldistribution, ...
+    maxdelaycuetovacuum,meanITI,minITI,maxITI,bgdsolenoid,r_bgd,T_bgd,mindelaybgdtocue, ...
+    mindelayfxdtobgd,totPoisssolenoid,trialbytrialbgdsolenoidflag) 
     global s
 
     portList = get(availablePorts,'Items');    % get list from popup menu
@@ -329,51 +341,48 @@ function pushConnect(source,eventdata,connectbutton,availablePorts,connectfield,
     set(disconnectbutton,'Enable','on');
     set(refreshbutton,'Enable','off');
     set(sendbutton, 'Enable', 'on');
-        
-    selectedmode = get(experimentmode, 'Value');
-    if selectedmode == 1 || selectedmode == 4 || selectedmode ==6
-        set(sendbutton,'Enable','on') 
-        set(cstable, 'Enable', 'on');
-        set(checkboxtrialbytrial, 'Enable', 'on');
-        set(checkboxrandlaser, 'Enable', 'on');
-        set(lasertrialbytrial, 'Enable', 'on');
-        set(laserlatency, 'Enable', 'on');
+    
+    selectedmode = get(experimentmode,'Value');
+
+    if selectedmode == 1 || selectedmode == 4 || selectedmode == 6   
+        set(cstable,'Enable','on','ColumnEditable',true); %Make table uneditable
+        set(randomlaser, 'Enable', 'on');
+        set(trialbytriallaser, 'Enable', 'on');
+        set(laserwrtcue, 'Enable', 'on');
         set(laserduration, 'Enable', 'on');
-        set(laserpulseperiod, 'Enable', 'on');
-        set(laserpulseoffperiod, 'Enable', 'on');
+        set(laserpulseon, 'Enable', 'on');
+        set(laserpulseoff, 'Enable', 'on');
+        set(Rewardlasercheck, 'Enable', 'on');
         set(CS1lasercheck, 'Enable', 'on');
         set(CS2lasercheck, 'Enable', 'on');
         set(CS3lasercheck, 'Enable', 'on');
         set(CS4lasercheck, 'Enable', 'on');
-        set(Rewardlasercheck, 'Enable', 'on');
-        set(checkboxintervaldistribution, 'Enable', 'on');
+        set(intervaldistribution, 'Enable', 'on');
         set(maxdelaycuetovacuum, 'Enable', 'on');
         set(meanITI, 'Enable', 'on');
-        set(maxITI, 'Enable', 'on');
         set(minITI, 'Enable', 'on');
-        set(backgroundsolenoid, 'Enable', 'on');
-        set(T_bgd, 'Enable', 'on');
+        set(maxITI, 'Enable', 'on');
+        set(bgdsolenoid, 'Enable', 'on');
         set(r_bgd, 'Enable', 'on');
-        set(mindelaybgdtocue, 'Enable', 'on'); 
-        set(mindelayfxdtobgd, 'Enable', 'on');    
-    elseif selectedmode == 2
-        set(sendbutton,'Enable','on') 
-        set(bgdrpanel, 'Enable', 'on');
         set(T_bgd, 'Enable', 'on');
-        set(r_bgd, 'Enable', 'on');
-        set(mindelaybgdtocue, 'Enable', 'on'); 
+        set(mindelaybgdtocue, 'Enable', 'on');
         set(mindelayfxdtobgd, 'Enable', 'on');
         set(totPoisssolenoid, 'Enable', 'on');
-    elseif selectedmode == 3 || selectedmode == 7
-        set(sendbutton,'Enable','on') 
-        set(licktable, 'Enable', 'on');
-    elseif selectedmode == 5
-        set(testserialport, 'Enable', 'on');
+        set(trialbytrialbgdsolenoidflag, 'Enable', 'on');
+    elseif selectedmode == 2
+        set(bgdsolenoid, 'Enable', 'on');
+        set(r_bgd, 'Enable', 'on');
+        set(T_bgd, 'Enable', 'on');
+        set(mindelaybgdtocue, 'Enable', 'on');
+        set(mindelayfxdtobgd, 'Enable', 'on');
+        set(totPoisssolenoid, 'Enable', 'on');
+        set(trialbytrialbgdsolenoidflag, 'Enable', 'on');
+    elseif selectedmode == 3 || selectedmode == 5
+        set(licktable,'Enable','on','ColumnEditable',true);
     end
-
 end
 
-function pushDisconnect(source, eventdata,connectbutton,connectfield,refreshbutton,availablePorts,sendbutton,disconnectbutton)
+function pushDisconnect(source, connectbutton,connectfield,uploadbutton,refreshbutton,availablePorts,sendbutton)
     global s
     fclose(s)
     instrreset                                          % "closes serial"
@@ -382,13 +391,13 @@ function pushDisconnect(source, eventdata,connectbutton,connectfield,refreshbutt
     set(connectbutton,'Enable','on');
     set(refreshbutton,'Enable','on');
     set(availablePorts,'Enable','on');
+    set(uploadbutton, 'Enable', 'on');
     set(sendbutton, 'Enable', 'off');
-    set(disconnectbutton, 'Enable', 'off');
 
 end
 
 % --- Executes on button press in refreshButton.
-function pushRefresh(source, eventdata, availablePorts, experimentmode)
+function pushRefresh(source, eventdata, availablePorts)
 
     serialInfo = instrhwinfo('serial');                             % get info on connected serial ports
     port = serialInfo.AvailableSerialPorts;
@@ -404,7 +413,12 @@ end
 
 
 %Send button callback
-function pushSend(source,eventdata,connectbutton,connectfield,disconnectbutton,refreshbutton,startbutton,testbuttons, csproperties, lickproperties) 
+function pushSend(source,disconnectbutton,refreshbutton,startbutton,testbuttons,...
+    cstable, licktable, csproperties, lickproperties,experimentmode,...
+    randomlaser,trialbytriallaser,laserwrtcue,laserduration,laserpulseon,laserpulseoff,Rewardlasercheck,...
+    CS1lasercheck,CS2lasercheck,CS3lasercheck,CS4lasercheck,intervaldistribution,maxdelaycuetovacuum,meanITI,minITI,maxITI,...
+    bgdsolenoid,r_bgd,T_bgd,mindelaybgdtocue,mindelayfxdtobgd,totPoisssolenoid,trialbytrialbgdsolenoidflag) 
+
     global s
     numtrials    = cell2mat(csproperties(1,2:end));
     CSfreq       = cell2mat(csproperties(2,2:end));
@@ -456,12 +470,64 @@ function pushSend(source,eventdata,connectbutton,connectfield,disconnectbutton,r
     lickspeaker     = cell2mat(lickproperties(14,2:end));
     licklight       = cell2mat(lickproperties(15,2:end));
     fixedsidecheck  = cell2mat(lickproperties(16,2:end));
-    
-    verify_inputs
-    
+    progressivemultiplier = cell2mat(lickproperties(17,2:end));
 
-    params = sprintf('%G+',cueprob,cuetype,cuefreq,cuesource,cuedur,cuepulse,ISI,laserpulse,...
-              laserdelay,laserdur,vacdelay,vacdur,sesdur,timedses);
+    experimentmode = get(experimentmode, 'Value');
+
+    % Validate inputs
+    inputs = [numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur, CS_t_fxd,...
+        CSpulse, CSspeaker, golickreq, golicktube, CSsignal, meanITI, maxITI, minITI, intervaldistribution,...
+        bgdsolenoid, T_bgd, r_bgd, mindelaybgdtocue, mindelayfxdtobgd,...
+        experimentmode, trialbytrialbgdsolenoidflag, totPoisssolenoid,...
+        reqlicknum, licksolenoid, lickprob, lickopentime, delaytoreward, delaytolick,...
+        minrewards, signaltolickreq, soundsignalpulse, soundfreq, sounddur, lickspeaker,...
+        laserwrtcue, laserduration, randomlaser, laserpulseon, laserpulseoff,...
+        trialbytriallaser, maxdelaycuetovacuum, CSlight,ratioschedule, intervalschedule,...
+        licklight, CS1lasercheck, CS2lasercheck, CS3lasercheck, CS4lasercheck,...
+        fixedsidecheck, Rewardlasercheck, CSrampmaxdelay, CSrampexp, CSincrease,delayforsecondcue,...
+        secondcuetype, secondcuefreq, secondcuespeaker, secondcuelight, progressivemultiplier]; % collect all inputs into array
+
+    negIn  = inputs < 0;
+    intIn  = inputs - fix(inputs);
+    negIn(53) = 0;
+    negIn(54) = 0;
+    negIn(55) = 0;
+    negIn(56) = 0; % Go lick requirement can be negative for no go task
+
+    if any([negIn intIn])
+        errordlg('Invalid inputs')
+        error('Invalid inputs')
+    end
+    if (inputs(37)>0 && inputs(37) < inputs(137)) || inputs(38) < inputs(137)
+        errordlg('Invalid inputs')
+        error('Invalid inputs: delay to solenoids must be bigger or same with delay to second cue')
+    end
+    if (inputs(39)>0 && inputs(39) < inputs(138)) || inputs(40) < inputs(138)
+        errordlg('Invalid inputs')
+        error('Invalid inputs: delay to solenoids must be bigger or same with delay to second cue')
+    end
+    if (inputs(41)>0 && inputs(41) < inputs(139)) || inputs(42) < inputs(139)
+        errordlg('Invalid inputs')
+        error('Invalid inputs: delay to solenoids must be bigger or same with delay to second cue')
+    end
+    if (inputs(43)>0 && inputs(43) < inputs(140)) || inputs(44) < inputs(140)
+        errordlg('Invalid inputs')
+        error('Invalid inputs: delay to solenoids must be bigger or same with delay to second cue')
+    end
+
+
+    params = sprintf('%G+',numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur, CS_t_fxd,...
+          CSpulse, CSspeaker, golickreq, golicktube, CSsignal, meanITI, maxITI, minITI, intervaldistribution,...
+          bgdsolenoid, T_bgd, r_bgd, mindelaybgdtocue, mindelayfxdtobgd,...
+          experimentmode, trialbytrialbgdsolenoidflag, totPoisssolenoid,...
+          reqlicknum, licksolenoid, lickprob, lickopentime, delaytoreward, delaytolick,...
+          minrewards, signaltolickreq, soundsignalpulse, soundfreq, sounddur, lickspeaker,...
+          laserwrtcue, laserduration, randomlaser, laserpulseon, laserpulseoff,...
+          trialbytriallaser, maxdelaycuetovacuum, CSlight,ratioschedule, intervalschedule,...
+          licklight, CS1lasercheck, CS2lasercheck, CS3lasercheck, CS4lasercheck,...
+          fixedsidecheck, Rewardlasercheck, CSrampmaxdelay, CSrampexp, CSincrease,delayforsecondcue,...
+          secondcuetype, secondcuefreq, secondcuespeaker, secondcuelight, progressivemultiplier);
+
     params = params(1:end-1);
     
     
@@ -470,86 +536,139 @@ function pushSend(source,eventdata,connectbutton,connectfield,disconnectbutton,r
     flushinput(s)
     
     %Make params uneditable
-    set(uit,'Enable','off','ColumnEditable',false); %Make table uneditable
     set(source,'Enable','off');     %Disable Send button
     set(startbutton,'Enable','on'); %Enable start button
-    %set(resetbutton,'Enable','on'); %Enable Reset button
-    set(vacdelayfield,'Enable','off','Editable','off');
-    set(vacdurfield,'Enable','off','Editable','off');
-    set(sesdurbtn,'Enable','off');
-    set(sesdurfield,'Enable','off','Editable','off');
-    set(numrewbtn,'Enable','off');
-    set(numrewfield,'Enable','off','Editable','off');
-    
-    set(connectbutton,'Enable','off');
-    set(connectfield,'Enable','off');
-%     set(disconnectbutton,'Enable','off');
+    set(disconnectbutton,'Enable','on');
     set(refreshbutton,'Enable','off');
     
+    set(cstable,'Enable','off','ColumnEditable',false); %Make table uneditable
+    set(licktable,'Enable','off','ColumnEditable',false); %Make table uneditable
+    set(randomlaser, 'Enable', 'off');
+    set(trialbytriallaser, 'Enable', 'off');
+    set(laserwrtcue, 'Enable', 'off');
+    set(laserduration, 'Enable', 'off');
+    set(laserpulseon, 'Enable', 'off');
+    set(laserpulseoff, 'Enable', 'off');
+    set(Rewardlasercheck, 'Enable', 'off');
+    set(CS1lasercheck, 'Enable', 'off');
+    set(CS2lasercheck, 'Enable', 'off');
+    set(CS3lasercheck, 'Enable', 'off');
+    set(CS4lasercheck, 'Enable', 'off');
+    set(intervaldistribution, 'Enable', 'off');
+    set(maxdelaycuetovacuum, 'Enable', 'off');
+    set(meanITI, 'Enable', 'off');
+    set(minITI, 'Enable', 'off');
+    set(maxITI, 'Enable', 'off');
+    set(bgdsolenoid, 'Enable', 'off');
+    set(r_bgd, 'Enable', 'off');
+    set(T_bgd, 'Enable', 'off');
+    set(mindelaybgdtocue, 'Enable', 'off');
+    set(mindelayfxdtobgd, 'Enable', 'off');
+    set(totPoisssolenoid, 'Enable', 'off');
+    set(trialbytrialbgdsolenoidflag, 'Enable', 'off');
+
     %Turn on testing buttons
     for btn = testbuttons
         set(btn,'Enable','on');
-    end    
-end  
+    end  
 
-function pushReset(source,eventdata,uploadbutton,sendbutton,startbutton) 
-    %Make params editable
-    set(uit,'Enable','on','ColumnEditable',true); %Make table editable
-    set(sendbutton,'Enable','on'); %Enable Send button
-    set(vacdelayfield,'Enable','on','Editable','on');
-    set(vacdurfield,'Enable','on','Editable','on');
-    set(sesdurbtn,'Enable','on');
-    set(sesdurfield,'Enable','on','Editable','on');
-    set(numrewbtn,'Enable','on');
-    set(numrewfield,'Enable','on','Editable','on');
     
-    
-    set(startbutton,'Enable','off');    %Disable start button
-    set(source,'Enable','off');         %Disable Reset button
 end
 
-function pushStart(source,eventdata,uit,vacdelayfield,vacdurfield,sesdurbtn,numrewbtn,sesdurfield,numrewfield,filenamefield,counters,testbuttons,controlbuttons,starttimefield) 
+
+function pushStart(source,eventdata,testbuttons,stopbutton,filenamefield, ...
+    csproperties, lickproperties,experimentmode,randomlaser,trialbytriallaser, ...
+    laserwrtcue,laserduration,laserpulseon,laserpulseoff,Rewardlasercheck,...
+    CS1lasercheck,CS2lasercheck,CS3lasercheck,CS4lasercheck,intervaldistribution, ...
+    maxdelaycuetovacuum,meanITI,minITI,maxITI,bgdsolenoid,r_bgd,T_bgd,mindelaybgdtocue, ...
+    mindelayfxdtobgd,totPoisssolenoid,trialbytrialbgdsolenoidflag)
     
     global s running actvAx saveDir 
+    numtrials    = cell2mat(csproperties(1,2:end));
+    CSfreq       = cell2mat(csproperties(2,2:end));
+    CSsolenoid   = [str2double(split(csproperties(3,2),'+'))',...
+                    str2double(split(csproperties(3,3),'+'))',...
+                    str2double(split(csproperties(3,4),'+'))',...
+                    str2double(split(csproperties(3,5),'+'))'];
+    CSprob       = [str2double(split(csproperties(4,2),'+'))',...
+                    str2double(split(csproperties(4,3),'+'))',...
+                    str2double(split(csproperties(4,4),'+'))',...
+                    str2double(split(csproperties(4,5),'+'))'];
+    CSopentime   = [str2double(split(csproperties(5,2),'+'))',...
+                    str2double(split(csproperties(5,3),'+'))',...
+                    str2double(split(csproperties(5,4),'+'))',...
+                    str2double(split(csproperties(5,5),'+'))'];
+    CSdur        = cell2mat(csproperties(6,2:end));
+    CS_t_fxd     = [str2double(split(csproperties(7,2),'+'))',...
+                    str2double(split(csproperties(7,3),'+'))',...
+                    str2double(split(csproperties(7,4),'+'))',...
+                    str2double(split(csproperties(7,5),'+'))'];
+    CSpulse      = cell2mat(csproperties(8,2:end));
+    CSspeaker    = cell2mat(csproperties(9,2:end));
+    CSlight      = cell2mat(csproperties(10,2:end));
+    golickreq    = cell2mat(csproperties(11,2:end));
+    golicktube   = cell2mat(csproperties(12,2:end));
+    CSsignal     = cell2mat(csproperties(13, 2:end));
+    CSrampmaxdelay = cell2mat(csproperties(14, 2:end));
+    CSrampexp    = cell2mat(csproperties(15,2:end));
+    CSincrease = cell2mat(csproperties(16, 2:end));
+    delayforsecondcue = cell2mat(csproperties(17, 2:end));
+    secondcuetype = cell2mat(csproperties(18, 2:end));
+    secondcuefreq = cell2mat(csproperties(19, 2:end));
+    secondcuespeaker = cell2mat(csproperties(20, 2:end));
+    secondcuelight = cell2mat(csproperties(21,2:end));
     
-    verify_inputs
+    reqlicknum      = cell2mat(lickproperties(1,2:end));
+    ratioschedule = cell2mat(lickproperties(2,2:end));
+    licksolenoid    = cell2mat(lickproperties(3,2:end));
+    lickprob        = cell2mat(lickproperties(4,2:end));
+    lickopentime    = cell2mat(lickproperties(5,2:end));
+    delaytoreward   = cell2mat(lickproperties(6,2:end));
+    delaytolick     = cell2mat(lickproperties(7,2:end));
+    intervalschedule = cell2mat(lickproperties(8,2:end));
+    minrewards      = cell2mat(lickproperties(9,2:end));
+    signaltolickreq = cell2mat(lickproperties(10,2:end));
+    soundsignalpulse   = cell2mat(lickproperties(11,2:end));
+    soundfreq       = cell2mat(lickproperties(12,2:end));
+    sounddur        = cell2mat(lickproperties(13,2:end));
+    lickspeaker     = cell2mat(lickproperties(14,2:end));
+    licklight       = cell2mat(lickproperties(15,2:end));
+    fixedsidecheck  = cell2mat(lickproperties(16,2:end));
+    progressivemultiplier = cell2mat(lickproperties(17,2:end));
+
+    experimentmode = get(experimentmode, 'Value');
     
-    params = sprintf('%G+',cueprob,cuetype,cuefreq,cuesource,cuedur,cuepulse,ISI,laserpulse,...
-              laserdelay,laserdur,vacdelay,vacdur,sesdur,timedses)
-             
+    params = sprintf('%G+',numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur, CS_t_fxd,...
+          CSpulse, CSspeaker, golickreq, golicktube, CSsignal, meanITI, maxITI, minITI, intervaldistribution,...
+          bgdsolenoid, T_bgd, r_bgd, mindelaybgdtocue, mindelayfxdtobgd,...
+          experimentmode, trialbytrialbgdsolenoidflag, totPoisssolenoid,...
+          reqlicknum, licksolenoid, lickprob, lickopentime, delaytoreward, delaytolick,...
+          minrewards, signaltolickreq, soundsignalpulse, soundfreq, sounddur, lickspeaker,...
+          laserwrtcue, laserduration, randomlaser, laserpulseon, laserpulseoff,...
+          trialbytriallaser, maxdelaycuetovacuum, CSlight,ratioschedule, intervalschedule,...
+          licklight, CS1lasercheck, CS2lasercheck, CS3lasercheck, CS4lasercheck,...
+          fixedsidecheck, Rewardlasercheck, CSrampmaxdelay, CSrampexp, CSincrease,delayforsecondcue,...
+          secondcuetype, secondcuefreq, secondcuespeaker, secondcuelight, progressivemultiplier);
+
     params = params(1:end-1);
-
-    %Reset counters to 0
-    for counter = counters
-        set(counter,'Value',0);
-    end
-
-    fname = get(filenamefield,'Value');
     
+    fname = get(filenamefield,'String');
+
     % Run arduino code
-    fprintf(s,'0');   % Signals to Arduino to start the experiment
+    fprintf(s,'0');                          % Signals to Arduino to start the experiment\
+    behavior_prog
+
     set(source,'Enable','off');             %Disable start button
-    set(controlbuttons(1),'Enable','on');   %Enable stop button
-    
-    conditioning_prog_cueseq
-    
-    %Disable control buttons
-    for btn = controlbuttons
-        set(btn,'Enable','off');    %reset, serial port drop down, refresh, connect, upload, file name field, disconnect
-    end
-    
-    
-    
+    set(stopbutton,'Visible','on','Enable','on');
     %Turn off testing buttons
     for btn = testbuttons
         set(btn,'Enable','off');
     end
     
-    
     flushinput(s);                                  % clear serial input buffer 
 end
 
-function pushStop(source,eventdata,startbutton,filenamefield) 
+function pushStop(source,eventdata,filenamefield,disconnectbutton) 
     global s running
     running = false;            % Stop running MATLAB code for monitoring arduino
     fprintf(s,'1');             % Send stop signal to arduino; 49 in the Arduino is the ASCII code for 1
@@ -557,7 +676,7 @@ function pushStop(source,eventdata,startbutton,filenamefield)
     set(source,'Enable','off');
     %set(resetbutton,'Enable','on');
     set(filenamefield,'Enable','on','Editable','on');
-    
+    set(disconnectbutton,'Enable','on');
     %Close Serial Port
     fclose(s)
     instrreset                                          % "closes serial"
@@ -674,3 +793,4 @@ function primelickretractsolenoid2_fcn(source, eventdata)
         fprintf(s,'R');              % Send stop solenoid signal to arduino; 70 in the Arduino is the ASCII code for F
     end
 end
+
