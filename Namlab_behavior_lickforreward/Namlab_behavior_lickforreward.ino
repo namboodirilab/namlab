@@ -258,7 +258,7 @@ unsigned long lickprob[numlicktube];
 unsigned long lickopentime[numlicktube];
 unsigned long delaytoreward[numlicktube];
 unsigned long delaytolick[numlicktube];
-unsigned long minrewards[numlicktube];
+int minrewards[numlicktube];
 unsigned long signaltolickreq[numlicktube];
 unsigned long soundsignalpulse[numlicktube];
 unsigned long soundfreq[numlicktube];
@@ -637,7 +637,7 @@ void loop() {
   licking();                           // record licking
   frametimestamp();                    // store timestamps of frames
 
-  if ((rewardct[0] >= minrewards[0]) && (rewardct[1] >= minrewards[1]) && (sessionendtime == 0)) {
+  if ((((rewardct[0]+rewardct[1]) >= (((minrewards[0]+minrewards[1])*3)/2)) || ((rewardct[0] >= minrewards[0]) && (rewardct[1] >= minrewards[1]))) && (sessionendtime == 0)) {
     sessionendtime = ts + 5000;
   }
 
