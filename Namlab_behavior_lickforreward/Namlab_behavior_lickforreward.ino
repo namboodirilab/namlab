@@ -291,6 +291,8 @@ unsigned long lightdur       = 500;   // Duration to keep light (signal for lick
 int totalnumtrials = 0;
 int rewardct[numlicktube];                   // number of rewards given for each lick tube in lick dependent experiment
 int licktubethatmetlickreq;      // Lick tube that met the lick requirement
+//int totalrewardct = 0; 
+//int totalminrewards = 0;
 
 unsigned long nextcue;           // timestamp of next trial
 unsigned long nextbgdsolenoid;   // timestamp of next background solenoid onset
@@ -636,10 +638,24 @@ void loop() {
 
   licking();                           // record licking
   frametimestamp();                    // store timestamps of frames
+  //totalrewardct = rewardct[0] + rewardct[1];
+  //totalminrewards = minrewards[0] + minrewards[1];
+  //Serial.print(1111);
 
-  if (((rewardct[0] >= minrewards[0]) && (rewardct[1] >= minrewards[1]) || (rewardct[0]+rewardct[1] >= (minrewards[0]+minrewards[1])*1.5)) && (sessionendtime == 0)) {
+  if ((rewardct[0] >= minrewards[0]) && (rewardct[1] >= minrewards[1]) && (sessionendtime == 0)) {
     sessionendtime = ts + 5000;
   }
+
+  //if ((totalrewardct >= totalminrewards) && (sessionendtime == 0)) {
+  //  Serial.print(totalrewardct);
+  //  Serial.print('\n');
+  //  Serial.print(totalminrewards);
+  //  sessionendtime = ts + 5000;
+  //}
+
+  //if (((rewardct[0] + rewardct[1]) >= round((minrewards[0] + minrewards[1]) * 1.5)) && (sessionendtime == 0)) {
+  //  sessionendtime = ts + 5000;
+  //}
 
   if (((ts >= sessionendtime) && (sessionendtime != 0)) || reading == 49) {
     endSession();
