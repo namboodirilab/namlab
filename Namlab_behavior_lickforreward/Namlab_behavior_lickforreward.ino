@@ -637,7 +637,7 @@ void loop() {
   licking();                           // record licking
   frametimestamp();                    // store timestamps of frames
 
-  if ((rewardct[0] >= minrewards[0]) && (rewardct[1] >= minrewards[1]) && (sessionendtime == 0)) {
+  if (((rewardct[0] >= minrewards[0]) && (rewardct[1] >= minrewards[1]) || (rewardct[0]+rewardct[1] >= (minrewards[0]+minrewards[1])*1.5)) && (sessionendtime == 0)) {
     sessionendtime = ts + 5000;
   }
 
