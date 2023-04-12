@@ -324,6 +324,7 @@ int lickctforreq[3];            // number of licks on lick tubes 1, 2 and 3 duri
 int CSct;                        // number of cues delivered
 int numbgdsolenoid;              // number of background solenoids delivered
 int numfxdsolenoids;             // number of fixed solenoids delivered per cue till now. Useful since same cue can have two delayed solenoids
+int openedSolenoid;
 
 int *cueList = 0;                // Using dynamic allocation for defining the cueList. Be very very careful with memory allocation. All sorts of problems can come about if the program becomes too large. This is done just to be able to set #CSs from MATLAB
 //int elements = 0;
@@ -727,11 +728,12 @@ void loop() {
       nextvacuum = ts + lickopentime[licktubethatmetlickreq] + delaytolick[licktubethatmetlickreq];       // fixed vacuum onset
     }
     solenoidOff = ts + lickopentime[licktubethatmetlickreq];                          // set solenoid off time
+    openedSolenoid = licksolenoid[licktubethatmetlickreq];
     nextfxdsolenoid = 0;
   }
 
   if (ts >= solenoidOff && solenoidOff != 0) {
-    digitalWrite(licksolenoid[licktubethatmetlickreq], LOW);
+    digitalWrite(openedSolenoid, LOW);
     solenoidOff = 0;
     digitalWrite(ttloutstoppin, LOW);
   }
@@ -770,6 +772,7 @@ void loop() {
   if (reading == 65) {                 // MANUAL solenoid 1
     digitalWrite(solenoid1, HIGH);          // turn on solenoid
     solenoidOff = ts + lickopentime[1];              // set solenoid off time
+    openedSolenoid = solenoid1;
     Serial.print(8);                   //   code data as solenoid1 onset timestamp
     Serial.print(" ");
     Serial.print(ts);                  //   send timestamp of solenoid onset
@@ -780,6 +783,7 @@ void loop() {
   if (reading == 68) {                 // MANUAL solenoid 2
     digitalWrite(solenoid2, HIGH);          // turn on solenoid
     solenoidOff = ts + lickopentime[1];              // set solenoid off time
+    openedSolenoid = solenoid2;
     Serial.print(9);                   //   code data as solenoid2 onset timestamp
     Serial.print(" ");
     Serial.print(ts);                  //   send timestamp of solenoid onset
@@ -790,6 +794,7 @@ void loop() {
   if (reading == 71) {                 // MANUAL solenoid 3
     digitalWrite(solenoid3, HIGH);          // turn on solenoid
     solenoidOff = ts + lickopentime[1];              // set solenoid off time
+    openedSolenoid = solenoid3;
     Serial.print(10);                   //   code data as solenoid3 onset timestamp
     Serial.print(" ");
     Serial.print(ts);                  //   send timestamp of solenoid onset
@@ -800,6 +805,7 @@ void loop() {
   if (reading == 74) {                 // MANUAL solenoid 4
     digitalWrite(solenoid4, HIGH);          // turn on solenoid
     solenoidOff = ts + lickopentime[1];              // set solenoid off time
+    openedSolenoid = solenoid4;
     Serial.print(11);                   //   code data as solenoid4 onset timestamp
     Serial.print(" ");
     Serial.print(ts);                  //   send timestamp of solenoid onset
