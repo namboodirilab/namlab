@@ -48,7 +48,7 @@ both1 = 0;% Counter for both light and cue 1's
 both2 = 0;% Counter for both light and cue 2's
 both3 = 0;% Counter for both light and cue 3's
 both4 = 0;% Counter for both light and cue 4's
-eventlog = zeros(logInit,3);% empty event log for all events 
+eventlog = nan(logInit,3);% empty event log for all events 
 l = 0;% Counter for logged events
 fisrtcueonset = NaN;
 
@@ -802,9 +802,10 @@ try
         end
     end
     
-    if l < logInit
-        eventlog = eventlog(1:l,:);   % smaller eventlog
-    end
+    eventlog = rmmissing(eventlog);
+%     if l < logInit
+%         eventlog = eventlog(1:l,:);   % smaller eventlog
+%     end
     
 
 %% Save data
@@ -951,10 +952,12 @@ try
 %     save(file,'video','-append')
     
 catch exception
-    if l < logInit
-        eventlog = eventlog(1:l,:);
-    end
+    eventlog = rmmissing(eventlog);
     
+%     if l < logInit
+%         eventlog = eventlog(1:l,:);
+%     end
+%     
     fprintf(s,'1');                                  % send stop signal to arduino; 49 in Arduino is the ASCII code for 1
     disp('Error running program.')
     format = 'yymmdd-HHMMSS';
