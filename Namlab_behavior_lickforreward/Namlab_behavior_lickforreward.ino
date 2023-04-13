@@ -318,7 +318,6 @@ float temp;                      // temporary float variable for temporary opera
 float temp1;                     // temporary float variable for temporary operations
 unsigned long tempu;
 unsigned long tempITI;
-
 int lickctforreq[3];            // number of licks on lick tubes 1, 2 and 3 during the cue-reward delay. If this is >= golickreq for the appropriate golicktube, animals get rewarded after the corresponding cue
 
 int CSct;                        // number of cues delivered
@@ -583,7 +582,7 @@ void setup() {
 
   rewardct[0] = 0;                        // Number of initial rewards for lick tube 1 is initialized to 0
   rewardct[1] = 0;                        // Number of initial rewards for lick tube 2 is initialized to 0
-  sessionendtime = 0;
+  sessionendtime = 45000;              // session will end after 75 min
   lickctforreq[0] = 0;                 // Number of licks1 during cue for first trial is initialized to 0
   lickctforreq[1] = 0;                 // Number of licks2 during cue for first trial is initialized to 0
 
@@ -641,7 +640,7 @@ void loop() {
 //  if ((((rewardct[0]+rewardct[1]) >= (((minrewards[0]+minrewards[1])*3)/2)) || ((rewardct[0] >= minrewards[0]) && (rewardct[1] >= minrewards[1]))) && (sessionendtime == 0)) {
 //    sessionendtime = ts + 5000;
 //  } 
-  sessionendtime = 45000;              // session will end after 75 min
+  
 
   if (((ts >= sessionendtime) && (sessionendtime != 0)) || reading == 49) {
     endSession();
