@@ -582,7 +582,7 @@ void setup() {
 
   rewardct[0] = 0;                        // Number of initial rewards for lick tube 1 is initialized to 0
   rewardct[1] = 0;                        // Number of initial rewards for lick tube 2 is initialized to 0
-  sessionendtime = 45000;              // session will end after 75 min
+  sessionendtime = 0;              // session will end after 75 min
   lickctforreq[0] = 0;                 // Number of licks1 during cue for first trial is initialized to 0
   lickctforreq[1] = 0;                 // Number of licks2 during cue for first trial is initialized to 0
 
@@ -641,10 +641,13 @@ void loop() {
 //    sessionendtime = ts + 5000;
 //  } 
   
-
-  if (((ts >= sessionendtime) && (sessionendtime != 0)) || reading == 49) {
+  if ((ts>=45000) || reading == 49){
     endSession();
   }
+
+//  if (((ts >= sessionendtime) && (sessionendtime != 0)) || reading == 49) {
+//    endSession();
+//  }
 
   if (reading == 89) {                // set lick tube 1 rewards to be zero (no further rewards licking on this licktube
     minrewards[0] = 0;
