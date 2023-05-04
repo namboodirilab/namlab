@@ -662,6 +662,9 @@ void loop() {
     tone(lickspeaker[licktubethatmetlickreq], soundfreq[licktubethatmetlickreq]);
     cuePulseOff = ts + 200;
     cuePulseOn = 0;
+    if (CSlasercheck[licktubethatmetlickreq]){
+      deliverlasertocues();
+    }
   }
   if (ts >= cueOff && cueOff != 0) {              // Turn off cue
     noTone(lickspeaker[licktubethatmetlickreq]);
@@ -674,6 +677,32 @@ void loop() {
     digitalWrite(light1, LOW);
     digitalWrite(light2, LOW);
     lightOff = 0;
+  }
+
+  // Pulse LASER
+  if (ts >= nextlaser && nextlaser != 0) {
+    Serial.print(31);                        // code data as laser timestamp
+    Serial.print(" ");
+    Serial.print(ts);                        // send timestamp of laser
+    Serial.print(" ");
+    Serial.print(0);
+    Serial.print('\n');
+    digitalWrite(laser, HIGH);
+    laserPulseOff = ts + laserpulseperiod;
+    laserOff = ts + laserduration;
+    nextlaser = 0;
+  }
+
+  if (ts >= laserPulseOff && laserPulseOff != 0 && ts < laserOff) {
+    digitalWrite(laser, LOW);                   // turn off laser
+    laserPulseOn = ts + laserpulseoffperiod;
+    laserPulseOff = 0;
+  }
+
+  if (ts >= laserPulseOn && laserPulseOn != 0 && ts < laserOff) {
+    digitalWrite(laser, HIGH);                   // turn on laser
+    laserPulseOn = 0;
+    laserPulseOff = ts + laserpulseperiod;
   }
 
   if (ts >= nextfxdsolenoid && nextfxdsolenoid != 0) {
@@ -1258,6 +1287,12 @@ void cues() {
   }
 
   cueOff  = ts + int(sounddur[licktubethatmetlickreq]);                   // set timestamp of cue cessation
+}
+
+void deliverlasertocues() {
+  if (laserduration > 0) {
+    nextlaser = ts + laserlatency;
+  }
 }
 
 

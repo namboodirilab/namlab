@@ -278,9 +278,30 @@ elseif selectedmode == 2
     set(handles.mindelaybgdtocue, 'Enable', 'on'); 
     set(handles.mindelayfxdtobgd, 'Enable', 'on');
     set(handles.totPoisssolenoid, 'Enable', 'on');
+    set(handles.checkboxtrialbytrial, 'Enable', 'on');
+    set(handles.checkboxrandlaser, 'Enable', 'on');
+    set(handles.lasertrialbytrial, 'Enable', 'on');
+    set(handles.lasertrialbytrial, 'Enable', 'on');
+    set(handles.laserlatency, 'Enable', 'on');
+    set(handles.laserduration, 'Enable', 'on');
+    set(handles.laserpulseperiod, 'Enable', 'on');
+    set(handles.laserpulseoffperiod, 'Enable', 'on');
+    set(handles.CS1lasercheck, 'Enable', 'on');
+    set(handles.CS2lasercheck, 'Enable', 'on');
+    set(handles.CS3lasercheck, 'Enable', 'on');
+    set(handles.CS4lasercheck, 'Enable', 'on');
+    set(handles.Rewardlasercheck, 'Enable', 'on');
 elseif selectedmode == 3 || selectedmode == 7
     set(handles.sendButton,'Enable','on') 
     set(handles.lickproperties, 'Enable', 'on');
+    set(handles.laserlatency, 'Enable', 'on');
+    set(handles.laserduration, 'Enable', 'on');
+    set(handles.laserpulseperiod, 'Enable', 'on');
+    set(handles.laserpulseoffperiod, 'Enable', 'on');
+    set(handles.CS1lasercheck, 'Enable', 'on');
+    set(handles.CS2lasercheck, 'Enable', 'on');
+    set(handles.CS3lasercheck, 'Enable', 'on');
+    set(handles.CS4lasercheck, 'Enable', 'on');
 elseif selectedmode == 5
     set(handles.testserialport, 'Enable', 'on');
 end
