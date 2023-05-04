@@ -662,9 +662,6 @@ void loop() {
     tone(lickspeaker[licktubethatmetlickreq], soundfreq[licktubethatmetlickreq]);
     cuePulseOff = ts + 200;
     cuePulseOn = 0;
-    if (CSlasercheck[licktubethatmetlickreq]){
-      deliverlasertocues();
-    }
   }
   if (ts >= cueOff && cueOff != 0) {              // Turn off cue
     noTone(lickspeaker[licktubethatmetlickreq]);
@@ -679,32 +676,7 @@ void loop() {
     lightOff = 0;
   }
 
-  // Pulse LASER
-  if (ts >= nextlaser && nextlaser != 0) {
-    Serial.print(31);                        // code data as laser timestamp
-    Serial.print(" ");
-    Serial.print(ts);                        // send timestamp of laser
-    Serial.print(" ");
-    Serial.print(0);
-    Serial.print('\n');
-    digitalWrite(laser, HIGH);
-    laserPulseOff = ts + laserpulseperiod;
-    laserOff = ts + laserduration;
-    nextlaser = 0;
-  }
-
-  if (ts >= laserPulseOff && laserPulseOff != 0 && ts < laserOff) {
-    digitalWrite(laser, LOW);                   // turn off laser
-    laserPulseOn = ts + laserpulseoffperiod;
-    laserPulseOff = 0;
-  }
-
-  if (ts >= laserPulseOn && laserPulseOn != 0 && ts < laserOff) {
-    digitalWrite(laser, HIGH);                   // turn on laser
-    laserPulseOn = 0;
-    laserPulseOff = ts + laserpulseperiod;
-  }
-
+  
   if (ts >= nextfxdsolenoid && nextfxdsolenoid != 0) {
     if (licksolenoid[licktubethatmetlickreq] == solenoid1) {            // setup which solenoid to give for lick onset
       Serial.print(8);                                // code data
@@ -735,6 +707,7 @@ void loop() {
       digitalWrite(ttloutstoppin, HIGH);
       Serial.print(0);                                // indicates the reward is given
       Serial.print('\n');
+      deliverlasertocues();
     }
     else {
       Serial.print(1);                                // indicates no reward given
@@ -759,6 +732,38 @@ void loop() {
     solenoidOff = ts + lickopentime[licktubethatmetlickreq];                          // set solenoid off time
     openedSolenoid = licksolenoid[licktubethatmetlickreq];
     nextfxdsolenoid = 0;
+  }
+  
+  // Pulse LASER
+  if (ts >= nextlaser && nextlaser != 0) {
+    Serial.print(31);                        // code data as laser timestamp
+    Serial.print(" ");
+    Serial.print(ts);                        // send timestamp of laser
+    Serial.print(" ");
+    Serial.print(0);
+    Serial.print('\n');
+    digitalWrite(laser, HIGH);
+    laserPulseOff = ts + laserpulseperiod;
+    laserOff = ts + laserduration;
+    nextlaser = 0;
+  }
+
+  if (ts >= laserPulseOff && laserPulseOff != 0 && ts < laserOff) {
+    digitalWrite(laser, LOW);                   // turn off laser
+    laserPulseOn = ts + laserpulseoffperiod;
+    laserPulseOff = 0;
+  }
+
+  if (ts >= laserPulseOn && laserPulseOn != 0 && ts < laserOff) {
+    digitalWrite(laser, HIGH);                   // turn on laser
+    laserPulseOn = 0;
+    laserPulseOff = ts + laserpulseperiod;
+  }
+
+  // Turn off laser
+  if (ts >= laserOff && laserOff != 0) {   // LASER CESSATION
+    digitalWrite(laser, LOW);              // turn off laser
+    laserOff = 0;
   }
 
   if (ts >= solenoidOff && solenoidOff != 0) {
