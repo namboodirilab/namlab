@@ -310,6 +310,7 @@ unsigned long laserPulseOff;     // timestamp to turn the laser off while pulsin
 unsigned long laserOff;          // timestamp to turn the laser off
 unsigned long CSlasercheck[numCS];    // flag for checking laser or not for each cue
 unsigned long Rewardlasercheck;  // flag for checking laser for reward
+unsigned long Omissionlasercheck; // flag for checking laser for omission
 
 unsigned long u;                 // uniform random number for inverse transform sampling to create an exponential distribution
 unsigned long sessionendtime;    // the time at which session ends. Set to 5s after last fixed solenoid
@@ -1076,15 +1077,24 @@ void loop() {
         digitalWrite(CSsolenoid[2 * cueList[CSct] + numfxdsolenoids], HIGH);      // turn on solenoid
         Serial.print(0);                       //   this indicates that the solenoid was actually given
         Serial.print('\n');
+        if (Rewardlasercheck==1){
+          nextlaser = ts + laserlatency;
+        }
       }
       else if (CSopentime[2 * cueList[CSct] + numfxdsolenoids] > 0 && lickctforreq[golicktube[cueList[CSct]]] == 0 && temp2 == -1) {  // -1 on golickreq indicates no-go cue, no licks on the lick tube gives a reward
         digitalWrite(CSsolenoid[2 * cueList[CSct] + numfxdsolenoids], HIGH);      // turn on solenoid
         Serial.print(0);                       //   this indicates that the solenoid was actually given
         Serial.print('\n');
+        if (Rewardlasercheck==1){
+          nextlaser = ts + laserlatency;
+        }
       }
       else {
         Serial.print(1);                       //   this indicates that the solenoid was not given
         Serial.print('\n');
+        if (Omissionlasercheck==1){
+          nextlaser = ts + laserlatency;
+        }
       }
       solenoidOff = ts + CSopentime[2 * cueList[CSct] + numfxdsolenoids];      // set solenoid off time
       numfxdsolenoids++;                                     // Increase fixed solenoids given till now for this cue
@@ -1101,6 +1111,9 @@ void loop() {
       digitalWrite(CSsolenoid[2 * cueList[fxdrwct] + 1], HIGH);      // turn on solenoid
       Serial.print(0);                       //   this indicates that the solenoid was actually given
       Serial.print('\n');
+      if (Rewardlasercheck==1){
+          nextlaser = ts + laserlatency;
+        }
 
       solenoidOff = ts + CSopentime[2 * cueList[fxdrwct] + 1];      // set solenoid off time
       fxdrwtime[fxdrwct] = 0;
@@ -1122,6 +1135,9 @@ void loop() {
       digitalWrite(CSsolenoid[2 * cueList[fxdrwct] + 1], HIGH);      // turn on solenoid
       Serial.print(0);                       //   this indicates that the solenoid was actually given
       Serial.print('\n');
+      if (Rewardlasercheck==1){
+          nextlaser = ts + laserlatency;
+        }
       solenoidOff = ts + CSopentime[2 * cueList[fxdrwct] + 1];      // set solenoid off time
       if (intervaldistribution == 5) {
         cuetime[fxdrwct] = nextfxdsolenoid + CS_t_fxd[2 * cueList[CSct] + 1];
@@ -1323,7 +1339,7 @@ void loop() {
 
 // Accept parameters from MATLAB
 void getParams() {
-  int pn = 156;                              // number of parameter inputs
+  int pn = 157;                              // number of parameter inputs
   unsigned long param[pn];                  // parameters
 
   for (int p = 0; p < pn; p++) {
@@ -1436,38 +1452,39 @@ void getParams() {
   fixedsidecheck[0]      = param[121];
   fixedsidecheck[1]      = param[122];
   Rewardlasercheck       = param[123];
-  CSrampmaxdelay[0]      = param[124];
-  CSrampmaxdelay[1]      = param[125];
-  CSrampmaxdelay[2]      = param[126];
-  CSrampmaxdelay[3]      = param[127];
-  CSrampexp[0]           = param[128];
-  CSrampexp[1]           = param[129];
-  CSrampexp[2]           = param[130];
-  CSrampexp[3]           = param[131];
-  CSincrease[0]          = param[132];
-  CSincrease[1]          = param[133];
-  CSincrease[2]          = param[134];
-  CSincrease[3]          = param[135];
-  delayforsecondcue[0]   = param[136];        // delay between sound cue and light cue if both present
-  delayforsecondcue[1]   = param[137];
-  delayforsecondcue[2]   = param[138];
-  delayforsecondcue[3]   = param[139];
-  CSsecondcue[0]             = param[140];
-  CSsecondcue[1]             = param[141];
-  CSsecondcue[2]             = param[142];
-  CSsecondcue[3]             = param[143];
-  CSsecondcuefreq[0]         = param[144];
-  CSsecondcuefreq[1]         = param[145];
-  CSsecondcuefreq[2]         = param[146];
-  CSsecondcuefreq[3]         = param[147];
-  CSsecondcuespeaker[0]          = param[148];
-  CSsecondcuespeaker[1]          = param[149];
-  CSsecondcuespeaker[2]          = param[150];
-  CSsecondcuespeaker[3]          = param[151];
-  CSsecondcuelight[0]            = param[152];
-  CSsecondcuelight[1]            = param[153];
-  CSsecondcuelight[2]            = param[154];
-  CSsecondcuelight[3]            = param[155];
+  Omissionlasercheck       = param[124];
+  CSrampmaxdelay[0]      = param[125];
+  CSrampmaxdelay[1]      = param[126];
+  CSrampmaxdelay[2]      = param[127];
+  CSrampmaxdelay[3]      = param[128];
+  CSrampexp[0]           = param[129];
+  CSrampexp[1]           = param[130];
+  CSrampexp[2]           = param[131];
+  CSrampexp[3]           = param[132];
+  CSincrease[0]          = param[133];
+  CSincrease[1]          = param[134];
+  CSincrease[2]          = param[135];
+  CSincrease[3]          = param[136];
+  delayforsecondcue[0]   = param[137];        // delay between sound cue and light cue if both present
+  delayforsecondcue[1]   = param[138];
+  delayforsecondcue[2]   = param[139];
+  delayforsecondcue[3]   = param[140];
+  CSsecondcue[0]             = param[141];
+  CSsecondcue[1]             = param[142];
+  CSsecondcue[2]             = param[143];
+  CSsecondcue[3]             = param[144];
+  CSsecondcuefreq[0]         = param[145];
+  CSsecondcuefreq[1]         = param[146];
+  CSsecondcuefreq[2]         = param[147];
+  CSsecondcuefreq[3]         = param[148];
+  CSsecondcuespeaker[0]          = param[149];
+  CSsecondcuespeaker[1]          = param[150];
+  CSsecondcuespeaker[2]          = param[151];
+  CSsecondcuespeaker[3]          = param[152];
+  CSsecondcuelight[0]            = param[153];
+  CSsecondcuelight[1]            = param[154];
+  CSsecondcuelight[2]            = param[155];
+  CSsecondcuelight[3]            = param[156];
 
   for (int p = 0; p < numCS; p++) {
     CSfreq[p] = CSfreq[p] * 1000;         // convert frequency from kHz to Hz
@@ -1723,6 +1740,8 @@ void deliverlasertocues() {
     }
   }
 }
+
+
 
 void lights() {
   //  Serial.print(21 + cueList[CSct]);           // code data as light1 ot light2 timestamp

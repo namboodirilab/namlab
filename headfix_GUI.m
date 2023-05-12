@@ -22,7 +22,7 @@ function varargout = headfix_GUI(varargin)
 
 % Edit the above text to modify the response to help headfix_GUI
 
-% Last Modified by GUIDE v2.5 07-Feb-2022 12:28:43
+% Last Modified by GUIDE v2.5 11-May-2023 17:23:39
 
 % cd 'F:\acads\Stuber lab\headfix'; %Change to directory
 
@@ -116,6 +116,7 @@ set(handles.CS2lasercheck, 'Enable', 'off');
 set(handles.CS3lasercheck, 'Enable', 'off');
 set(handles.CS4lasercheck, 'Enable', 'off');
 set(handles.Rewardlasercheck, 'Enable', 'off');
+set(handles.Omissionlasercheck, 'Enable', 'off');
 set(handles.checkboxintervaldistribution, 'Enable', 'off');
 set(handles.maxdelaycuetovacuum, 'Enable', 'off');
 set(handles.meanITI, 'Enable', 'off');
@@ -260,6 +261,7 @@ if selectedmode == 1 || selectedmode == 4 || selectedmode ==6
     set(handles.CS3lasercheck, 'Enable', 'on');
     set(handles.CS4lasercheck, 'Enable', 'on');
     set(handles.Rewardlasercheck, 'Enable', 'on');
+    set(handles.Omissionlasercheck, 'Enable', 'on');
     set(handles.checkboxintervaldistribution, 'Enable', 'on');
     set(handles.maxdelaycuetovacuum, 'Enable', 'on');
     set(handles.meanITI, 'Enable', 'on');
@@ -291,6 +293,7 @@ elseif selectedmode == 2
     set(handles.CS3lasercheck, 'Enable', 'on');
     set(handles.CS4lasercheck, 'Enable', 'on');
     set(handles.Rewardlasercheck, 'Enable', 'on');
+    set(handles.Omissionlasercheck, 'Enable', 'on');
 elseif selectedmode == 3 || selectedmode == 7
     set(handles.sendButton,'Enable','on') 
     set(handles.lickproperties, 'Enable', 'on');
@@ -398,6 +401,8 @@ set(handles.CS2lasercheck, 'Enable', 'off');
 set(handles.CS3lasercheck, 'Enable', 'off');
 set(handles.CS4lasercheck, 'Enable', 'off');
 set(handles.Rewardlasercheck, 'Enable', 'off');
+set(handles.Omissionlasercheck, 'Enable', 'off');
+
 set(handles.checkboxintervaldistribution, 'Enable', 'off');
 set(handles.maxdelaycuetovacuum, 'Enable', 'off');
 set(handles.meanITI, 'Enable', 'off');
@@ -897,6 +902,7 @@ CS2lasercheck = get(handles.CS2lasercheck, 'Value');
 CS3lasercheck = get(handles.CS3lasercheck, 'Value');
 CS4lasercheck = get(handles.CS4lasercheck, 'Value');
 Rewardlasercheck = get(handles.Rewardlasercheck, 'Value');
+Omissionlasercheck = get(handles.Omissionlasercheck, 'Value');
 
 % Validate inputs
 inputs = [numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur, CS_t_fxd,...
@@ -908,7 +914,7 @@ inputs = [numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur, CS_t_fxd,...
           laserlatency, laserduration, randlaserflag, laserpulseperiod, laserpulseoffperiod,...
           lasertrialbytrialflag, maxdelaycuetovacuum, CSlight,variableratioflag, variableintervalflag,...
           licklight, CS1lasercheck, CS2lasercheck, CS3lasercheck, CS4lasercheck,...
-          fixedsidecheck, Rewardlasercheck, CSrampmaxdelay, CSrampexp, CSincrease,delayforsecondcue,...
+          fixedsidecheck, Rewardlasercheck, Omissionlasercheck,CSrampmaxdelay, CSrampexp, CSincrease,delayforsecondcue,...
           secondcuetype, secondcuefreq, secondcuespeaker, secondcuelight]; % collect all inputs into array
 
 negIn  = inputs < 0;
@@ -972,6 +978,7 @@ set(handles.CS2lasercheck,'Enable','off');
 set(handles.CS3lasercheck,'Enable','off');
 set(handles.CS4lasercheck,'Enable','off');
 set(handles.Rewardlasercheck,'Enable','off');
+set(handles.Omissionlasercheck,'Enable','off');
 
 set(handles.testcs1,'Enable','on')
 set(handles.testcs2,'Enable','on')
@@ -1007,7 +1014,7 @@ params = sprintf('%G+', numtrials, CSfreq, CSsolenoid, CSprob, CSopentime,...
                  laserpulseoffperiod, lasertrialbytrialflag, maxdelaycuetovacuum, CSlight,...
                  variableratioflag,variableintervalflag,licklight,...
                  CS1lasercheck, CS2lasercheck, CS3lasercheck,CS4lasercheck,fixedsidecheck,...
-                 Rewardlasercheck, CSrampmaxdelay, CSrampexp, CSincrease,delayforsecondcue,...
+                 Rewardlasercheck, Omissionlasercheck, CSrampmaxdelay, CSrampexp, CSincrease,delayforsecondcue,...
                  secondcuetype, secondcuefreq, secondcuespeaker, secondcuelight);
 params = params(1:end-1);
 
@@ -1126,6 +1133,7 @@ CS2lasercheck = get(handles.CS2lasercheck, 'Value');
 CS3lasercheck = get(handles.CS3lasercheck, 'Value');
 CS4lasercheck = get(handles.CS4lasercheck, 'Value');
 Rewardlasercheck = get(handles.Rewardlasercheck, 'Value');
+Omissionlasercheck = get(handles.Omissionlasercheck, 'Value');
 
 % Validate inputs
 inputs = [numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur, CS_t_fxd,...
@@ -1137,7 +1145,7 @@ inputs = [numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur, CS_t_fxd,...
           laserlatency, laserduration, randlaserflag, laserpulseperiod, laserpulseoffperiod,...
           lasertrialbytrialflag, maxdelaycuetovacuum, CSlight,variableratioflag,...
           variableintervalflag,licklight, CS1lasercheck,...
-          CS2lasercheck, CS3lasercheck, CS4lasercheck, fixedsidecheck, Rewardlasercheck,...
+          CS2lasercheck, CS3lasercheck, CS4lasercheck, fixedsidecheck, Rewardlasercheck, Omissionlasercheck,...
           CSrampmaxdelay, CSrampexp, CSincrease, delayforsecondcue,...
           secondcuetype, secondcuefreq, secondcuespeaker, secondcuelight]; % collect all inputs into array
           
@@ -1228,7 +1236,7 @@ params = sprintf('%G+', numtrials, CSfreq, CSsolenoid, CSprob, CSopentime,...
                  laserlatency, laserduration, randlaserflag, laserpulseperiod, laserpulseoffperiod,...
                  lasertrialbytrialflag, maxdelaycuetovacuum, CSlight,variableratioflag,...
                  variableintervalflag,licklight, CS1lasercheck,...
-                 CS2lasercheck, CS3lasercheck,CS4lasercheck, fixedsidecheck, Rewardlasercheck,...
+                 CS2lasercheck, CS3lasercheck,CS4lasercheck, fixedsidecheck, Rewardlasercheck, Omissionlasercheck,...
                  CSrampmaxdelay, CSrampexp, CSincrease, delayforsecondcue,...
                  secondcuetype, secondcuefreq, secondcuespeaker, secondcuelight);
              
