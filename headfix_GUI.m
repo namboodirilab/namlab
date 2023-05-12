@@ -301,10 +301,7 @@ elseif selectedmode == 3 || selectedmode == 7
     set(handles.laserduration, 'Enable', 'on');
     set(handles.laserpulseperiod, 'Enable', 'on');
     set(handles.laserpulseoffperiod, 'Enable', 'on');
-    set(handles.CS1lasercheck, 'Enable', 'on');
-    set(handles.CS2lasercheck, 'Enable', 'on');
-    set(handles.CS3lasercheck, 'Enable', 'on');
-    set(handles.CS4lasercheck, 'Enable', 'on');
+    set(handles.Rewardlasercheck, 'Enable', 'on');
 elseif selectedmode == 5
     set(handles.testserialport, 'Enable', 'on');
 end
