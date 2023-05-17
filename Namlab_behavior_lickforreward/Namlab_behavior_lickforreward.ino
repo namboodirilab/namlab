@@ -124,10 +124,10 @@
 //109) light number for CS2
 //110) light number for CS3
 //111) light number for CS4
-//112) ratio schedule for lick 1s:  0==fixed, 1=variable, 2=progressive
-//113) ratio schedule for lick 1s:  0==fixed, 1=variable, 2=progressive
-//114) interval schedule for lick 1s: 0==fixed, 1=variable, 2=progressive
-//115) interval schedule for lick 1s: 0==fixed, 1=variable, 2=progressive
+//112) variable ratio check for lick 1s. 1==variable, 0==fixed
+//113) variable ratio check for lick 2s. 1==variable, 0==fixed
+//114) variable interval flag for lick 1s. 1==variable, 0==fixed
+//115) variable interval flag for lick 2s. 1==variable, 0==fixed
 //116) light number for lick 1
 //117) light number for lick 2
 //118) laser on flag for CS1, 1==laser on, 0==laser off
@@ -157,15 +157,15 @@
 //142) second cue type for CS2, 1=sound, 2=light, 0=no second cue
 //143) second cue type for CS3, 1=sound, 2=light, 0=no second cue
 //144) second cue type for CS4, 1=sound, 2=light, 0=no second cue
-//145) second cue frequency for CS1 if it's sound
-//146) second cue frequency for CS2 if it's sound
-//147) second cue frequency for CS3 if it's sound
-//148) second cue frequency for CS4 if it's sound
-//149) second cue speaker number for CS1
+//145) second cue frequency for CS1 if it's sound 
+//146) second cue frequency for CS2 if it's sound 
+//147) second cue frequency for CS3 if it's sound 
+//148) second cue frequency for CS4 if it's sound 
+//149) second cue speaker number for CS1 
 //150) second cue speaker number for CS2
 //151) second cue speaker number for CS3
 //152) second cue speaker number for CS4
-//153) second cue light number for CS1
+//153) second cue light number for CS1 
 //154) second cue light number for CS2
 //155) second cue light number for CS3
 //156) second cue light number for CS4
@@ -258,14 +258,14 @@ unsigned long lickprob[numlicktube];
 unsigned long lickopentime[numlicktube];
 unsigned long delaytoreward[numlicktube];
 unsigned long delaytolick[numlicktube];
-int minrewards[numlicktube];
+unsigned long minrewards[numlicktube];
 unsigned long signaltolickreq[numlicktube];
 unsigned long soundsignalpulse[numlicktube];
 unsigned long soundfreq[numlicktube];
 unsigned long sounddur[numlicktube];
 unsigned long lickspeaker[numlicktube];
-unsigned long ratioschedule[numlicktube];
-unsigned long intervalschedule[numlicktube];
+unsigned long variableratioflag[numlicktube];
+unsigned long variableintervalflag[numlicktube];
 float rewardprobforlick[numlicktube];
 unsigned long licklight[numlicktube];
 unsigned long fixedsidecheck[numlicktube];
@@ -289,7 +289,7 @@ unsigned long lightdur       = 500;   // Duration to keep light (signal for lick
 
 
 int totalnumtrials = 0;
-int rewardct[numlicktube];                   // number of rewards given for each lick tube in lick dependent experiment
+unsigned long rewardct[numlicktube];                   // number of rewards given for each lick tube in lick dependent experiment
 int licktubethatmetlickreq;      // Lick tube that met the lick requirement
 
 unsigned long nextcue;           // timestamp of next trial
@@ -324,7 +324,6 @@ int lickctforreq[3];            // number of licks on lick tubes 1, 2 and 3 duri
 int CSct;                        // number of cues delivered
 int numbgdsolenoid;              // number of background solenoids delivered
 int numfxdsolenoids;             // number of fixed solenoids delivered per cue till now. Useful since same cue can have two delayed solenoids
-int openedSolenoid;
 
 int *cueList = 0;                // Using dynamic allocation for defining the cueList. Be very very careful with memory allocation. All sorts of problems can come about if the program becomes too large. This is done just to be able to set #CSs from MATLAB
 //int elements = 0;
@@ -588,13 +587,9 @@ void setup() {
   lickctforreq[1] = 0;                 // Number of licks2 during cue for first trial is initialized to 0
 
   // UNCOMMENT THESE LINES FOR TRIGGERING IMAGE COLLECTION AT BEGINNING
-  // digitalWrite(ttloutpin, HIGH);
-  // delay(100);
-  // digitalWrite(ttloutpin, LOW);
-  // TILL HERE
-
-  // UNCOMMENT THESE LINES FOR TRIGGERING PHOTOMETRY IMAGE COLLECTION AT BEGINNING
   digitalWrite(ttloutpin, HIGH);
+  delay(100);
+  digitalWrite(ttloutpin, LOW);
   // TILL HERE
 
   // start session
@@ -638,11 +633,11 @@ void loop() {
   licking();                           // record licking
   frametimestamp();                    // store timestamps of frames
 
-  if ((((rewardct[0]+rewardct[1]) >= (((minrewards[0]+minrewards[1])*3)/2)) || ((rewardct[0] >= minrewards[0]) && (rewardct[1] >= minrewards[1]))) && (sessionendtime == 0)) {
+  if (rewardct[0] >= minrewards[0] && rewardct[1] >= minrewards[1] && sessionendtime == 0) {
     sessionendtime = ts + 5000;
-  } 
+  }
 
-  if (((ts >= sessionendtime) && (sessionendtime != 0)) || reading == 49) {
+  if ((ts >= sessionendtime && sessionendtime != 0) || reading == 49) {
     endSession();
   }
 
@@ -676,7 +671,6 @@ void loop() {
     lightOff = 0;
   }
 
-  
   if (ts >= nextfxdsolenoid && nextfxdsolenoid != 0) {
     if (licksolenoid[licktubethatmetlickreq] == solenoid1) {            // setup which solenoid to give for lick onset
       Serial.print(8);                                // code data
@@ -704,16 +698,14 @@ void loop() {
 
     if (lickopentime[licktubethatmetlickreq] > 0 && u < lickprob[licktubethatmetlickreq] && minrewards[licktubethatmetlickreq] > 0) {          // set lick solenoid high
       digitalWrite(licksolenoid[licktubethatmetlickreq], HIGH);
-      digitalWrite(ttloutstoppin, HIGH);
       Serial.print(0);                                // indicates the reward is given
       Serial.print('\n');
-      deliverlasertocues();
     }
     else {
       Serial.print(1);                                // indicates no reward given
       Serial.print('\n');
     }
-    if (intervalschedule[licktubethatmetlickreq] == 1) {
+    if (variableintervalflag[licktubethatmetlickreq] == 1) {
       u = random(0, 10000);
       temp = (float)u / 10000;
       temp1 = 3;
@@ -723,53 +715,16 @@ void loop() {
       temp = -log(1 - temp);
       nextvacuum = (unsigned long)ts + lickopentime[licktubethatmetlickreq] + delaytolick[licktubethatmetlickreq] * temp;       // variable vacuum onset
     }
-    else if (intervalschedule[licktubethatmetlickreq] == 2) {
-      nextvacuum = ts + lickopentime[licktubethatmetlickreq] + delaytolick[licktubethatmetlickreq] * pow(progressivemultiplier[licktubethatmetlickreq], rewardct[licktubethatmetlickreq]);
-    }
-    else if (intervalschedule[licktubethatmetlickreq] == 0) {
+    else if (variableintervalflag[licktubethatmetlickreq] == 0) {
       nextvacuum = ts + lickopentime[licktubethatmetlickreq] + delaytolick[licktubethatmetlickreq];       // fixed vacuum onset
     }
     solenoidOff = ts + lickopentime[licktubethatmetlickreq];                          // set solenoid off time
-    openedSolenoid = licksolenoid[licktubethatmetlickreq];
     nextfxdsolenoid = 0;
-  }
-  
-  // Pulse LASER
-  if (ts >= nextlaser && nextlaser != 0) {
-    Serial.print(31);                        // code data as laser timestamp
-    Serial.print(" ");
-    Serial.print(ts);                        // send timestamp of laser
-    Serial.print(" ");
-    Serial.print(0);
-    Serial.print('\n');
-    digitalWrite(laser, HIGH);
-    laserPulseOff = ts + laserpulseperiod;
-    laserOff = ts + laserduration;
-    nextlaser = 0;
-  }
-
-  if (ts >= laserPulseOff && laserPulseOff != 0 && ts < laserOff) {
-    digitalWrite(laser, LOW);                   // turn off laser
-    laserPulseOn = ts + laserpulseoffperiod;
-    laserPulseOff = 0;
-  }
-
-  if (ts >= laserPulseOn && laserPulseOn != 0 && ts < laserOff) {
-    digitalWrite(laser, HIGH);                   // turn on laser
-    laserPulseOn = 0;
-    laserPulseOff = ts + laserpulseperiod;
-  }
-
-  // Turn off laser
-  if (ts >= laserOff && laserOff != 0) {   // LASER CESSATION
-    digitalWrite(laser, LOW);              // turn off laser
-    laserOff = 0;
   }
 
   if (ts >= solenoidOff && solenoidOff != 0) {
-    digitalWrite(openedSolenoid, LOW);
+    digitalWrite(licksolenoid[licktubethatmetlickreq], LOW);
     solenoidOff = 0;
-    digitalWrite(ttloutstoppin, LOW);
   }
 
   if (ts >= nextvacuum && nextvacuum != 0) {             // set vacuum high
@@ -790,23 +745,11 @@ void loop() {
     lickctforreq[0] = 0;
     lickctforreq[1] = 0;
     rewardct[licktubethatmetlickreq]++;
-
-    // calculating next required licking number for progressive ratio
-    if (ratioschedule[licktubethatmetlickreq] == 2) {
-      if (progressivemultiplier[licktubethatmetlickreq] == 1) {
-        reqlicknum[licktubethatmetlickreq] = reqlicknum[licktubethatmetlickreq] + reqlicknum[licktubethatmetlickreq];
-      }
-      else {
-        reqlicknum[licktubethatmetlickreq] = reqlicknum[licktubethatmetlickreq] * pow(progressivemultiplier[licktubethatmetlickreq], rewardct[licktubethatmetlickreq]);
-      }
-    }
-    
     licktubesactive = true;
   }
   if (reading == 65) {                 // MANUAL solenoid 1
     digitalWrite(solenoid1, HIGH);          // turn on solenoid
     solenoidOff = ts + lickopentime[1];              // set solenoid off time
-    openedSolenoid = solenoid1;
     Serial.print(8);                   //   code data as solenoid1 onset timestamp
     Serial.print(" ");
     Serial.print(ts);                  //   send timestamp of solenoid onset
@@ -817,7 +760,6 @@ void loop() {
   if (reading == 68) {                 // MANUAL solenoid 2
     digitalWrite(solenoid2, HIGH);          // turn on solenoid
     solenoidOff = ts + lickopentime[1];              // set solenoid off time
-    openedSolenoid = solenoid2;
     Serial.print(9);                   //   code data as solenoid2 onset timestamp
     Serial.print(" ");
     Serial.print(ts);                  //   send timestamp of solenoid onset
@@ -828,7 +770,6 @@ void loop() {
   if (reading == 71) {                 // MANUAL solenoid 3
     digitalWrite(solenoid3, HIGH);          // turn on solenoid
     solenoidOff = ts + lickopentime[1];              // set solenoid off time
-    openedSolenoid = solenoid3;
     Serial.print(10);                   //   code data as solenoid3 onset timestamp
     Serial.print(" ");
     Serial.print(ts);                  //   send timestamp of solenoid onset
@@ -839,7 +780,6 @@ void loop() {
   if (reading == 74) {                 // MANUAL solenoid 4
     digitalWrite(solenoid4, HIGH);          // turn on solenoid
     solenoidOff = ts + lickopentime[1];              // set solenoid off time
-    openedSolenoid = solenoid4;
     Serial.print(11);                   //   code data as solenoid4 onset timestamp
     Serial.print(" ");
     Serial.print(ts);                  //   send timestamp of solenoid onset
@@ -963,10 +903,10 @@ void getParams() {
   CSlight[1]             = param[108];
   CSlight[2]             = param[109];
   CSlight[3]             = param[110];
-  ratioschedule[0]      = param[111];
-  ratioschedule[1]      = param[112];
-  intervalschedule[0]   = param[113];
-  intervalschedule[1]   = param[114];
+  variableratioflag[0]      = param[111];
+  variableratioflag[1]      = param[112];
+  variableintervalflag[0]   = param[113];
+  variableintervalflag[1]   = param[114];
   licklight[0]           = param[115];
   licklight[1]           = param[116];
   CSlasercheck[0]         = param[117];
@@ -1082,7 +1022,7 @@ void getParams() {
     }
   }
 
-  if (ratioschedule[0] == 1) {
+  if (variableratioflag[0] == 1) {
     rewardprobforlick[0] = 1. / reqlicknum[0];
     rewardprobforlick[1] = 1. / reqlicknum[1];
   }
@@ -1146,23 +1086,19 @@ void licking() {
     Serial.print('\n');
     lickctforreq[0]++;
 
-    if (ratioschedule[0] == 0 || ratioschedule[0] == 2) {
+    if (variableratioflag[0] == 0) {
       if (lickctforreq[0] >= reqlicknum[0] && licktubesactive) {  // Check if lick requirement met
         LickReqMet(0);
       }
     }
-    else if (ratioschedule[0] == 1) {
+    else if (variableratioflag[0] == 1) {
       u = random(0, 10000);
       temp = (float)u / 10000;
       if (lickctforreq[0] >= 1 && temp <= rewardprobforlick[0] && licktubesactive) {  // Check if lick requirement met
         LickReqMet(0);
       }
-      else if (lickctforreq[0] >= 2 * reqlicknum[0] && licktubesactive) {
-        LickReqMet(0);
-      }
     }
   }
-
 
   if (lickwithdrawn) {                     // if lick withdrawn
     Serial.print(2);                       //   code data as lick1 withdrawn timestamp
@@ -1187,18 +1123,15 @@ void licking() {
     Serial.print('\n');
     lickctforreq[1]++;
 
-    if (ratioschedule[1] == 0 || ratioschedule[1] == 2) {
+    if (variableratioflag[1] == 0) {
       if (lickctforreq[1] >= reqlicknum[1] && licktubesactive) {  // Check if lick requirement met
         LickReqMet(1);
       }
     }
-    else if (ratioschedule[1] == 1) {
+    else if (variableratioflag[1] == 1) {
       u = random(0, 10000);
       temp = (float)u / 10000;
       if (lickctforreq[1] >= 1 && temp <= rewardprobforlick[1] && licktubesactive) {  // Check if lick requirement met
-        LickReqMet(1);
-      }
-      else if (lickctforreq[1] >= 2 * reqlicknum[1] && licktubesactive) {
         LickReqMet(1);
       }
     }
@@ -1227,18 +1160,15 @@ void licking() {
     Serial.print('\n');
     lickctforreq[2]++;
 
-    if (ratioschedule[2] == 0) {
+    if (variableratioflag[2] == 0) {
       if (lickctforreq[2] >= reqlicknum[2] && licktubesactive) {  // Check if lick requirement met
         LickReqMet(2);
       }
     }
-    else if (ratioschedule[2] == 1) {
+    else if (variableratioflag[2] == 1) {
       u = random(0, 10000);
       temp = (float)u / 10000;
       if (lickctforreq[2] >= 1 && temp <= rewardprobforlick[2] && licktubesactive) {  // Check if lick requirement met
-        LickReqMet(2);
-      }
-      else if (lickctforreq[2] >= 2 * reqlicknum[2] && licktubesactive) {
         LickReqMet(2);
       }
     }
@@ -1294,12 +1224,6 @@ void cues() {
   cueOff  = ts + int(sounddur[licktubethatmetlickreq]);                   // set timestamp of cue cessation
 }
 
-void deliverlasertocues() {
-  if (laserduration > 0) {
-    nextlaser = ts + laserlatency;
-  }
-}
-
 
 void lights() {
   //  if (licktubethatmetlickreq == 0) {
@@ -1331,10 +1255,9 @@ void software_Reboot()
 
 // End session //////////////
 void endSession() {
-  //  digitalWrite(ttloutstoppin, HIGH);
-  //  delay(100);
-  // digitalWrite(ttloutstoppin, LOW);
-  digitalWrite(ttloutpin, LOW);
+  digitalWrite(ttloutstoppin, HIGH);
+  delay(100);
+  digitalWrite(ttloutstoppin, LOW);
   Serial.print(0);                       //   code data as end of session
   Serial.print(" ");
   Serial.print(ts);                      //   send timestamp

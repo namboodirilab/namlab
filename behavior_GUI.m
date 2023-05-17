@@ -31,17 +31,17 @@ if ~isempty(port)
 end
 
 %Connected to Field
-connectlbl = uilabel(fig, 'Text', 'Connected to:', 'Position', [580 850 80 22]);
-connectfield = uieditfield(fig,'text','Editable','off','Position', [670 850 150 22]);
-filenamelbl = uilabel(fig, 'Text', 'Save file as:', 'Position', [580 820 70 22]);
-filenamefield = uieditfield(fig,'text','Value','animal_name','Editable','on','Position', [670 820 150 22]);
-starttimelbl = uilabel(fig, 'Text', 'Start Time:', 'Position', [580 790 70 22]);
-starttimefield = uieditfield(fig,'text','Editable','off','Position', [670 790 150 22]);
-refreshbutton = uibutton(fig, 'Position',[220 790 100 40], 'Text','Refresh','FontSize',11, 'ButtonPushedFcn', {@pushRefresh,availablePorts});
-connectbutton = uibutton(fig, 'Position',[10 790 100 40], 'Text','Connect','FontSize',11, 'Enable','off','ButtonPushedFcn', {@pushConnect,connectfield,availablePorts});
+connectlbl = uilabel(fig, 'Text', 'Connected to:', 'Position', [580 855 80 22]);
+connectfield = uieditfield(fig,'text','Editable','off','Position', [670 855 150 22]);
+filenamelbl = uilabel(fig, 'Text', 'Save file as:', 'Position', [580 825 70 22]);
+filenamefield = uieditfield(fig,'text','Value','animal_name','Editable','on','Position', [670 825 150 22]);
+starttimelbl = uilabel(fig, 'Text', 'Start Time:', 'Position', [580 795 70 22]);
+starttimefield = uieditfield(fig,'text','Editable','off','Position', [670 795 150 22]);
+refreshbutton = uibutton(fig, 'Position',[220 795 100 40], 'Text','Refresh','FontSize',11, 'ButtonPushedFcn', {@pushRefresh,availablePorts});
+connectbutton = uibutton(fig, 'Position',[10 795 100 40], 'Text','Connect','FontSize',11, 'Enable','off','ButtonPushedFcn', {@pushConnect,connectfield,availablePorts});
 
 % Select experiment mode 
-experiments = uipanel(fig, 'Title', 'Experiment modes:', 'FontSize',12,'Units','normalized', 'Position', [0.23 0.86 0.15*.9 0.12]);
+experiments = uipanel(fig, 'Title', 'Experiment modes:', 'FontSize',12,'Units','normalized', 'Position', [0.23 0.88 0.15*.9 0.11]);
 experimentmode = uidropdown('Parent',experiments,'Items',{'1: Cues with or without lick req','2: Random rewards','3: Lick for rewards','4: Decision making',...
     '5: Ramp timing task'}, 'ItemsData',[1 2 3 4 5 6], 'FontSize', 11);
 experimentmode.Position = [12 50 170 24];
@@ -53,7 +53,7 @@ uploadbutton = uibutton('Parent', experiments,'Text', 'Upload','FontSize', 11,..
 % unittetx = uilabel(fig, 'Text', '* All time values are in units of ms', 'FontSize',11, 'Position', [570 830 190 30]);
 
 % Buttons for disconnecting to arduino
-disconnectbutton = uibutton(fig, 'Position',[115 790 100 40], 'Text','Disconnect','FontSize',11, 'Enable','off','ButtonPushedFcn', {@pushDisconnect,connectbutton,connectfield,uploadbutton,refreshbutton,availablePorts,experimentmode});
+disconnectbutton = uibutton(fig, 'Position',[115 795 100 40], 'Text','Disconnect','FontSize',11, 'Enable','off','ButtonPushedFcn', {@pushDisconnect,connectbutton,connectfield,uploadbutton,refreshbutton,availablePorts,experimentmode});
 
 % Data for csproperties and lick properties
 tempCS ={'Number of trials', 25, 25, 50, 0;
@@ -83,7 +83,7 @@ set(cstable, 'columnname', cscolnames);
 cstable.FontSize = 9;
 % csproperties.Position(:) = [50 500 400 300];
 cstable.Units = 'normalized';
-cstable.Position = [0.005 0.47 0.32 0.38];
+cstable.Position = [0.005 0.49 0.32 0.38];
 cstable.ColumnEditable = [false true true true true];
 assignin('base','cstable',cstable);
 
@@ -110,7 +110,7 @@ set(licktable, 'columnname', lickcolnames);
 licktable.FontSize = 9;
 % lickproperties.Position(:) = [500 600 300 200];
 licktable.Units = 'normalized';
-licktable.Position = [0.33 0.47 0.22 0.38];
+licktable.Position = [0.33 0.49 0.22 0.38];
 licktable.ColumnEditable = [false true true];
 assignin('base','licktable', licktable);
 
@@ -224,7 +224,7 @@ testbuttons = [testCS1,testCS2,testCS3,testCS4,testlaser,testvacuum,manualsoleno
     primelickretractsolenoid1, primelickretractsolenoid2, manualvacuum];
 
 % Make plot
-ax = uiaxes(fig, 'Units','normalized','Position', [0.018 0.022 0.53 0.44]);   % set as global so conditiong_prog can plot
+ax = uiaxes(fig, 'Units','normalized','Position', [0.015 0.01 0.54 0.48]);   % set as global so conditiong_prog can plot
 actvAx = ax;
 
 lick1text = uilabel(fig, 'Text', 'Lick1s', 'FontColor', [0.2 0.6 1],'FontWeight','bold', 'FontSize', 12, 'Position', [870 280 40 20]);
