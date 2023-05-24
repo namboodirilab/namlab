@@ -2,7 +2,7 @@
 % This function is called upon clicking the Start button in the GUI
 % Requires variables param and s (serial object).
 
-cla(actvAx);                                    % Clear the axes before starting
+cla;                                    % Clear the axes before starting
 %% Parameters
 truncITI = min(maxITI,3*meanITI);                     % minITI is really the mean ITI for exponential dbn
 

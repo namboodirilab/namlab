@@ -302,6 +302,7 @@ set(sendbutton, 'ButtonPushedFcn', {@pushSend,disconnectbutton,refreshbutton,sta
 set(stopbutton, 'ButtonPushedFcn', {@pushStop, filenamefield, disconnectbutton});
 set(startbutton, 'ButtonPushedFcn', {@pushStart,testbuttons,stopbutton,filenamefield,disconnectbutton,experimentmode,...
     laserfunctions,ITIfunctions,bgdsolfunctions,starttimefield,cstable, licktable});
+set(fig, 'CloseRequestFcn', @closeFigureCallback);
 end
 
 function pushUpload(source, eventdata, availablePorts,uploadbutton,experimentmode,connectbutton)%,pushSolenoid3,primeSolenoid3on,primeSolenoid3off,testVacuum,testLaser,testSerialPort,testCue1,testCue2,testCue3,testCue4,testCue5)   
@@ -828,3 +829,13 @@ function primelickretractsolenoid2_fcn(source, eventdata)
     end
 end
 
+function closeFigureCallback(fig,event)
+    % Close all serial ports
+    delete(fig);
+    ports = instrfindall;
+    if ~isempty(ports)
+        fclose(ports);
+        delete(ports);
+    end
+    % Close the GUI or perform any other necessary actions
+end
