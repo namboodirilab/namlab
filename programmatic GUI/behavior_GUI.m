@@ -198,24 +198,24 @@ testvacuum = uibutton(fig, 'Text', 'Test Vacuum', 'FontSize',11, 'Position',[139
 solenoid1panel = uipanel(fig, 'Title', 'Solenoid 1','Units','normalized', 'Position', [0.56 0.58 0.105 0.08]);
 manualsolenoid1 = uibutton(solenoid1panel, 'Text','Manual', 'FontSize', 11, 'Enable','off','Position', [15 28 120 20],'ButtonPushedFcn', {@manualsolenoid1_fcn});
 primesolenoid1 = uibutton(solenoid1panel, 'state', 'Text','Prime', 'Value', false, 'FontSize',11, 'Enable','off','Position',[15 5 120 20], 'ValueChangedFcn', {@primesolenoid1_fcn});
-solenoid2panel = uipanel(fig, 'Title', 'Solenoid 2','Units','normalized','Position', [0.56 0.48 0.105 0.08]);
+solenoid2panel = uipanel(fig, 'Title', 'Solenoid 2','Units','normalized','Position', [0.67 0.58 0.105 0.08]);
 manualsolenoid2 = uibutton('Parent', solenoid2panel, 'Text','Manual', 'FontSize', 11, 'Enable','off','Position', [15 28 120 20],'ButtonPushedFcn', {@manualsolenoid2_fcn});
 primesolenoid2 = uibutton(solenoid2panel, 'state','Text','prime', 'Value', false, 'FontSize',11, 'Enable','off','Position',[15 5 120 20], 'ValueChangedFcn', {@primesolenoid2_fcn});
-solenoid3panel = uipanel(fig, 'Title', 'Solenoid 3','Units','normalized','Position', [0.675 0.58 0.105 0.08]);
+solenoid3panel = uipanel(fig, 'Title', 'Solenoid 3','Units','normalized','Position', [0.78 0.58 0.105 0.08]);
 manualsolenoid3 = uibutton('Parent', solenoid3panel, 'Text','Manual', 'FontSize', 11, 'Enable','off','Position', [15 28 120 20],'ButtonPushedFcn', {@manualsolenoid3_fcn});
 primesolenoid3 = uibutton(solenoid3panel, 'state','Text','prime', 'Value', false, 'FontSize',11, 'Enable','off','Position',[15 5 120 20], 'ValueChangedFcn', {@primesolenoid3_fcn});
-solenoid4panel = uipanel(fig, 'Title', 'Solenoid 4','Units','normalized','Position', [0.675 0.48 0.105 0.08]);
+solenoid4panel = uipanel(fig, 'Title', 'Solenoid 4','Units','normalized','Position', [0.89 0.58 0.105 0.08]);
 manualsolenoid4 = uibutton('Parent', solenoid4panel, 'Text','Manual', 'FontSize', 11, 'Enable','off','Position', [15 28 120 20],'ButtonPushedFcn', {@manualsolenoid4_fcn});
 primesolenoid4 = uibutton(solenoid4panel, 'state','Text','prime', 'Value', false, 'FontSize',11, 'Enable','off','Position',[15 5 120 20], 'ValueChangedFcn', {@primesolenoid4_fcn});
 
-lickretractsolenoid1panel = uipanel(fig, 'Title', 'Lick retract solenoid 1','Units','normalized','Position', [0.79 0.58 0.105 0.08]);
+lickretractsolenoid1panel = uipanel(fig, 'Title', 'Lick retract solenoid 1','Units','normalized','Position', [0.56 0.48 0.105 0.08]);
 manuallickretractsolenoid1 = uibutton('Parent', lickretractsolenoid1panel, 'Text','Manual', 'FontSize', 11, 'Enable','off','Position', [15 28 120 20],'ButtonPushedFcn', {@manuallickretractsolenoid1_fcn});
 primelickretractsolenoid1 = uibutton(lickretractsolenoid1panel,'state', 'Text','prime', 'Value', false, 'Enable','off','FontSize',11,'Position',[15 5 120 20], 'ValueChangedFcn', {@primelickretractsolenoid1_fcn});
-lickretractsolenoid2panel = uipanel(fig, 'Title', 'Lick retract solenoid 2','Units','normalized','Position', [0.79 0.48 0.105 0.08]);
+lickretractsolenoid2panel = uipanel(fig, 'Title', 'Lick retract solenoid 2','Units','normalized','Position', [0.67 0.48 0.105 0.08]);
 manuallickretractsolenoid2 = uibutton('Parent', lickretractsolenoid2panel, 'Text','Manual', 'FontSize', 11, 'Enable','off','Position', [15 28 120 20],'ButtonPushedFcn', {@manuallickretractsolenoid2_fcn});
 primelickretractsolenoid2 = uibutton(lickretractsolenoid2panel, 'state','Text','prime', 'Enable','off', 'Value', false, 'FontSize',11, 'Position',[15 5 120 20], 'ValueChangedFcn', {@primelickretractsolenoid2_fcn});
 
-vacuumpanel = uipanel(fig, 'Title', 'Vacuum','Units','normalized','Position', [0.90 0.58 0.095 0.08]);
+vacuumpanel = uipanel(fig, 'Title', 'Vacuum','Units','normalized','Position', [0.78 0.48 0.105 0.08]);
 manualvacuum = uibutton(vacuumpanel, 'Text', 'Manual', 'FontSize', 11, 'Enable','off','Position', [15 12 120 30]);
 
 % Test buttons
@@ -296,10 +296,10 @@ sendbutton = uibutton(fig,'Text','Send','FontSize', 12,'Position',[900 350 120 5
 
 set(uploadbutton,'ButtonPushedFcn', {@pushUpload,availablePorts,uploadbutton,experimentmode,connectbutton});
 set(connectbutton,'ButtonPushedFcn', {@pushConnect,connectbutton,availablePorts,connectfield,disconnectbutton,refreshbutton,sendbutton,cstable,licktable,Optopanel,ITIpanel,bgdrpanel,experimentmode});
-set(disconnectbutton,'ButtonPushedFcn', {@pushDisconnect,connectbutton,connectfield,uploadbutton,refreshbutton,availablePorts,experimentmode,sendbutton,startbutton});
+set(disconnectbutton,'ButtonPushedFcn', {@pushDisconnect,connectbutton,connectfield,uploadbutton,refreshbutton,availablePorts,experimentmode,sendbutton,startbutton,testbuttons});
 set(sendbutton, 'ButtonPushedFcn', {@pushSend,disconnectbutton,refreshbutton,startbutton, testbuttons, cstable, licktable, experimentmode,...
   laserfunctions, ITIfunctions, bgdsolfunctions, Optopanel, ITIpanel, bgdrpanel});
-set(stopbutton, 'ButtonPushedFcn', {@pushStop, filenamefield, disconnectbutton});
+set(stopbutton, 'ButtonPushedFcn', {@pushStop, filenamefield, disconnectbutton,testbuttons});
 set(startbutton, 'ButtonPushedFcn', {@pushStart,testbuttons,stopbutton,filenamefield,disconnectbutton,experimentmode,...
     laserfunctions,ITIfunctions,bgdsolfunctions,starttimefield,cstable, licktable});
 set(fig, 'CloseRequestFcn', @closeFigureCallback);
@@ -381,7 +381,7 @@ function pushConnect(source,eventdata,connectbutton,availablePorts,connectfield,
     end
 end
 
-function pushDisconnect(source, eventdata, connectbutton,connectfield,uploadbutton,refreshbutton,availablePorts,experimentmode,sendbutton,startbutton)
+function pushDisconnect(source, eventdata, connectbutton,connectfield,uploadbutton,refreshbutton,availablePorts,experimentmode,sendbutton,startbutton,testbuttons)
     global s
 %     fclose(s);
     delete(s);
@@ -396,7 +396,7 @@ function pushDisconnect(source, eventdata, connectbutton,connectfield,uploadbutt
     set(experimentmode, 'Enable', 'on');
     set(sendbutton, 'Enable', 'off');
     set(startbutton, 'Enable', 'off');
-
+    set(testbuttons,'Enable','off');
 end
 
 % --- Executes on button press in refreshButton.
@@ -702,7 +702,7 @@ function pushStart(source,eventdata,testbuttons,stopbutton,filenamefield,disconn
     flushinput(s);                                  % clear serial input buffer 
 end
 
-function pushStop(source,eventdata,filenamefield,disconnectbutton) 
+function pushStop(source,eventdata,filenamefield,disconnectbutton,testbuttons) 
     global s running
     running = false;            % Stop running MATLAB code for monitoring arduino
     fprintf(s,'1');             % Send stop signal to arduino; 49 in the Arduino is the ASCII code for 1
@@ -711,6 +711,7 @@ function pushStop(source,eventdata,filenamefield,disconnectbutton)
     %set(resetbutton,'Enable','on');
     set(filenamefield,'Enable','on','Editable','on');
     set(disconnectbutton,'Enable','on');
+    set(testbuttons,'Enable','on');
     %Close Serial Port
 %     fclose(s)
     clear("serialport");                                          % "closes serial"
