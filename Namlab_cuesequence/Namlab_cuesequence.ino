@@ -238,6 +238,7 @@ void setup() {
 
   // start session
   start = millis();                    // start time
+  digitalWrite(ttloutpin, HIGH);
 
   //  cues();                              //begin state 1
   //  cueOff_ts = start + statedur[state-1];
@@ -280,7 +281,7 @@ void loop() {
   // 30 = frame
   // 31 = laser
 
-  if (reading == 49) {    // MATLAB SIGNAL END SESSION
+  if (reading == 49 || (timedses && ts >= sesdur) || (!timedses && rewcount >= sesdur)) {    // MATLAB SIGNAL END SESSION
     endSession();       // end
   }
 
@@ -296,6 +297,7 @@ void loop() {
     chooseNextState();
     if (state == rewstate) {
       deliverRew();
+      digitalWrite(ttloutstoppin, HIGH);
       rewOff_ts = ts + statedur[state - 1];
     } else {
       cues();
@@ -345,6 +347,7 @@ void loop() {
 
   if (ts >= rewOff_ts && rewOff_ts != 0) {
     digitalWrite(solenoid3, LOW);
+    digitalWrite(ttloutstoppin, LOW);
     vacuumOn_ts = ts + vacuumdelay;
     nextState_ts = ts + ISI[state - 1];
     rewOff_ts = 0;
@@ -577,6 +580,7 @@ void getParams() {
 
   if (param[p] == 1) {   //ses dur is minutes
     timedses = true;
+    sesdur = sesdur * 60 * 1000; //convert ses dur from min to ms
   } else {               //sesdur is max number of rewards
     timedses = false;
   }

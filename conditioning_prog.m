@@ -48,7 +48,7 @@ both1 = 0;% Counter for both light and cue 1's
 both2 = 0;% Counter for both light and cue 2's
 both3 = 0;% Counter for both light and cue 3's
 both4 = 0;% Counter for both light and cue 4's
-eventlog = zeros(logInit,3);% empty event log for all events 
+eventlog = nan(logInit,3);% empty event log for all events 
 l = 0;% Counter for logged events
 fisrtcueonset = NaN;
 
@@ -802,9 +802,10 @@ try
         end
     end
     
-    if l < logInit
-        eventlog = eventlog(1:l,:);   % smaller eventlog
-    end
+    eventlog = rmmissing(eventlog);
+%     if l < logInit
+%         eventlog = eventlog(1:l,:);   % smaller eventlog
+%     end
     
 
 %% Save data
@@ -874,7 +875,7 @@ try
                  "lasertrialbytrialflag"; "maxdelaycuetovacuum"; "CSlight"; "variableratioflag";...
                  "variableintervalflag"; "licklight"; "CS1lasercheck";...
                  "CS2lasercheck"; "CS3lasercheck"; "CS4lasercheck";"fixedsidecheck"; "Rewardlasercheck";...
-                 "CSrampmaxdelay"; "CSrampexp"; "CSincrease"; "delaybetweensoundandlight";...
+                 "Omissionlasercheck","CSrampmaxdelay"; "CSrampexp"; "CSincrease"; "delaybetweensoundandlight";...
                  "CSsecondcue";"CSsecondcuefreq";"CSsecondcuespeaker";"CSsecondcuelight"]);
 
         params.(paramnames(1)) = param(1:4);                        % numtrials (3)
@@ -930,14 +931,15 @@ try
         params.(paramnames(51)) = param(121);                       % CS4 laser check flag
         params.(paramnames(52)) = param(122:123);                   % lick fixed side check (2)
         params.(paramnames(53)) = param(124);                       % Reward laser check flag
-        params.(paramnames(54)) = param(125:128);                   % CS max ramp delay 
-        params.(paramnames(55)) = param(129:132);                   % CS ramp exponential factor
-        params.(paramnames(56)) = param(133:136);                   % CS increase
-        params.(paramnames(57)) = param(137:140);                   % delay between sound and light cue if both are present 
-        params.(paramnames(58)) = param(141:144);                   % CS second cue typessss
-        params.(paramnames(59)) = param(145:148);                   % CS second cue frequency 
-        params.(paramnames(60)) = param(149:152);                   % CS second cue speaker number
-        params.(paramnames(61)) = param(153:156);                   % CS second cue light number
+        params.(paramnames(54)) = parma(125);                       % Omission laser check flag    
+        params.(paramnames(55)) = param(126:129);                   % CS max ramp delay 
+        params.(paramnames(56)) = param(130:133);                   % CS ramp exponential factor
+        params.(paramnames(57)) = param(134:137);                   % CS increase
+        params.(paramnames(58)) = param(138:141);                   % delay between sound and light cue if both are present 
+        params.(paramnames(59)) = param(142:145);                   % CS second cue typessss
+        params.(paramnames(60)) = param(146:149);                   % CS second cue frequency 
+        params.(paramnames(61)) = param(150:153);                   % CS second cue speaker number
+        params.(paramnames(62)) = param(154:156);                   % CS second cue light number
   
     assignin('base','eventlog',eventlog);
 %     file = [saveDir fname '_' num2str(r_bgd) '_' num2str(T_bgd) '_'  str probstr laserstr bgdsolenoidstr extinctionstr date '.mat'];
@@ -951,10 +953,12 @@ try
 %     save(file,'video','-append')
     
 catch exception
-    if l < logInit
-        eventlog = eventlog(1:l,:);
-    end
+    eventlog = rmmissing(eventlog);
     
+%     if l < logInit
+%         eventlog = eventlog(1:l,:);
+%     end
+%     
     fprintf(s,'1');                                  % send stop signal to arduino; 49 in Arduino is the ASCII code for 1
     disp('Error running program.')
     format = 'yymmdd-HHMMSS';
@@ -1029,7 +1033,7 @@ catch exception
                  "lasertrialbytrialflag"; "maxdelaycuetovacuum"; "CSlight"; "variableratioflag";...
                  "variableintervalflag"; "licklight"; "CS1lasercheck";...
                  "CS2lasercheck"; "CS3lasercheck"; "CS4lasercheck";"fixedsidecheck"; "Rewardlasercheck";...
-                 "CSrampmaxdelay"; "CSrampexp"; "CSincrease"; "delaybetweensoundandlight";...
+                 "Omissionlasercheck","CSrampmaxdelay"; "CSrampexp"; "CSincrease"; "delaybetweensoundandlight";...
                  "CSsecondcue";"CSsecondcuefreq";"CSsecondcuespeaker";"CSsecondcuelight"]);
 
         params.(paramnames(1)) = param(1:4);                        % numtrials (3)
@@ -1085,14 +1089,15 @@ catch exception
         params.(paramnames(51)) = param(121);                       % CS4 laser check flag
         params.(paramnames(52)) = param(122:123);                   % lick fixed side check (2)
         params.(paramnames(53)) = param(124);                       % Reward laser check flag
-        params.(paramnames(54)) = param(125:128);                   % CS max ramp delay 
-        params.(paramnames(55)) = param(129:132);                   % CS ramp exponential factor
-        params.(paramnames(56)) = param(133:136);                   % CS increase
-        params.(paramnames(57)) = param(137:140);                   % delay between sound and light cue if both are present 
-        params.(paramnames(58)) = param(141:144);                   % CS second cue type
-        params.(paramnames(59)) = param(145:148);                   % CS second cue frequency 
-        params.(paramnames(60)) = param(149:152);                   % CS second cue speaker number
-        params.(paramnames(61)) = param(153:156);                   % CS second cue light number
+        params.(paramnames(54)) = parma(125);                       % Omission laser check flag    
+        params.(paramnames(55)) = param(126:129);                   % CS max ramp delay 
+        params.(paramnames(56)) = param(130:133);                   % CS ramp exponential factor
+        params.(paramnames(57)) = param(134:137);                   % CS increase
+        params.(paramnames(58)) = param(138:141);                   % delay between sound and light cue if both are present 
+        params.(paramnames(59)) = param(142:145);                   % CS second cue typessss
+        params.(paramnames(60)) = param(146:149);                   % CS second cue frequency 
+        params.(paramnames(61)) = param(150:153);                   % CS second cue speaker number
+        params.(paramnames(62)) = param(154:156);                   % CS second cue light number
     
     save(file, 'eventlog', 'params','exception')
     end 

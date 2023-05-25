@@ -320,7 +320,7 @@ function pushReset(source,eventdata,uit,vacdelayfield,vacdurfield,sesdurbtn,numr
     set(source,'Enable','off');         %Disable Reset button
 end
 
-function pushStart(source,eventdata,uit,vacdelayfield,vacdurfield,sesdurbtn,numrewbtn,sesdurfield,numrewfield,filenamefield,counters,testbuttons,controlbuttons,starttimefield) 
+function pushStart(source,eventdata,uit,vacdelayfield,vacdurfield,sesdurbtn,numrewbtn,sesdurfield,numrewfield,filenamefield,counters,testbuttons,starttimefield, stopbutton, disconnectbutton) %controlbuttons
     
     global s running actvAx saveDir 
     
@@ -363,14 +363,18 @@ function pushStart(source,eventdata,uit,vacdelayfield,vacdurfield,sesdurbtn,numr
     % Run arduino code
     fprintf(s,'0');   % Signals to Arduino to start the experiment
     set(source,'Enable','off');             %Disable start button
-    set(controlbuttons(1),'Enable','on');   %Enable stop button
+%     set(controlbuttons(1),'Enable','on');   %Enable stop button
+    set(stopbutton,'Enable','on');
+    set(disconnectbutton,'Enable','on');
+
+
     
     conditioning_prog_cueseq
     
     %Disable control buttons
-    for btn = controlbuttons
-        set(btn,'Enable','off');    %reset, serial port drop down, refresh, connect, upload, file name field, disconnect
-    end
+%     for btn = controlbuttons
+%         set(btn,'Enable','off');    %reset, serial port drop down, refresh, connect, upload, file name field, disconnect
+%     end
     
     
     
