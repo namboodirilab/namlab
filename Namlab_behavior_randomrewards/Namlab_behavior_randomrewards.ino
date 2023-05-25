@@ -270,6 +270,7 @@ unsigned long variableintervalflag[numlicktube];
 float rewardprobforlick[numlicktube];
 unsigned long licklight[numlicktube];
 unsigned long fixedsidecheck[numlicktube];
+int progressivemultiplier[numlicktube];
 
 unsigned long laserlatency;      // Laser latency wrt cue (ms)
 unsigned long laserduration;     // Laser duration (ms)
@@ -687,13 +688,12 @@ void setup() {
 
   u = random(0, 10000);
   temp = (float)u / 10000;
-  temp = log(temp);
-  //temp1 = 1-exp(-3); // truncate inter-reward-interval at 3 times the T_bgd
-  //temp = temp * temp1;
-  //temp = log(1-temp);
+  temp1 = 1-exp(-3); // truncate inter-reward-interval at 3 times the T_bgd
+  temp = temp * temp1;
+  temp = log(1-temp);
   
   if (trialbytrialbgdsolenoidflag == 0) {
-    nextbgdsolenoid = 0 - max(T_bgd * temp,-300000); // truncate inter-reward-interval at 5 min (300 s)
+    nextbgdsolenoid = 0 - T_bgd * temp;
   }
   else if (trialbytrialbgdsolenoidflag == 1) {
     nextbgdsolenoid = 0 - T_bgdvec[0] * temp;
@@ -853,11 +853,10 @@ void loop() {
       numbgdsolenoid = numbgdsolenoid + 1;            // Count background solenoids
       u = random(0, 10000);
       temp = (float)u / 10000;
-      temp = log(temp);
-      //temp1 = 1 - exp(-3); // truncate inter-reward-interval at 3 times the T_bgd
-      //temp = temp * temp1;
-      //temp = log(1-temp);
-      nextbgdsolenoid = ts - max(T_bgd * temp,-300000); // truncate inter-reward-interval at 5 min (300 s)
+      temp1 = 1 - exp(-3); // truncate inter-reward-interval at 3 times the T_bgd
+      temp = temp * temp1;
+      temp = log(1-temp);
+      nextbgdsolenoid = ts - T_bgd * temp;
     }
   }
 }
@@ -866,7 +865,7 @@ void loop() {
 // Accept parameters from MATLAB
 // Accept parameters from MATLAB
 void getParams() {
-  int pn = 156;                              // number of parameter inputs
+  int pn = 158;                              // number of parameter inputs
   unsigned long param[pn];                  // parameters
 
   for (int p = 0; p < pn; p++) {
@@ -1011,7 +1010,9 @@ void getParams() {
   CSsecondcuelight[1]            = param[153];
   CSsecondcuelight[2]            = param[154];
   CSsecondcuelight[3]            = param[155];
-
+  progressivemultiplier[0]       = param[156];  
+  progressivemultiplier[1]       = param[157];
+  
   for (int p = 0; p < numCS; p++) {
     CSfreq[p] = CSfreq[p] * 1000;         // convert frequency from kHz to Hz
     CSsecondcuefreq[p] = CSsecondcuefreq[p] * 1000;

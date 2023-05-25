@@ -1,7 +1,6 @@
 // The original script sets trial-by-trial LASER randomly on 50% of the trials (shuffled) without consideration of whether a trial is CS+ or CS-
 // Here, there are going to be 0.8*numCSminus (=40) CS+ laser trials and 0.8*numCSminus (=40) CS- laser trials with 10 each being laser off.
 // Added on 8/22/2016
-//8/25/22 above 0.8 comment now changed to 0.5
 
 // Records event from pin 'lick' and sends it
 // through serial port as the time of event from the
@@ -269,6 +268,7 @@ unsigned long lickspeaker[numlicktube];
 unsigned long licklight[numlicktube];
 float rewardprobforlick[numlicktube];
 unsigned long fixedsidecheck[numlicktube];
+int progressivemultiplier[numlicktube];
 
 unsigned long laserlatency;      // Laser latency wrt cue (ms)
 unsigned long laserduration;     // Laser duration (ms)
@@ -634,7 +634,7 @@ void setup() {
     if (a < numtrials[0]) {
       cueList[a] = 0;
       if (lasertrialbytrialflag == 1) {
-        if (a < 0.5 * numtrials[0]) {
+        if (a < 0.8 * numtrials[0]) {
           Laserontrial[a] = 1;
         }
         else {
@@ -645,7 +645,7 @@ void setup() {
     else if (a < numtrials[0] + numtrials[1]) {
       cueList[a] = 1;
       if (lasertrialbytrialflag == 1) {
-        if (a < numtrials[0] + 0.5 * numtrials[1]) {
+        if (a < numtrials[0] + 0.8 * numtrials[1]) {
           Laserontrial[a] = 1;
         }
         else {
@@ -656,7 +656,7 @@ void setup() {
     else if (a < numtrials[0] + numtrials[1] + numtrials[2]) {
       cueList[a] = 2;
       if (lasertrialbytrialflag == 1) {
-        if (a < numtrials[0] + numtrials[1] + 0.5 * numtrials[2]) {
+        if (a < numtrials[0] + numtrials[1] + 0.8 * numtrials[2]) {
           Laserontrial[a] = 1;
         }
         else {
@@ -667,7 +667,7 @@ void setup() {
     else {
       cueList[a] = 3;
       if (lasertrialbytrialflag == 1) {
-        if (a < numtrials[0] + numtrials[1] + 0.5 * numtrials[2] + 0.5 * numtrials[3]) {
+        if (a < numtrials[0] + numtrials[1] + 0.8 * numtrials[2] + 0.8 * numtrials[3]) {
           Laserontrial[a] = 1;
         }
         else {
@@ -882,9 +882,6 @@ void loop() {
           nextfxdsolenoid = fxdrwtime[fxdrwct];
         }
       }
-      if (CSlasercheck[cueList[CSct]]) {
-        deliverlasertocues();              // check whether to and deliver laser if needed; relative to the first cue of each trial
-        } 
     }
     else if (secondcue == 1) {
       if (CSsecondcue[cueList[CSct]] == 1) {               // if second cue is sound cue, deliver sound
@@ -909,7 +906,10 @@ void loop() {
       nextcue = 0;
       cueover = true;
     }
-    
+
+    if (CSlasercheck[cueList[CSct]]) {
+      deliverlasertocues();              // check whether to and deliver laser if needed
+    }
 
     if (intervaldistribution > 2 && cueover) {
       CSct++;
@@ -1323,7 +1323,7 @@ void loop() {
 
 // Accept parameters from MATLAB
 void getParams() {
-  int pn = 156;                              // number of parameter inputs
+  int pn = 158;                              // number of parameter inputs
   unsigned long param[pn];                  // parameters
 
   for (int p = 0; p < pn; p++) {
@@ -1468,6 +1468,8 @@ void getParams() {
   CSsecondcuelight[1]            = param[153];
   CSsecondcuelight[2]            = param[154];
   CSsecondcuelight[3]            = param[155];
+  progressivemultiplier[0]       = param[156];
+  progressivemultiplier[1]       = param[157];
 
   for (int p = 0; p < numCS; p++) {
     CSfreq[p] = CSfreq[p] * 1000;         // convert frequency from kHz to Hz
@@ -1739,7 +1741,7 @@ void lights() {
       digitalWrite(CSsecondcuelight[cueList[CSct]], HIGH);
     }
   }
-  lightOff = ts + CSdur[cueList[CSct]];
+  lightOff = ts + lightdur;
   lickctforreq[0] = 0;
   lickctforreq[1] = 0;
   lickctforreq[2] = 0;
