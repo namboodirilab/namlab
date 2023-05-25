@@ -397,7 +397,6 @@ function pushDisconnect(source, eventdata, connectbutton,connectfield,uploadbutt
     set(sendbutton, 'Enable', 'off');
     set(startbutton, 'Enable', 'off');
     set(testbuttons,'Enable','off');
-
 end
 
 % --- Executes on button press in refreshButton.
