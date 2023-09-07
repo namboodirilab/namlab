@@ -1059,12 +1059,12 @@ void loop() {
     Serial.print(" ");
 
     if (intervaldistribution < 3) {
-      u = random(0, 100);
       if (numfxdsolenoids == 1) {
         temp2 = golickreq[cueList[CSct]];     // Go lick requirement only applies to the second reward per cue
       }
       else {
         temp2 = 0;
+        u = random(0, 100); // if a given trial is determined as a rewarded trial, both first and and second rewards will be delivered in the trial 
       }
       if (CSsolenoidcode[2 * cueList[CSct] + numfxdsolenoids] == 35 && CSopentime[2 * cueList[CSct] + numfxdsolenoids] > 0 && u < CSprob[2 * cueList[CSct] + numfxdsolenoids]) {
         digitalWrite(lickretractsolenoid1, HIGH);
