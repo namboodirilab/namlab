@@ -2,7 +2,10 @@
 % This function is called upon clicking the Start button in the GUI
 % Requires variables param and s (serial object).
 
-cla;                                    % Clear the axes before starting
+% cla("reset");                                    % Clear the axes before starting
+% cla;
+cla(actvAx);
+
 %% Parameters
 truncITI = min(maxITI,3*meanITI);                     % minITI is really the mean ITI for exponential dbn
 
@@ -207,6 +210,8 @@ try
         
         code = read(1);                             % read identifier for data
         if code == 0                                % signifies "end of session"
+            set(stopbutton, 'Enable','off');
+            set(disconnectbutton, 'Enable', 'on');
             break
         end
 
