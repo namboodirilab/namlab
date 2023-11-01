@@ -2,7 +2,7 @@ function behavior_GUI
 
 global s running actvAx saveDir textfield fig
 
-mainPath = 'C:\Users\mzhou9\OneDrive - University of California, San Francisco\Behavioral_acquisition_and_analysis';
+mainPath = 'E:\OneDrive - UCSF\Behavioral_acquisition_and_analysis';
 addpath(mainPath)
 saveDir = [mainPath '\data\'];          % where to save data
 
@@ -60,7 +60,7 @@ tempCS ={'Number of trials', 25, 25, 50, 0;
         'Frequency(kHz)', 12, 3, 5, 0;
         'Predicted solenoid', '1+3', '1+3', '1+3', '1+3';
         'Probability of solenoid', '0+100', '0+100', '0+0', '0+0';
-        'Solenoid open time (ms)', '0+40', '3000+40', '0+30', '0+40';
+        'Solenoid open time (ms)', '0+40', '0+40', '0+30', '0+40';
         'Cue duration (ms)', 1000, 1000, 1000, 1000;
         'Delay to solenoid (ms)', '0+3000', '0+3000', '0+3000', '0+3000';
         'Pulse tone (1) or not (0)', 0, 0, 1, 0;
@@ -148,13 +148,13 @@ maxdelaycuetovacuumtext = uilabel('Parent', ITIpanel, 'Text', 'max delay b/w cue
 maxdelaycuetovacuum = uieditfield('numeric','Parent',ITIpanel,'Editable','on','Position', [160 140 50 20], 'Value', 6000);
 meanITItext = uilabel('Parent', ITIpanel, 'Text', 'mean IIT (if same with', 'FontSize', 11,'Position', [20 110 150 20]);
 meanITItextline2 = uilabel('Parent', ITIpanel, 'Text', 'maxITI use fixed ITI)', 'FontSize', 11, 'Position', [20 90 150 20]);
-meanITI = uieditfield('numeric','Parent',ITIpanel,'Editable','on','Position', [160 100 50 20], 'Value', 5000);
+meanITI = uieditfield('numeric','Parent',ITIpanel,'Editable','on','Position', [160 100 50 20], 'Value', 30000);
 minITItext = uilabel('Parent', ITIpanel, 'Text', 'minITI', 'FontSize', 11, 'Position', [55 60 120 20]);
 minITI = uieditfield('numeric','Parent',ITIpanel,'Editable','on','Position', [160 60 50 20]);
 maxITItext = uilabel('Parent', ITIpanel, 'Text', 'maxITI truncation of ITI - ',...
     'FontSize', 11, 'Position', [25 30 180 20]);
 maxITItextline2 = uilabel('Parent',ITIpanel, 'Text', 'min(maxITI, 3*meanITI)', 'FontSize', 11, 'Position', [25 10 140 20]);
-maxITI = uieditfield('numeric','Parent',ITIpanel,'Editable','on','Position', [160 20 50 20], 'Value', 10000);
+maxITI = uieditfield('numeric','Parent',ITIpanel,'Editable','on','Position', [160 20 50 20], 'Value', 90000);
 
 ITIfunctions = [intervaldistribution, maxdelaycuetovacuum, meanITI, minITI, maxITI];
 
@@ -219,9 +219,11 @@ vacuumpanel = uipanel(fig, 'Title', 'Vacuum','Units','normalized','Position', [0
 manualvacuum = uibutton(vacuumpanel, 'Text', 'Manual', 'FontSize', 11, 'Enable','off','Position', [15 12 120 30]);
 
 % Test buttons
-testbuttons = [testCS1,testCS2,testCS3,testCS4,testlaser,testvacuum,manualsolenoid1,manualsolenoid2,manualsolenoid3,manualsolenoid4,...
-    primesolenoid1,primesolenoid2,primesolenoid3,primesolenoid4,manuallickretractsolenoid1,manuallickretractsolenoid2,...
+testbuttons = [testCS1,testCS2,testCS3,testCS4,testlaser,testvacuum,...
+    primesolenoid1,primesolenoid2,primesolenoid3,primesolenoid4,...
     primelickretractsolenoid1, primelickretractsolenoid2, manualvacuum];
+manualbuttons = [manualsolenoid1,manualsolenoid2,manualsolenoid3,manualsolenoid4,...
+    manuallickretractsolenoid1,manuallickretractsolenoid2];
 
 % Make plot
 ax = uiaxes(fig, 'Units','normalized','Position', [0.015 0.01 0.54 0.48]);   % set as global so conditiong_prog can plot
@@ -288,19 +290,19 @@ textfield = struct( ...
 
 % Send, Start and Stop buttons
 stopbutton = uibutton(fig,'Text','Stop','FontSize', 12,'Position',[1180 350 120 50],'Enable','off','ButtonPushedFcn', {@pushStop});
-startbutton = uibutton(fig,'Text','Start','FontSize', 12,'Position',[1040 350 120 50],'Enable','off','ButtonPushedFcn', {@pushStart,testbuttons, ...
+startbutton = uibutton(fig,'Text','Start','FontSize', 12,'Position',[1040 350 120 50],'Enable','off','ButtonPushedFcn', {@pushStart,testbuttons,manualbuttons, ...
     stopbutton,filenamefield,disconnectbutton,experimentmode,laserfunctions,ITIfunctions,bgdsolfunctions,starttimefield, cstable, licktable});
 sendbutton = uibutton(fig,'Text','Send','FontSize', 12,'Position',[900 350 120 50],'Enable','off','ButtonPushedFcn', {@pushSend,...
-    disconnectbutton,refreshbutton,startbutton,testbuttons, cstable, licktable, experimentmode,...
+    disconnectbutton,refreshbutton,startbutton,testbuttons, manualbuttons,cstable, licktable, experimentmode,...
     laserfunctions,ITIfunctions,bgdsolfunctions, Optopanel, ITIpanel, bgdrpanel});
 
 set(uploadbutton,'ButtonPushedFcn', {@pushUpload,availablePorts,uploadbutton,experimentmode,connectbutton});
 set(connectbutton,'ButtonPushedFcn', {@pushConnect,connectbutton,availablePorts,connectfield,disconnectbutton,refreshbutton,sendbutton,cstable,licktable,Optopanel,ITIpanel,bgdrpanel,experimentmode});
-set(disconnectbutton,'ButtonPushedFcn', {@pushDisconnect,connectbutton,connectfield,uploadbutton,refreshbutton,availablePorts,experimentmode,sendbutton,startbutton,testbuttons});
-set(sendbutton, 'ButtonPushedFcn', {@pushSend,disconnectbutton,refreshbutton,startbutton, testbuttons, cstable, licktable, experimentmode,...
+set(disconnectbutton,'ButtonPushedFcn', {@pushDisconnect,connectbutton,connectfield,uploadbutton,refreshbutton,availablePorts,experimentmode,sendbutton,startbutton,testbuttons,manualbuttons});
+set(sendbutton, 'ButtonPushedFcn', {@pushSend,disconnectbutton,refreshbutton,startbutton, testbuttons,manualbuttons,cstable, licktable, experimentmode,...
   laserfunctions, ITIfunctions, bgdsolfunctions, Optopanel, ITIpanel, bgdrpanel});
-set(stopbutton, 'ButtonPushedFcn', {@pushStop, filenamefield, disconnectbutton,testbuttons});
-set(startbutton, 'ButtonPushedFcn', {@pushStart,testbuttons,stopbutton,filenamefield,disconnectbutton,experimentmode,...
+set(stopbutton, 'ButtonPushedFcn', {@pushStop, filenamefield, disconnectbutton,testbuttons,manualbuttons});
+set(startbutton, 'ButtonPushedFcn', {@pushStart,testbuttons,manualbuttons,stopbutton,filenamefield,disconnectbutton,experimentmode,...
     laserfunctions,ITIfunctions,bgdsolfunctions,starttimefield,cstable, licktable});
 set(fig, 'CloseRequestFcn', @closeFigureCallback);
 end
@@ -315,7 +317,7 @@ function pushUpload(source, eventdata, availablePorts,uploadbutton,experimentmod
     assignin('base', "selectedmode", selectedmode);
 
     if selectedmode == 1
-        [status,cmdout] = dos(strcat(basecmd,'C:\Users\mzhou9\Desktop\Behavioral_acquisition_and_analysis_old\uploads\Namlab_behavior_cues.ino.hex',':i'));
+        [status,cmdout] = dos(strcat(basecmd,'C:\Users\User\Desktop\uploads\Namlab_behavior_cues.ino.hex',':i'));
     elseif selectedmode == 2
         [status,cmdout] = dos(strcat(basecmd,'C:\Users\mzhou9\Desktop\Behavioral_acquisition_and_analysis_old\uploads',':i'));
     elseif selectedmode == 3
@@ -381,7 +383,7 @@ function pushConnect(source,eventdata,connectbutton,availablePorts,connectfield,
     end
 end
 
-function pushDisconnect(source, eventdata, connectbutton,connectfield,uploadbutton,refreshbutton,availablePorts,experimentmode,sendbutton,startbutton,testbuttons)
+function pushDisconnect(source, eventdata, connectbutton,connectfield,uploadbutton,refreshbutton,availablePorts,experimentmode,sendbutton,startbutton,testbuttons,manualbuttons)
     global s
 %     fclose(s);
     delete(s);
@@ -397,6 +399,7 @@ function pushDisconnect(source, eventdata, connectbutton,connectfield,uploadbutt
     set(sendbutton, 'Enable', 'off');
     set(startbutton, 'Enable', 'off');
     set(testbuttons,'Enable','off');
+    set(manualbuttons, 'Enable','off');
 end
 
 % --- Executes on button press in refreshButton.
@@ -416,7 +419,7 @@ end
 
 
 %Send button callback
-function pushSend(source,eventdata,disconnectbutton,refreshbutton,startbutton, testbuttons, cstable, licktable, experimentmode,...
+function pushSend(source,eventdata,disconnectbutton,refreshbutton,startbutton, testbuttons, manualbuttons, cstable, licktable, experimentmode,...
   laserfunctions, ITIfunctions, bgdsolfunctions,Optopanel, ITIpanel, bgdrpanel)
 
     global s
@@ -580,10 +583,13 @@ function pushSend(source,eventdata,disconnectbutton,refreshbutton,startbutton, t
     for btn = testbuttons
         set(btn,'Enable','on');
     end  
+    for btn = manualbuttons
+        set(btn, 'Enable','on');
+    end
 end
 
 
-function pushStart(source,eventdata,testbuttons,stopbutton,filenamefield,disconnectbutton,experimentmode,...
+function pushStart(source,eventdata,testbuttons,manualbuttons,stopbutton,filenamefield,disconnectbutton,experimentmode,...
     laserfunctions,ITIfunctions,bgdsolfunctions,starttimefield,cstable, licktable)
     
     global s running actvAx saveDir textfield fig
@@ -702,7 +708,7 @@ function pushStart(source,eventdata,testbuttons,stopbutton,filenamefield,disconn
     flushinput(s);                                  % clear serial input buffer 
 end
 
-function pushStop(source,eventdata,filenamefield,disconnectbutton,testbuttons) 
+function pushStop(source,eventdata,filenamefield,disconnectbutton,testbuttons,manualbuttons) 
     global s running
     running = false;            % Stop running MATLAB code for monitoring arduino
     fprintf(s,'1');             % Send stop signal to arduino; 49 in the Arduino is the ASCII code for 1
@@ -712,6 +718,7 @@ function pushStop(source,eventdata,filenamefield,disconnectbutton,testbuttons)
     set(filenamefield,'Enable','on','Editable','on');
     set(disconnectbutton,'Enable','on');
     set(testbuttons,'Enable','on');
+    set(manualbuttons,'Enable','on');
     %Close Serial Port
 %     fclose(s)
     clear("serialport");                                          % "closes serial"
