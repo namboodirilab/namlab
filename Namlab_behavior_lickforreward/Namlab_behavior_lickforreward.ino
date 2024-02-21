@@ -190,8 +190,8 @@ int solenoid4 = 45;   // pin for solenoid4
 int framein   = 32;   // pin receiving the TTL input for frame start
 int vacuum    = 38;   // pin for vacuum
 int laser     = 40;   // laser to pin 9
-int ttloutpin = 42;   // ttl out pin for starting imaging
-int ttloutstoppin = 44; // ttl out pin for stopping imaging
+int ttloutpin = 42;   // ttl1 - session start / end
+int ttloutstoppin = 44; // ttl2 - reward onset / offset
 
 // Global variables
 unsigned long reading;           // variable to temporarily store data being read
@@ -587,10 +587,12 @@ void setup() {
   lickctforreq[1] = 0;                 // Number of licks2 during cue for first trial is initialized to 0
 
   // UNCOMMENT THESE LINES FOR TRIGGERING IMAGE COLLECTION AT BEGINNING
-  digitalWrite(ttloutpin, HIGH);
-  delay(100);
-  digitalWrite(ttloutpin, LOW);
+  //digitalWrite(ttloutpin, HIGH);
+  //delay(100);
+  //digitalWrite(ttloutpin, LOW);
   // TILL HERE
+
+  digitalWrite(ttloutpin, HIGH);
 
   // start session
   start = millis();                    // start time
@@ -698,6 +700,7 @@ void loop() {
 
     if (lickopentime[licktubethatmetlickreq] > 0 && u < lickprob[licktubethatmetlickreq] && minrewards[licktubethatmetlickreq] > 0) {          // set lick solenoid high
       digitalWrite(licksolenoid[licktubethatmetlickreq], HIGH);
+      digitalWrite(ttloutstoppin, HIGH);
       Serial.print(0);                                // indicates the reward is given
       Serial.print('\n');
     }
@@ -724,6 +727,7 @@ void loop() {
 
   if (ts >= solenoidOff && solenoidOff != 0) {
     digitalWrite(licksolenoid[licktubethatmetlickreq], LOW);
+    digitalWrite(ttloutstoppin, LOW);
     solenoidOff = 0;
   }
 
@@ -1255,9 +1259,10 @@ void software_Reboot()
 
 // End session //////////////
 void endSession() {
-  digitalWrite(ttloutstoppin, HIGH);
-  delay(100);
-  digitalWrite(ttloutstoppin, LOW);
+  //digitalWrite(ttloutstoppin, HIGH);
+  //delay(100);
+  //digitalWrite(ttloutstoppin, LOW);
+  digitalWrite(ttloutpin, LOW);
   Serial.print(0);                       //   code data as end of session
   Serial.print(" ");
   Serial.print(ts);                      //   send timestamp
