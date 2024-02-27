@@ -15,6 +15,9 @@ logInit = 10^6;                                      % Log of all serial input e
 bgdsolenoidsinit = ceil(sum(numtrials)*truncITI*3/T_bgd);      % number of background solenoids to initialize = total time spent in ITI*rate of rewards*3. It won't be more than 3 times the expected rate
 
 xWindow = [-(truncITI+1000) maxdelaycuetovacuum];  % Defines x-axis limits for the plot.
+if xWindow(1)<-90*1000 % if ITI is longer than 90 s truncate plot limit so licks in trial period are visible on raster plot
+    xWindow(1) = -90*1000;
+end
 fractionPSTHdisplay = 0.15;             % What fraction of the display is the PSTH?
 yOffset = ceil(fractionPSTHdisplay*sum(numtrials)/(1-fractionPSTHdisplay));% amount by which the y-axis extends beyond trials so as to plot the PSTH of licks
 binSize = 1000;                         % in ms
