@@ -11,7 +11,7 @@ cuesinit = sum(numtrials);                               % number of cues to ini
 logInit = 10^6;                                      % Log of all serial input events from the Arduino
 bgdsolenoidsinit = ceil(sum(numtrials)*truncITI*3/T_bgd);      % number of background solenoids to initialize = total time spent in ITI*rate of rewards*3. It won't be more than 3 times the expected rate
 
-xWindow = [-(truncITI+1000) maxdelaycuetovacuum];  % Defines x-axis limits for the plot.
+xWindow = [-(truncITI+1000) maxdelaycuetovacuum+3000];  % Defines x-axis limits for the plot.
 if xWindow(1)<-100*1000
     xWindow(1) = -100*1000;
 end
@@ -20,7 +20,7 @@ yOffset = ceil(fractionPSTHdisplay*sum(numtrials)/(1-fractionPSTHdisplay));% amo
 binSize = 1000;                         % in ms
 xbins = xWindow(1):binSize:xWindow(2);  % Bins in x-axis for PSTH
 
-ticks = -(truncITI+1000):10000:maxdelaycuetovacuum;% tick marks for x-axis of raster plot. moves through by 2s
+ticks = -(truncITI+1000):10000:maxdelaycuetovacuum+3000;% tick marks for x-axis of raster plot. moves through by 2s
 labels = ticks'/1000;                     % convert tick labels to seconds
 labelsStr = cellstr(num2str(labels));     % convert to cell of strings
 
