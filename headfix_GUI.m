@@ -68,7 +68,7 @@ guidata(hObject, handles);
 % global actvAx saveDir cam             % to use camera uncomment this
 global actvAx saveDir                   % to use camera comment this
 
-mainPath = 'C:\Users\namboodirilab\OneDrive - University of California, San Francisco\Behavioral_acquisition_and_analysis';
+mainPath = 'C:\Users\mzhou9\OneDrive - University of California, San Francisco\Behavioral_acquisition_and_analysis';
 addpath(mainPath)
 saveDir = [mainPath '\data\'];          % where to save data
 
@@ -332,7 +332,8 @@ basecmd = strcat('"C:\Program Files (x86)\Arduino\hardware\tools\avr/bin/avrdude
 selectedmode = get(handles.experimentmode,'Value');
 
 if selectedmode == 1
-    [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_cues.ino.hex',':i'));
+    
+    [status,cmdout] = dos(strcat(basecmd,'C:\Users\mzhou9\Desktop\Behavioral_acquisition_and_analysis_old\uploads\Namlab_behavior_cues.ino.hex',':i'));
 elseif selectedmode == 2
     [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_randomrewards.ino.hex',':i'));
 elseif selectedmode == 3
