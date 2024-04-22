@@ -51,8 +51,6 @@ both4 = 0;% Counter for both light and cue 4's
 eventlog = nan(logInit,3);% empty event log for all events 
 l = 0;% Counter for logged events
 fisrtcueonset = NaN;
-endtrial = false;
-endtime = 0;
 
 % The following variables are declared because they are stored in the
 % buffer until a trial ends. This is done so that the plot can be aligned
@@ -376,10 +374,7 @@ try
                      plot([time-temptrialdur;time-temptrialdur],[-trial;-trial-1],'Color',[0.97 0.28 0.18],'LineWidth',2);hold on
                  end
             end 
-        elseif code == 14                            % Vaccum;    
-            endtrial = true;
-            endtime = time;
-        elseif endtrial == true && time-endtime>=3000
+        elseif code == 14                            % Vaccum;            
             if (experimentmode == 1 && intervaldistribution<3) || experimentmode == 4 || experimentmode == 6  
                 tempcuetovacuumdelay = NaN;
                 if ~isnan(tempsecondcue1)
@@ -618,8 +613,7 @@ try
                 tempsecondlight3 = NaN;
                 tempsecondlight4 = NaN;
                 firstcueonset = NaN;
-                endtime = NaN;
-                endtrial = false;
+
             end
         elseif code == 15                            % CS1 cue onset; GREEN
             if itemflag == 0
