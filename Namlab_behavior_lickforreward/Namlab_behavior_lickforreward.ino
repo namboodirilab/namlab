@@ -232,7 +232,7 @@ unsigned long r_bgd;             // magnitude of background solenoid; in solenoi
 unsigned long mindelaybgdtocue;  // minimum delay between background solenoid and the following cue
 unsigned long mindelayfxdtobgd;  // minimum delay between fixed solenoid to the next background solenoid
 unsigned long experimentmode;    // if==1, run experiment with cues; if==2, give only background solenoids; if==3, give lick dependent rewards
-boolean trialbytrialbgdsolenoidflag;  // if ==1, run experiment by changing bgd solenoid rate on a trial-by-trial basis
+boolean isibgdsolenoidflag;  // if ==1, run experiment by changing bgd solenoid rate on a trial-by-trial basis
 unsigned long totbgdsolenoid;         // total number of background solenoids if experimentmode==2, i.e. when only Poisson solenoids are delivered.
 unsigned long CSsolenoidcode[2 * numCS];
 boolean rewardactive;
@@ -870,7 +870,7 @@ void getParams() {
   mindelaybgdtocue       = param[71];                   // get minimum delay between a background solenoid and the next cue, in ms
   mindelayfxdtobgd       = param[72];                   // get minimum delay between a fixed solenoid and the next background solenoid, in ms
   experimentmode         = param[73];
-  trialbytrialbgdsolenoidflag = (boolean)param[74];
+  isibgdsolenoidflag = (boolean)param[74];
   totbgdsolenoid         = param[75];                   // total number of background solenoids to stop the session if the session just has Poisson solenoids, i.e. experimentmode==1
   reqlicknum[0]          = param[76];
   reqlicknum[1]          = param[77];

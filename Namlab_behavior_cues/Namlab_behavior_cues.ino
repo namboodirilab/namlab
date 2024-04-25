@@ -743,20 +743,20 @@ void setup() {
     nextlaser = random(0, temp);
   }
 
-  u = random(0, 10000);
-  temp = (float)u / 10000;
-  temp = log(temp);
-//  if (trialbytrialbgdsolenoidflag == 0) {
-  nextbgdsolenoid = 0 - T_bgd * temp;
-//  }
-//  else if (trialbytrialbgdsolenoidflag == 1) {
-//    nextbgdsolenoid = 0 - T_bgdvec[0] * temp;
-//  }
-  while (nextbgdsolenoid > (nextcue - mindelaybgdtocue) && experimentmode != 1 && ~isibgdsolenoidflag) {
+  if (r_bgd>0) {
     u = random(0, 10000);
     temp = (float)u / 10000;
     temp = log(temp);
     nextbgdsolenoid = 0 - T_bgd * temp;
+    while (nextbgdsolenoid > (nextcue - mindelaybgdtocue) && experimentmode != 1 && !isibgdsolenoidflag) {
+      u = random(0, 10000);
+      temp = (float)u / 10000;
+      temp = log(temp);
+      nextbgdsolenoid = 0 - T_bgd * temp;
+    }
+  }
+  else {
+    nextbgdsolenoid = 0;
   }
 
   if (intervaldistribution == 3) {
@@ -1063,12 +1063,12 @@ void loop() {
     Serial.print(" ");
 
     if (intervaldistribution < 3) {
+      u = random(0,100); // if a given trial is determined as a rewarded trial, both first and and second rewards will be delivered in the trial 
       if (numfxdsolenoids == 1) {
         temp2 = golickreq[cueList[CSct]];     // Go lick requirement only applies to the second reward per cue
       }
       else {
         temp2 = 0;
-        u = random(0, 100); // if a given trial is determined as a rewarded trial, both first and and second rewards will be delivered in the trial 
       }
       if (CSsolenoidcode[2 * cueList[CSct] + numfxdsolenoids] == 35 && CSopentime[2 * cueList[CSct] + numfxdsolenoids] > 0 && u < CSprob[2 * cueList[CSct] + numfxdsolenoids]) {
         digitalWrite(lickretractsolenoid1, HIGH);
@@ -1089,12 +1089,22 @@ void loop() {
       else {
         Serial.print(1);                       //   this indicates that the solenoid was not given
         Serial.print('\n');
+        // Serial.print(CSopentime[2 * cueList[CSct] + numfxdsolenoids]);
+        // Serial.print('\n');
+        // Serial.print(u);
+        // Serial.print('\n');
+        // Serial.print(CSprob[2 * cueList[CSct] + numfxdsolenoids]);
+        // Serial.print('\n');
+        // Serial.print(lickctforreq[golicktube[cueList[CSct]]]);
+        // Serial.print('\n');
+        // Serial.print(temp2);
+        // Serial.print('\n');
       }
       solenoidOff = ts + CSopentime[2 * cueList[CSct] + numfxdsolenoids];      // set solenoid off time
       numfxdsolenoids++;                                     // Increase fixed solenoids given till now for this cue
 
       if (numfxdsolenoids == 1) { //set time for next fixed solenoid
-        nextfxdsolenoid = ts + CS_t_fxd[2 * cueList[CSct] + numfxdsolenoids] - CS_t_fxd[2 * cueList[CSct]];
+        nextfxdsolenoid = ts + CS_t_fxd[2 * cueList[CSct] + numfxdsolenoids] - CS_t_fxd[2 * cueList[CSct]];  
       }
       else {
         nextfxdsolenoid = 0;
@@ -1157,7 +1167,7 @@ void loop() {
   }
 
   if (ts >= nextbgdsolenoid && nextbgdsolenoid != 0) { // give background solenoid 
-    if ((ITIflag && ~isibgdsolenoidflag && r_bgd>0) || (isibgdsolenoidflag && r_bgd>0)) {
+    if ((ITIflag && !isibgdsolenoidflag) || isibgdsolenoidflag){
       digitalWrite(backgroundsolenoid, HIGH);          // turn on solenoid
       solenoidOff = ts + r_bgd;              // set solenoid off time
       Serial.print(7);                       //   code data as background solenoid onset timestamp
@@ -1171,18 +1181,8 @@ void loop() {
     u = random(0, 10000);
     temp = (float)u / 10000;
     temp = log(temp);
-//    if (trialbytrialbgdsolenoidflag == 0) {
     nextbgdsolenoid = ts + r_bgd - T_bgd * temp;// next background solenoid can't be earlier than the offset of the solenoid
-//    }
-//    else if (trialbytrialbgdsolenoidflag == 1) {
-//      if (T_bgdvec[CSct] > 0) {
-//        nextbgdsolenoid = ts + r_bgd - T_bgdvec[CSct] * temp;// next background solenoid can't be earlier than the offset of the solenoid
-//      }
-//      else {
-//        nextbgdsolenoid = 0;
-//      }
-//    }
-    while (nextbgdsolenoid > (nextcue - mindelaybgdtocue) && ~isibgdsolenoidflag) {
+    while (nextbgdsolenoid > (nextcue - mindelaybgdtocue) && !isibgdsolenoidflag) {
       u = random(0, 10000);
       temp = (float)u / 10000;
       temp = log(temp);
@@ -1306,25 +1306,14 @@ void loop() {
       lickctforreq[1] = 0;                 // reset lick2 count to zero at end of trial
       lickctforreq[2] = 0;                 // reset lick3 count to zero at end of trial
 
-      u = random(0, 10000);
-      temp = (float)u / 10000;
-      temp = log(temp);
-//      if (trialbytrialbgdsolenoidflag == 0) {
-      nextbgdsolenoid = ts + mindelaybgdtocue + r_bgd - T_bgd * temp;// next background solenoid can't be earlier than the offset of the solenoid
-//      }
-//      else if (trialbytrialbgdsolenoidflag == 1) {
-//        if (T_bgdvec[CSct] > 0) {
-//          nextbgdsolenoid = ts + mindelaybgdtocue + r_bgd - T_bgdvec[CSct] * temp;// next background solenoid can't be earlier than the offset of the solenoid
-//        }
-//        else {
-//          nextbgdsolenoid = 0;
-//        }
-//      }
-      while (nextbgdsolenoid > (nextcue - mindelaybgdtocue) && isibgdsolenoidflag) {// next background solenoid can't be closer to CS than mindelaybgdtocue
-        u = random(0, 10000);
-        temp = (float)u / 10000;
-        temp = log(temp);
-        nextbgdsolenoid = ts + mindelaybgdtocue + r_bgd - T_bgd * temp;
+      if (!isibgdsolenoidflag){
+        nextbgdsolenoid = nextcue - mindelaybgdtocue + 1;
+        while (nextbgdsolenoid > (nextcue - mindelaybgdtocue)) {
+          u = random(0, 10000);
+          temp = (float)u / 10000;
+          temp = log(temp);
+          nextbgdsolenoid = ts + mindelaybgdtocue + r_bgd - T_bgd * temp;
+        }
       }
     }
   }

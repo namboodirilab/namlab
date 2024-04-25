@@ -22,7 +22,7 @@ function varargout = headfix_GUI(varargin)
 
 % Edit the above text to modify the response to help headfix_GUI
 
-% Last Modified by GUIDE v2.5 11-May-2023 17:23:39
+% Last Modified by GUIDE v2.5 25-Apr-2024 14:26:04
 
 % cd 'F:\acads\Stuber lab\headfix'; %Change to directory
 
@@ -68,7 +68,7 @@ guidata(hObject, handles);
 % global actvAx saveDir cam             % to use camera uncomment this
 global actvAx saveDir                   % to use camera comment this
 
-mainPath = 'C:\Users\mzhou9\OneDrive - University of California, San Francisco\Behavioral_acquisition_and_analysis';
+mainPath = 'D:\OneDrive - UCSF\Behavioral_acquisition_and_analysis';
 addpath(mainPath)
 saveDir = [mainPath '\data\'];          % where to save data
 
@@ -104,7 +104,7 @@ set(handles.r_bgd, 'Enable', 'off');
 set(handles.mindelaybgdtocue, 'Enable', 'off'); 
 set(handles.mindelayfxdtobgd, 'Enable', 'off');
 set(handles.totPoisssolenoid, 'Enable', 'off');
-set(handles.checkboxtrialbytrial, 'Enable', 'off');
+set(handles.checkboxisibgd, 'Enable', 'off');
 set(handles.checkboxrandlaser, 'Enable', 'off');
 set(handles.lasertrialbytrial, 'Enable', 'off');
 set(handles.laserlatency, 'Enable', 'off');
@@ -249,7 +249,7 @@ selectedmode = get(handles.experimentmode, 'Value');
 if selectedmode == 1 || selectedmode == 4 || selectedmode ==6
     set(handles.sendButton,'Enable','on') 
     set(handles.csproperties, 'Enable', 'on');
-    set(handles.checkboxtrialbytrial, 'Enable', 'on');
+    set(handles.checkboxisibgd, 'Enable', 'on');
     set(handles.checkboxrandlaser, 'Enable', 'on');
     set(handles.lasertrialbytrial, 'Enable', 'on');
     set(handles.laserlatency, 'Enable', 'on');
@@ -280,7 +280,7 @@ elseif selectedmode == 2
     set(handles.mindelaybgdtocue, 'Enable', 'on'); 
     set(handles.mindelayfxdtobgd, 'Enable', 'on');
     set(handles.totPoisssolenoid, 'Enable', 'on');
-    set(handles.checkboxtrialbytrial, 'Enable', 'on');
+    set(handles.checkboxisibgd, 'Enable', 'on');
     set(handles.checkboxrandlaser, 'Enable', 'on');
     set(handles.lasertrialbytrial, 'Enable', 'on');
     set(handles.lasertrialbytrial, 'Enable', 'on');
@@ -328,12 +328,12 @@ portList = get(handles.availablePorts,'String');    % get list from popup menu
 selected = get(handles.availablePorts,'Value');     % find which is selected
 port     = portList{selected};                      % selected port
            
-basecmd = strcat('"C:\Program Files (x86)\Arduino\hardware\tools\avr/bin/avrdude" -C"C:\Program Files (x86)\Arduino\hardware\tools\avr/etc/avrdude.conf" -v -patmega2560 -cwiring -P',port,' -b115200 -D -Uflash:w:');
+basecmd = strcat('"C:\Users\namboodirilab\AppData\Local\Arduino15\packages\arduino\tools\avrdude\6.3.0-arduino17\bin\avrdude" -C"C:\Users\namboodirilab\AppData\Local\Arduino15\packages\arduino\tools\avrdude\6.3.0-arduino17\etc\avrdude.conf" -v -patmega2560 -cwiring -P',port,' -b115200 -D -Uflash:w:');
 selectedmode = get(handles.experimentmode,'Value');
 
 if selectedmode == 1
     
-    [status,cmdout] = dos(strcat(basecmd,'C:\Users\mzhou9\Desktop\Behavioral_acquisition_and_analysis_old\uploads\Namlab_behavior_cues.ino.hex',':i'));
+    [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\uploads\Namlab_behavior_cues_test.ino.hex',':i'));
 elseif selectedmode == 2
     [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_randomrewards.ino.hex',':i'));
 elseif selectedmode == 3
@@ -386,7 +386,7 @@ set(handles.r_bgd, 'Enable', 'off');
 set(handles.mindelaybgdtocue, 'Enable', 'off'); 
 set(handles.mindelayfxdtobgd, 'Enable', 'off');
 set(handles.totPoisssolenoid, 'Enable', 'off');
-set(handles.checkboxtrialbytrial, 'Enable', 'off');
+set(handles.checkboxisibgd, 'Enable', 'off');
 set(handles.checkboxrandlaser, 'Enable', 'off');
 set(handles.lasertrialbytrial, 'Enable', 'off');
 set(handles.laserlatency, 'Enable', 'off');
@@ -646,12 +646,12 @@ flushinput(s)
 
 % --- Executes on button press in testserialport.
 function testserialport_Callback(hObject, eventdata, handles)
-% hObject    handle to testserialport (see GCBO)
+% hObject    handle to testsersialport (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 global s running actvAx saveDir
 
-mainPath = 'C:\Users\namboodirilab\OneDrive - University of California, San Francisco\Behavioral_acquisition_and_analysis';	
+mainPath = 'D:\OneDrive - UCSF\Behavioral_acquisition_and_analysis';
 addpath(mainPath)	
 saveDir = [mainPath '\serialtest\'];          % save serial testing data here
 
@@ -859,7 +859,7 @@ mindelaybgdtocue = get(handles.mindelaybgdtocue,'String');
 mindelaybgdtocue = str2double(mindelaybgdtocue);
 mindelayfxdtobgd = get(handles.mindelayfxdtobgd,'String');
 mindelayfxdtobgd = str2double(mindelayfxdtobgd);
-trialbytrialbgdsolenoidflag = get(handles.checkboxtrialbytrial,'Value');
+isibgdsolenoidflag = get(handles.checkboxisibgd,'Value');
 totPoisssolenoid = get(handles.totPoisssolenoid,'String'); % Total Poisson solenoids to deliver
 totPoisssolenoid = str2double(totPoisssolenoid);
 
@@ -907,7 +907,7 @@ Omissionlasercheck = get(handles.Omissionlasercheck, 'Value');
 inputs = [numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur, CS_t_fxd,...
         CSpulse, CSspeaker, golickreq, golicktube, CSsignal, meanITI, maxITI, minITI, intervaldistribution,...
         backgroundsolenoid, T_bgd, r_bgd, mindelaybgdtocue, mindelayfxdtobgd,...
-        experimentmode, trialbytrialbgdsolenoidflag, totPoisssolenoid,...
+        experimentmode, isibgdsolenoidflag, totPoisssolenoid,...
         reqlicknum, licksolenoid, lickprob, lickopentime, delaytoreward, delaytolick,...
         minrewards, signaltolickreq, soundsignalpulse, soundfreq, sounddur, lickspeaker,...
         laserlatency, laserduration, randlaserflag, laserpulseperiod, laserpulseoffperiod,...
@@ -962,7 +962,7 @@ set(handles.T_bgd,'Enable','off')
 set(handles.r_bgd,'Enable','off')
 set(handles.mindelaybgdtocue,'Enable','off')
 set(handles.mindelayfxdtobgd,'Enable','off')
-set(handles.checkboxtrialbytrial,'Enable','off')
+set(handles.checkboxisibgd,'Enable','off')
 set(handles.checkboxintervaldistribution,'Enable','off')
 set(handles.totPoisssolenoid,'Enable','off')
 
@@ -1006,7 +1006,7 @@ set(handles.testlaser,'Enable','on')
 params = sprintf('%G+',numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur, CS_t_fxd,...
           CSpulse, CSspeaker, golickreq, golicktube, CSsignal, meanITI, maxITI, minITI, intervaldistribution,...
           backgroundsolenoid, T_bgd, r_bgd, mindelaybgdtocue, mindelayfxdtobgd,...
-          experimentmode, trialbytrialbgdsolenoidflag, totPoisssolenoid,...
+          experimentmode, isibgdsolenoidflag, totPoisssolenoid,...
           reqlicknum, licksolenoid, lickprob, lickopentime, delaytoreward, delaytolick,...
           minrewards, signaltolickreq, soundsignalpulse, soundfreq, sounddur, lickspeaker,...
           laserlatency, laserduration, randlaserflag, laserpulseperiod, laserpulseoffperiod,...
@@ -1090,7 +1090,7 @@ mindelaybgdtocue = get(handles.mindelaybgdtocue,'String');
 mindelaybgdtocue = str2double(mindelaybgdtocue);
 mindelayfxdtobgd = get(handles.mindelayfxdtobgd,'String');
 mindelayfxdtobgd = str2double(mindelayfxdtobgd);
-trialbytrialbgdsolenoidflag = get(handles.checkboxtrialbytrial,'Value');
+isibgdsolenoidflag = get(handles.checkboxisibgd,'Value');
 totPoisssolenoid = get(handles.totPoisssolenoid,'String'); % Total Poisson solenoids to deliver
 totPoisssolenoid = str2double(totPoisssolenoid);
 
@@ -1138,7 +1138,7 @@ Omissionlasercheck = get(handles.Omissionlasercheck, 'Value');
 inputs = [numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur, CS_t_fxd,...
         CSpulse, CSspeaker, golickreq, golicktube, CSsignal, meanITI, maxITI, minITI, intervaldistribution,...
         backgroundsolenoid, T_bgd, r_bgd, mindelaybgdtocue, mindelayfxdtobgd,...
-        experimentmode, trialbytrialbgdsolenoidflag, totPoisssolenoid,...
+        experimentmode, isibgdsolenoidflag, totPoisssolenoid,...
         reqlicknum, licksolenoid, lickprob, lickopentime, delaytoreward, delaytolick,...
         minrewards, signaltolickreq, soundsignalpulse, soundfreq, sounddur, lickspeaker,...
         laserlatency, laserduration, randlaserflag, laserpulseperiod, laserpulseoffperiod,...
@@ -1227,7 +1227,7 @@ fname = get(handles.fileName,'String');
 params = sprintf('%G+',numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur, CS_t_fxd,...
           CSpulse, CSspeaker, golickreq, golicktube, CSsignal, meanITI, maxITI, minITI, intervaldistribution,...
           backgroundsolenoid, T_bgd, r_bgd, mindelaybgdtocue, mindelayfxdtobgd,...
-          experimentmode, trialbytrialbgdsolenoidflag, totPoisssolenoid,...
+          experimentmode, isibgdsolenoidflag, totPoisssolenoid,...
           reqlicknum, licksolenoid, lickprob, lickopentime, delaytoreward, delaytolick,...
           minrewards, signaltolickreq, soundsignalpulse, soundfreq, sounddur, lickspeaker,...
           laserlatency, laserduration, randlaserflag, laserpulseperiod, laserpulseoffperiod,...
