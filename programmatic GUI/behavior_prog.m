@@ -238,6 +238,7 @@ try
         %   16 = sound 2
         %   17 = sound 3                    % leave room for possible cues 
         %   18 = sound 4
+        %   19 = background solenoid cue
         %   21 = light 1
         %   22 = light 2
         %   23 = light 3
@@ -919,7 +920,7 @@ try
                  "CS2lasercheck"; "CS3lasercheck"; "CS4lasercheck";"fixedsidecheck"; "Rewardlasercheck";...
                  "CSrampmaxdelay"; "CSrampexp"; "CSincrease"; "delaybetweensoundandlight";...
                  "CSsecondcue";"CSsecondcuefreq";"CSsecondcuespeaker";"CSsecondcuelight"; ...
-                 "progressivemultiplier"]);
+                 "progressivemultiplier";"bgdsolenoidcue"]);
 
         params.(paramnames(1)) = param(1:4);                        % numtrials (3)
         params.(paramnames(2)) = param(5:8);                        % CS frequency (3)
@@ -983,6 +984,8 @@ try
         params.(paramnames(60)) = param(149:152);                   % CS second cue speaker number
         params.(paramnames(61)) = param(153:156);                   % CS second cue light number
         params.(paramnames(62)) = param(157:158);                   % progressive ratio or interval multiplier (2)
+        params.(paramnames(63)) = param(159);
+        
   
     assignin('base','eventlog',eventlog);
 %     file = [saveDir fname '_' num2str(r_bgd) '_' num2str(T_bgd) '_'  str probstr laserstr bgdsolenoidstr extinctionstr date '.mat'];
@@ -1076,7 +1079,7 @@ catch exception
                  "CS2lasercheck"; "CS3lasercheck"; "CS4lasercheck";"fixedsidecheck"; "Rewardlasercheck";...
                  "CSrampmaxdelay"; "CSrampexp"; "CSincrease"; "delaybetweensoundandlight";...
                  "CSsecondcue";"CSsecondcuefreq";"CSsecondcuespeaker";"CSsecondcuelight"; ...
-                 "progressivemultiplier"]);
+                 "progressivemultiplier";"bgdsolenoidcue"]);
 
         params.(paramnames(1)) = param(1:4);                        % numtrials (3)
         params.(paramnames(2)) = param(5:8);                        % CS frequency (3)
@@ -1140,6 +1143,7 @@ catch exception
         params.(paramnames(60)) = param(149:152);                   % CS second cue speaker number
         params.(paramnames(61)) = param(153:156);                   % CS second cue light number
         params.(paramnames(62)) = param(157:158);                   % progressive ratio/interval multiplier (2)
+        params.(paramnames(63)) = param(159);                       % whether background reward is preceded by a cue
     
     save(file, 'eventlog', 'params','exception')
     end 

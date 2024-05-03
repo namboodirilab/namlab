@@ -232,7 +232,8 @@ unsigned long mindelaybgdtocue;  // minimum delay between background solenoid an
 unsigned long mindelayfxdtobgd;  // minimum delay between fixed solenoid to the next background solenoid
 unsigned long experimentmode;    // if==1, run experiment with cues; if==2, give only background solenoids; if==3, give lick dependent rewards
 //boolean trialbytrialbgdsolenoidflag;  // if ==1, run experiment by changing bgd solenoid rate on a trial-by-trial basis
-boolean isibgdsolenoidflag;
+boolean isibgdsolenoidflag;       // if==1, background reward is given thoughout a trial including inter-stimulus interval (cue-reward delay)
+boolean bgdsolenoidcueflag;       // if==1, background solenoid is preceded by a cue; the cue feature and delay to reward is hard-coded for now
 unsigned long totbgdsolenoid;         // total number of background solenoids if experimentmode==2, i.e. when only Poisson solenoids are delivered.
 unsigned long CSsolenoidcode[2 * numCS];
 boolean rewardactive;
@@ -294,6 +295,7 @@ int licktubethatmetlickreq;      // Lick tube that met the lick requirement
 
 unsigned long nextcue;           // timestamp of next trial
 unsigned long nextbgdsolenoid;   // timestamp of next background solenoid onset
+unsigned long nextbgdcue;        // timestamp of next background solenoid cue
 unsigned long nextfxdsolenoid;   // timestamp of next fixed solenoid onset
 unsigned long nextvacuum;        // timestamp of next vacuum
 unsigned long nextvacuumOff;     // timestamp of next vacuum off
@@ -303,6 +305,7 @@ unsigned long cueOff;            // timestamp to turn off cues (after cue starte
 unsigned long cuePulseOff;       // timestamp to pulse cue off (for CS-)
 unsigned long cuePulseOn;        // timestamp to pulse cue on (for CS-)
 unsigned long lightOff;          // timestamp to turn off light
+unsigned long bgdcueOff;         // timestamp to turn off background solenoid cue
 
 unsigned long nextttlouton;      // timestamp to turn on the TTL out pin for starting imaging
 unsigned long nextttloutoff;     // timestamp to turn off the TTL out pin for starting imaging
@@ -743,6 +746,7 @@ void setup() {
     nextlaser = random(0, temp);
   }
 
+  nextbgdcue = 0;
   if (r_bgd>0) {
     u = random(0, 10000);
     temp = (float)u / 10000;
@@ -753,6 +757,9 @@ void setup() {
       temp = (float)u / 10000;
       temp = log(temp);
       nextbgdsolenoid = 0 - T_bgd * temp;
+    }
+    if (bgdsolenoidcueflag) {
+      nextbgdcue = nextbgdsolenoid-500; // a cue is given 500ms before a background reward
     }
   }
   else {
@@ -766,6 +773,7 @@ void setup() {
     cuetime = new unsigned long[totalnumtrials];
   }
 
+  bgdcueOff = 0;
   cueOff     = nextcue + CSdur[cueList[0]];           // get timestamp of first cue cessation
   ITIflag = true;
   solenoidOff = 0;
@@ -846,6 +854,25 @@ void loop() {
 
   licking();                           // determine if lick occured or was withdrawn
   frametimestamp();                    // store timestamps of frames
+
+  if (ts >= nextbgdcue && nextbgdcue !=0) { // everything about background cue is hardcoded for now - 0.25s 3khz tone at speaker 2
+    Serial.print(19);
+    Serial.print(" ");
+    Serial.print(ts);
+    Serial.print(" ");
+    Serial.print(0);
+    Serial.print('\n');
+    tone(speaker2,3000);
+    digitalWrite(ttloutstoppin, HIGH);
+    bgdcueOff = nextbgdcue + 250; // backgrund cue is 250ms long
+    nextbgdcue = 0;
+  }
+
+  if (ts >= bgdcueOff && bgdcueOff !=0) {
+    noTone(speaker2);
+    digitalWrite(ttloutstoppin, LOW);
+    bgdcueOff = 0;
+  }
 
   if (ts >= nextcue && ((ITIflag && intervaldistribution < 3) || intervaldistribution > 2) && nextcue != 0) {
     if (secondcue == 0) {
@@ -1182,11 +1209,11 @@ void loop() {
     temp = (float)u / 10000;
     temp = log(temp);
     nextbgdsolenoid = ts + r_bgd - T_bgd * temp;// next background solenoid can't be earlier than the offset of the solenoid
-    while (nextbgdsolenoid > (nextcue - mindelaybgdtocue) && !isibgdsolenoidflag) {
-      u = random(0, 10000);
-      temp = (float)u / 10000;
-      temp = log(temp);
-      nextbgdsolenoid = ts + r_bgd - T_bgd * temp;
+    if (nextbgdsolenoid > (nextcue - mindelaybgdtocue) && !isibgdsolenoidflag) {
+      nextbgdsolenoid = 0;
+    }
+    if (bgdsolenoidcueflag) {
+      nextbgdcue = nextbgdsolenoid - 500;
     }
   }
 
@@ -1307,13 +1334,13 @@ void loop() {
       lickctforreq[2] = 0;                 // reset lick3 count to zero at end of trial
 
       if (!isibgdsolenoidflag){
-        nextbgdsolenoid = nextcue - mindelaybgdtocue + 1;
-        while (nextbgdsolenoid > (nextcue - mindelaybgdtocue)) {
-          u = random(0, 10000);
-          temp = (float)u / 10000;
-          temp = log(temp);
-          nextbgdsolenoid = ts + mindelaybgdtocue + r_bgd - T_bgd * temp;
-        }
+        u = random(0, 10000);
+        temp = (float)u / 10000;
+        temp = log(temp);
+        nextbgdsolenoid = ts + r_bgd - T_bgd * temp;// next background solenoid can't be earlier than the offset of the solenoid
+        if (nextbgdsolenoid > (nextcue - mindelaybgdtocue)) {
+          nextbgdsolenoid = 0;
+          }
       }
     }
   }
@@ -1322,7 +1349,7 @@ void loop() {
 
 // Accept parameters from MATLAB
 void getParams() {
-  int pn = 158;                              // number of parameter inputs
+  int pn = 159;                              // number of parameter inputs
   unsigned long param[pn];                  // parameters
 
   for (int p = 0; p < pn; p++) {
@@ -1469,6 +1496,7 @@ void getParams() {
   CSsecondcuelight[3]            = param[155];
   progressivemultiplier[0]       = param[156];
   progressivemultiplier[1]       = param[157];
+  bgdsolenoidcueflag             = (boolean)param[158];
 
   for (int p = 0; p < numCS; p++) {
     CSfreq[p] = CSfreq[p] * 1000;         // convert frequency from kHz to Hz

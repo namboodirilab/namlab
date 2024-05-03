@@ -232,7 +232,8 @@ unsigned long r_bgd;             // magnitude of background solenoid; in solenoi
 unsigned long mindelaybgdtocue;  // minimum delay between background solenoid and the following cue
 unsigned long mindelayfxdtobgd;  // minimum delay between fixed solenoid to the next background solenoid
 unsigned long experimentmode;    // if==1, run experiment with cues; if==2, give only background solenoids; if==3, give lick dependent rewards
-boolean trialbytrialbgdsolenoidflag;  // if ==1, run experiment by changing bgd solenoid rate on a trial-by-trial basis
+boolean isibgdsolenoidflag;       // if==1, background reward is given thoughout a trial including inter-stimulus interval (cue-reward delay)
+boolean bgdsolenoidcueflag;       // if==1, background solenoid is preceded by a cue; the cue feature and delay to reward is hard-coded for now
 unsigned long totbgdsolenoid;         // total number of background solenoids if experimentmode==2, i.e. when only Poisson solenoids are delivered.
 unsigned long CSsolenoidcode[2 * numCS];
 boolean rewardactive;
@@ -572,33 +573,7 @@ void setup() {
   }
   // initialize T_bgdvec to the non-zero background solenoid rates for trials
   int r;
-  if (trialbytrialbgdsolenoidflag == 1) {
-    for (int a = 0; a < 120; a++) {
-      if (a < 22) {
-        T_bgdvec[a] = 6000;
-      }
-      else if (a < 44) {
-        T_bgdvec[a] = 12000;
-      }
-      else if (a < 66) {
-        T_bgdvec[a] = 15000;
-      }
-      else if (a < 88) {
-        T_bgdvec[a] = 18000;
-      }
-      else if (a < 120) {
-        T_bgdvec[a] = 0;
-      }
-    }
-    //shuffle T_bgdvec
-    for (int a = 0; a < 120; a++)
-    {
-      r = random(a, 120);
-      int temp = T_bgdvec[a];
-      T_bgdvec[a] = T_bgdvec[r];
-      T_bgdvec[r] = temp;
-    }
-  }
+
   //initialize cueList
   cueList = new int[totalnumtrials];
   if (lasertrialbytrialflag == 1) {
@@ -690,12 +665,12 @@ void setup() {
   u = random(0, 10000);
   temp = (float)u / 10000;
   temp = log(temp);
-  if (trialbytrialbgdsolenoidflag == 0) {
+  //if (trialbytrialbgdsolenoidflag == 0) {
     nextbgdsolenoid = 0 - T_bgd * temp;
-  }
-  else if (trialbytrialbgdsolenoidflag == 1) {
-    nextbgdsolenoid = 0 - T_bgdvec[0] * temp;
-  }
+  //}
+  //else if (trialbytrialbgdsolenoidflag == 1) {
+  //  nextbgdsolenoid = 0 - T_bgdvec[0] * temp;
+  //}
   if (nextbgdsolenoid > (nextcue - mindelaybgdtocue) && experimentmode != 1) {
     nextbgdsolenoid = 0;
   }
@@ -944,17 +919,17 @@ void loop() {
     u = random(0, 10000);
     temp = (float)u / 10000;
     temp = log(temp);
-    if (trialbytrialbgdsolenoidflag == 0) {
+    //if (trialbytrialbgdsolenoidflag == 0) {
       nextbgdsolenoid = ts + r_bgd - T_bgd * temp;// next background solenoid can't be earlier than the offset of the solenoid
-    }
-    else if (trialbytrialbgdsolenoidflag == 1) {
-      if (T_bgdvec[CSct] > 0) {
-        nextbgdsolenoid = ts + r_bgd - T_bgdvec[CSct] * temp;// next background solenoid can't be earlier than the offset of the solenoid
-      }
-      else {
-        nextbgdsolenoid = 0;
-      }
-    }
+    //}
+    //else if (trialbytrialbgdsolenoidflag == 1) {
+    //  if (T_bgdvec[CSct] > 0) {
+    //    nextbgdsolenoid = ts + r_bgd - T_bgdvec[CSct] * temp;// next background solenoid can't be earlier than the offset of the solenoid
+    //  }
+    //  else {
+    //    nextbgdsolenoid = 0;
+    //  }
+    //}
     if (nextbgdsolenoid > (nextcue - mindelaybgdtocue)) {
       nextbgdsolenoid = 0;
     }
@@ -1085,17 +1060,17 @@ void loop() {
       u = random(0, 10000);
       temp = (float)u / 10000;
       temp = log(temp);
-      if (trialbytrialbgdsolenoidflag == 0) {
+      //if (trialbytrialbgdsolenoidflag == 0) {
         nextbgdsolenoid = ts + mindelaybgdtocue + r_bgd - T_bgd * temp;// next background solenoid can't be earlier than the offset of the solenoid
-      }
-      else if (trialbytrialbgdsolenoidflag == 1) {
-        if (T_bgdvec[CSct] > 0) {
-          nextbgdsolenoid = ts + mindelaybgdtocue + r_bgd - T_bgdvec[CSct] * temp;// next background solenoid can't be earlier than the offset of the solenoid
-        }
-        else {
-          nextbgdsolenoid = 0;
-        }
-      }
+      //}
+      //else if (trialbytrialbgdsolenoidflag == 1) {
+      //  if (T_bgdvec[CSct] > 0) {
+      //    nextbgdsolenoid = ts + mindelaybgdtocue + r_bgd - T_bgdvec[CSct] * temp;// next background solenoid can't be earlier than the offset of the solenoid
+     //   }
+     //   else {
+     //     nextbgdsolenoid = 0;
+      //  }
+      //}
       if (nextbgdsolenoid > (nextcue - mindelaybgdtocue)) {// next background solenoid can't be closer to CS than mindelaybgdtocue
         nextbgdsolenoid = 0;
       }
@@ -1106,7 +1081,7 @@ void loop() {
 
 // Accept parameters from MATLAB
 void getParams() {
-  int pn = 158;                              // number of parameter inputs
+  int pn = 159;                              // number of parameter inputs
   unsigned long param[pn];                  // parameters
 
   for (int p = 0; p < pn; p++) {
@@ -1169,7 +1144,7 @@ void getParams() {
   mindelaybgdtocue       = param[71];                   // get minimum delay between a background solenoid and the next cue, in ms
   mindelayfxdtobgd       = param[72];                   // get minimum delay between a fixed solenoid and the next background solenoid, in ms
   experimentmode         = param[73];
-  trialbytrialbgdsolenoidflag = (boolean)param[74];
+  isibgdsolenoidflag = (boolean)param[74];
   totbgdsolenoid         = param[75];                   // total number of background solenoids to stop the session if the session just has Poisson solenoids, i.e. experimentmode==1
   reqlicknum[0]          = param[76];
   reqlicknum[1]          = param[77];
@@ -1253,6 +1228,7 @@ void getParams() {
   CSsecondcuelight[3]            = param[155];
   progressivemultiplier[0]       = param[156];  
   progressivemultiplier[1]       = param[157];
+  bgdsolenoidcueflag             = (boolean)param[158];
 
   for (int p = 0; p < numCS; p++) {
     CSfreq[p] = CSfreq[p] * 1000;         // convert frequency from kHz to Hz
