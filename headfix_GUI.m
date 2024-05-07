@@ -22,7 +22,7 @@ function varargout = headfix_GUI(varargin)
 
 % Edit the above text to modify the response to help headfix_GUI
 
-% Last Modified by GUIDE v2.5 25-Apr-2024 14:26:04
+% Last Modified by GUIDE v2.5 03-May-2024 14:15:51
 
 % cd 'F:\acads\Stuber lab\headfix'; %Change to directory
 
@@ -105,6 +105,7 @@ set(handles.mindelaybgdtocue, 'Enable', 'off');
 set(handles.mindelayfxdtobgd, 'Enable', 'off');
 set(handles.totPoisssolenoid, 'Enable', 'off');
 set(handles.checkboxisibgd, 'Enable', 'off');
+set(handles.checkboxbgdcue, 'Enable', 'off');
 set(handles.checkboxrandlaser, 'Enable', 'off');
 set(handles.lasertrialbytrial, 'Enable', 'off');
 set(handles.laserlatency, 'Enable', 'off');
@@ -250,6 +251,7 @@ if selectedmode == 1 || selectedmode == 4 || selectedmode ==6
     set(handles.sendButton,'Enable','on') 
     set(handles.csproperties, 'Enable', 'on');
     set(handles.checkboxisibgd, 'Enable', 'on');
+    set(handles.checkboxbgdcue, 'Enable', 'on');
     set(handles.checkboxrandlaser, 'Enable', 'on');
     set(handles.lasertrialbytrial, 'Enable', 'on');
     set(handles.laserlatency, 'Enable', 'on');
@@ -281,6 +283,7 @@ elseif selectedmode == 2
     set(handles.mindelayfxdtobgd, 'Enable', 'on');
     set(handles.totPoisssolenoid, 'Enable', 'on');
     set(handles.checkboxisibgd, 'Enable', 'on');
+    set(handles.checkboxbgdcue, 'Enable', 'on');
     set(handles.checkboxrandlaser, 'Enable', 'on');
     set(handles.lasertrialbytrial, 'Enable', 'on');
     set(handles.lasertrialbytrial, 'Enable', 'on');
@@ -328,12 +331,11 @@ portList = get(handles.availablePorts,'String');    % get list from popup menu
 selected = get(handles.availablePorts,'Value');     % find which is selected
 port     = portList{selected};                      % selected port
            
-basecmd = strcat('"C:\Users\namboodirilab\AppData\Local\Arduino15\packages\arduino\tools\avrdude\6.3.0-arduino17\bin\avrdude" -C"C:\Users\namboodirilab\AppData\Local\Arduino15\packages\arduino\tools\avrdude\6.3.0-arduino17\etc\avrdude.conf" -v -patmega2560 -cwiring -P',port,' -b115200 -D -Uflash:w:');
+basecmd = strcat('"C:\Program Files (x86)\Arduino\hardware\tools\avr/bin/avrdude" -C"C:\Program Files (x86)\Arduino\hardware\tools\avr/etc/avrdude.conf" -v -patmega2560 -cwiring -P',port,' -b115200 -D -Uflash:w:');
 selectedmode = get(handles.experimentmode,'Value');
 
 if selectedmode == 1
-    
-    [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\uploads\Namlab_behavior_cues_test.ino.hex',':i'));
+    [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\uploads\Namlab_behavior_cues.ino.hex',':i'));
 elseif selectedmode == 2
     [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\Behavioral_acquisition_and_analysis\uploads\Namlab_behavior_randomrewards.ino.hex',':i'));
 elseif selectedmode == 3
@@ -387,6 +389,7 @@ set(handles.mindelaybgdtocue, 'Enable', 'off');
 set(handles.mindelayfxdtobgd, 'Enable', 'off');
 set(handles.totPoisssolenoid, 'Enable', 'off');
 set(handles.checkboxisibgd, 'Enable', 'off');
+set(handles.checkboxbgdcue, 'Enable', 'off');
 set(handles.checkboxrandlaser, 'Enable', 'off');
 set(handles.lasertrialbytrial, 'Enable', 'off');
 set(handles.laserlatency, 'Enable', 'off');
@@ -860,6 +863,7 @@ mindelaybgdtocue = str2double(mindelaybgdtocue);
 mindelayfxdtobgd = get(handles.mindelayfxdtobgd,'String');
 mindelayfxdtobgd = str2double(mindelayfxdtobgd);
 isibgdsolenoidflag = get(handles.checkboxisibgd,'Value');
+bgdsolenoidcueflag = get(handles.checkboxbgdcue,'Value');
 totPoisssolenoid = get(handles.totPoisssolenoid,'String'); % Total Poisson solenoids to deliver
 totPoisssolenoid = str2double(totPoisssolenoid);
 
@@ -914,7 +918,7 @@ inputs = [numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur, CS_t_fxd,...
         lasertrialbytrialflag, maxdelaycuetovacuum, CSlight,variableratioflag, variableintervalflag,...
         licklight, CS1lasercheck, CS2lasercheck, CS3lasercheck, CS4lasercheck,...
         fixedsidecheck, Rewardlasercheck, CSrampmaxdelay, CSrampexp, CSincrease,delayforsecondcue,...
-        secondcuetype, secondcuefreq, secondcuespeaker, secondcuelight, progressivemultiplier]; % collect all inputs into array
+        secondcuetype, secondcuefreq, secondcuespeaker, secondcuelight, progressivemultiplier, bgdsolenoidcueflag]; % collect all inputs into array
 
 negIn  = inputs < 0;
 intIn  = inputs - fix(inputs);
@@ -963,6 +967,7 @@ set(handles.r_bgd,'Enable','off')
 set(handles.mindelaybgdtocue,'Enable','off')
 set(handles.mindelayfxdtobgd,'Enable','off')
 set(handles.checkboxisibgd,'Enable','off')
+set(handles.checkboxbgdcue, 'Enable', 'off');
 set(handles.checkboxintervaldistribution,'Enable','off')
 set(handles.totPoisssolenoid,'Enable','off')
 
@@ -1013,7 +1018,7 @@ params = sprintf('%G+',numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur,
           lasertrialbytrialflag, maxdelaycuetovacuum, CSlight,variableratioflag, variableintervalflag,...
           licklight, CS1lasercheck, CS2lasercheck, CS3lasercheck, CS4lasercheck,...
           fixedsidecheck, Rewardlasercheck, CSrampmaxdelay, CSrampexp, CSincrease,delayforsecondcue,...
-          secondcuetype, secondcuefreq, secondcuespeaker, secondcuelight, progressivemultiplier);
+          secondcuetype, secondcuefreq, secondcuespeaker, secondcuelight, progressivemultiplier, bgdsolenoidcueflag);
 params = params(1:end-1);
 
 % Run arduino code
@@ -1093,6 +1098,7 @@ mindelayfxdtobgd = str2double(mindelayfxdtobgd);
 isibgdsolenoidflag = get(handles.checkboxisibgd,'Value');
 totPoisssolenoid = get(handles.totPoisssolenoid,'String'); % Total Poisson solenoids to deliver
 totPoisssolenoid = str2double(totPoisssolenoid);
+bgdsolenoidcueflag = get(handles.checkboxbgdcue,'Value');
 
 % Lick dependent rewards 
 
@@ -1145,7 +1151,7 @@ inputs = [numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur, CS_t_fxd,...
         lasertrialbytrialflag, maxdelaycuetovacuum, CSlight,variableratioflag, variableintervalflag,...
         licklight, CS1lasercheck, CS2lasercheck, CS3lasercheck, CS4lasercheck,...
         fixedsidecheck, Rewardlasercheck, CSrampmaxdelay, CSrampexp, CSincrease,delayforsecondcue,...
-        secondcuetype, secondcuefreq, secondcuespeaker, secondcuelight, progressivemultiplier]; % collect all inputs into array
+        secondcuetype, secondcuefreq, secondcuespeaker, secondcuelight, progressivemultiplier, bgdsolenoidcueflag]; % collect all inputs into array
           
 negIn  = inputs < 0;
 intIn  = inputs - fix(inputs);
@@ -1234,7 +1240,7 @@ params = sprintf('%G+',numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur,
           lasertrialbytrialflag, maxdelaycuetovacuum, CSlight,variableratioflag, variableintervalflag,...
           licklight, CS1lasercheck, CS2lasercheck, CS3lasercheck, CS4lasercheck,...
           fixedsidecheck, Rewardlasercheck, CSrampmaxdelay, CSrampexp, CSincrease,delayforsecondcue,...
-          secondcuetype, secondcuefreq, secondcuespeaker, secondcuelight, progressivemultiplier);
+          secondcuetype, secondcuefreq, secondcuespeaker, secondcuelight, progressivemultiplier, bgdsolenoidcueflag);
              
 params = params(1:end-1);
 % disp(params)
@@ -1328,3 +1334,12 @@ function minITI_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+
+% --- Executes on button press in checkboxbgdcue.
+function checkboxbgdcue_Callback(hObject, eventdata, handles)
+% hObject    handle to checkboxbgdcue (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of checkboxbgdcue

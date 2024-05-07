@@ -176,9 +176,11 @@ mindelayfxdtobgd = uieditfield('numeric','Parent', bgdrpanel, 'Position', [180 8
 totPoisssolenoidtext = uilabel('Parent', bgdrpanel, 'Text','Total# background rewards', 'FontSize',11, 'Position', [15 50 160 20]);
 totPoisssolenoid = uieditfield('numeric','Parent', bgdrpanel, 'Position', [180 50 40 20],'Value',100); 
 isibgdsolenoidflag = uicheckbox('Parent',bgdrpanel, 'Text', 'background rewards throughout a trial?',...
-    'FontSize', 11, 'Position', [5 20 250 20]);
+    'FontSize', 11, 'Position', [5 25 250 20]);
+bgdsolenoidcueflag = uicheckbox('Parent',bgdrpanel, 'Text', 'cue preceding background rewards?',...
+    'FontSize', 11, 'Position', [5 5 250 20]);
 
-bgdsolfunctions = [bgdsolenoid, r_bgd, T_bgd, mindelaybgdtocue, mindelayfxdtobgd, totPoisssolenoid, isibgdsolenoidflag];
+bgdsolfunctions = [bgdsolenoid, r_bgd, T_bgd, mindelaybgdtocue, mindelayfxdtobgd, totPoisssolenoid, isibgdsolenoidflag, bgdsolenoidcueflag];
 
 % Set the panels off initially
 set(cstable,'Enable','off','ColumnEditable',false); %Make table uneditable
@@ -310,13 +312,13 @@ end
 function pushUpload(source, eventdata, availablePorts,uploadbutton,experimentmode,connectbutton)%,pushSolenoid3,primeSolenoid3on,primeSolenoid3off,testVacuum,testLaser,testSerialPort,testCue1,testCue2,testCue3,testCue4,testCue5)   
     
     port = get(availablePorts,'Value');        % find which is selected
-    basecmd = strcat('"C:\Users\namboodirilab\AppData\Local\Arduino15\packages\arduino\tools\avrdude\6.3.0-arduino17\bin\avrdude" -C"C:\Users\namboodirilab\AppData\Local\Arduino15\packages\arduino\tools\avrdude\6.3.0-arduino17\etc\avrdude.conf" -v -patmega2560 -cwiring -P',port,' -b115200 -D -Uflash:w:');
+    basecmd = strcat('"C:\Program Files (x86)\Arduino\hardware\tools\avr/bin/avrdude" -C"C:\Program Files (x86)\Arduino\hardware\tools\avr/etc/avrdude.conf" -v -patmega2560 -cwiring -P',port,' -b115200 -D -Uflash:w:');
     
     selectedmode = get(experimentmode, 'Value');
     assignin('base', "selectedmode", selectedmode);
 
     if selectedmode == 1
-        [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\uploads\Namlab_behavior_cues_test.ino.hex',':i'));
+        [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\uploads\Namlab_behavior_cues_test2.ino.hex',':i'));
     elseif selectedmode == 2
         [status,cmdout] = dos(strcat(basecmd,'C:\Users\mzhou9\Desktop\Behavioral_acquisition_and_analysis_old\uploads',':i'));
     elseif selectedmode == 3
@@ -504,6 +506,7 @@ function pushSend(source,eventdata,disconnectbutton,refreshbutton,startbutton, t
     mindelayfxdtobgd = get(bgdsolfunctions(5), 'Value');
     totPoisssolenoid = get(bgdsolfunctions(6), 'Value');
     isibgdsolenoidflag = get(bgdsolfunctions(7), 'Value');
+    bgdsolenoidcueflag = get(bgdsolfunctions(8), 'Value');
 
     % Validate inputs
     inputs = [numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur, CS_t_fxd,...
@@ -516,7 +519,7 @@ function pushSend(source,eventdata,disconnectbutton,refreshbutton,startbutton, t
         trialbytriallaser, maxdelaycuetovacuum, CSlight,ratioschedule, intervalschedule,...
         licklight, CS1lasercheck, CS2lasercheck, CS3lasercheck, CS4lasercheck,...
         fixedsidecheck, Rewardlasercheck, CSrampmaxdelay, CSrampexp, CSincrease,delayforsecondcue,...
-        secondcuetype, secondcuefreq, secondcuespeaker, secondcuelight, progressivemultiplier]; % collect all inputs into array
+        secondcuetype, secondcuefreq, secondcuespeaker, secondcuelight, progressivemultiplier, bgdsolenoidcueflag]; % collect all inputs into array
 
     negIn  = inputs < 0;
     intIn  = inputs - fix(inputs);
@@ -557,7 +560,7 @@ function pushSend(source,eventdata,disconnectbutton,refreshbutton,startbutton, t
           trialbytriallaser, maxdelaycuetovacuum, CSlight,ratioschedule, intervalschedule,...
           licklight, CS1lasercheck, CS2lasercheck, CS3lasercheck, CS4lasercheck,...
           fixedsidecheck, Rewardlasercheck, CSrampmaxdelay, CSrampexp, CSincrease,delayforsecondcue,...
-          secondcuetype, secondcuefreq, secondcuespeaker, secondcuelight, progressivemultiplier);
+          secondcuetype, secondcuefreq, secondcuespeaker, secondcuelight, progressivemultiplier, bgdsolenoidcueflag);
 
     params = params(1:end-1);
     
@@ -674,6 +677,7 @@ function pushStart(source,eventdata,testbuttons,manualbuttons,stopbutton,filenam
     mindelayfxdtobgd = get(bgdsolfunctions(5), 'Value');
     totPoisssolenoid = get(bgdsolfunctions(6), 'Value');
     isibgdsolenoidflag = get(bgdsolfunctions(7), 'Value');
+    bgdsolenoidcueflag = get(bgdsolfunctions(8), 'Value');
 
 
     params = sprintf('%G+',numtrials, CSfreq, CSsolenoid, CSprob, CSopentime, CSdur, CS_t_fxd,...
@@ -686,7 +690,7 @@ function pushStart(source,eventdata,testbuttons,manualbuttons,stopbutton,filenam
           trialbytriallaser, maxdelaycuetovacuum, CSlight,ratioschedule, intervalschedule,...
           licklight, CS1lasercheck, CS2lasercheck, CS3lasercheck, CS4lasercheck,...
           fixedsidecheck, Rewardlasercheck, CSrampmaxdelay, CSrampexp, CSincrease,delayforsecondcue,...
-          secondcuetype, secondcuefreq, secondcuespeaker, secondcuelight, progressivemultiplier);
+          secondcuetype, secondcuefreq, secondcuespeaker, secondcuelight, progressivemultiplier, bgdsolenoidcueflag);
 
     params = params(1:end-1);
     
