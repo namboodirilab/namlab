@@ -1166,7 +1166,7 @@ void loop() {
     }
   }
 
-  if (ts >= nextbgdsolenoid && nextbgdsolenoid != 0) { // give background solenoid 
+  if (ts >= nextbgdsolenoid && nextbgdsolenoid != 0 && r_bgd != 0) { // give background solenoid 
     if ((ITIflag && !isibgdsolenoidflag) || isibgdsolenoidflag){
       digitalWrite(backgroundsolenoid, HIGH);          // turn on solenoid
       solenoidOff = ts + r_bgd;              // set solenoid off time
@@ -1306,7 +1306,7 @@ void loop() {
       lickctforreq[1] = 0;                 // reset lick2 count to zero at end of trial
       lickctforreq[2] = 0;                 // reset lick3 count to zero at end of trial
 
-      if (!isibgdsolenoidflag){
+      if (!isibgdsolenoidflag && r_bgd!=0){
         nextbgdsolenoid = nextcue - mindelaybgdtocue + 1;
         while (nextbgdsolenoid > (nextcue - mindelaybgdtocue)) {
           u = random(0, 10000);
