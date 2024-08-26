@@ -1089,6 +1089,8 @@ void loop() {
     Serial.print(ts);                      //   send timestamp of solenoid onset
     Serial.print(" ");
 
+    
+
     if (intervaldistribution < 3) {
       u = random(0,100); // if a given trial is determined as a rewarded trial, both first and and second rewards will be delivered in the trial 
       if (numfxdsolenoids == 1) {
@@ -1107,11 +1109,17 @@ void loop() {
         digitalWrite(CSsolenoid[2 * cueList[CSct] + numfxdsolenoids], HIGH);      // turn on solenoid
         Serial.print(0);                       //   this indicates that the solenoid was actually given
         Serial.print('\n');
+        if (Rewardlasercheck) {
+          delieverlasertorewards();              // check whether to and deliver laser if needed
+          }
       }
       else if (CSopentime[2 * cueList[CSct] + numfxdsolenoids] > 0 && lickctforreq[golicktube[cueList[CSct]]] == 0 && temp2 == -1) {  // -1 on golickreq indicates no-go cue, no licks on the lick tube gives a reward
         digitalWrite(CSsolenoid[2 * cueList[CSct] + numfxdsolenoids], HIGH);      // turn on solenoid
         Serial.print(0);                       //   this indicates that the solenoid was actually given
         Serial.print('\n');
+        if (Rewardlasercheck) {
+          delieverlasertorewards();              // check whether to and deliver laser if needed
+          }
       }
       else {
         Serial.print(1);                       //   this indicates that the solenoid was not given
@@ -1142,7 +1150,11 @@ void loop() {
       digitalWrite(CSsolenoid[2 * cueList[fxdrwct] + 1], HIGH);      // turn on solenoid
       Serial.print(0);                       //   this indicates that the solenoid was actually given
       Serial.print('\n');
-
+      
+      if (Rewardlasercheck) {
+        delieverlasertorewards();              // check whether to and deliver laser if needed
+        }
+          
       solenoidOff = ts + CSopentime[2 * cueList[fxdrwct] + 1];      // set solenoid off time
       fxdrwtime[fxdrwct] = 0;
       fxdrwct++;
@@ -1163,6 +1175,10 @@ void loop() {
       digitalWrite(CSsolenoid[2 * cueList[fxdrwct] + 1], HIGH);      // turn on solenoid
       Serial.print(0);                       //   this indicates that the solenoid was actually given
       Serial.print('\n');
+      if (Rewardlasercheck) {
+        delieverlasertorewards();              // check whether to and deliver laser if needed
+        }
+        
       solenoidOff = ts + CSopentime[2 * cueList[fxdrwct] + 1];      // set solenoid off time
       if (intervaldistribution == 5) {
         cuetime[fxdrwct] = nextfxdsolenoid + CS_t_fxd[2 * cueList[CSct] + 1];
@@ -1751,6 +1767,12 @@ void deliverlasertocues() {
     if (Laserontrial[CSct] == 1) {
       nextlaser = ts + laserlatency;
     }
+  }
+}
+
+void delieverlasertorewards() {
+  if (laserduration > 0 && lasertrialbytrialflag ==0 && randlaserflag == 0 {
+    nextlaser = ts + laserlatency;
   }
 }
 
