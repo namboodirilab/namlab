@@ -699,7 +699,7 @@ void setup() {
   // else if (trialbytrialbgdsolenoidflag == 1) {
   //   nextbgdsolenoid = 0 - T_bgdvec[0] * temp;
   // }
-  if (nextbgdsolenoid > (nextcue - mindelaybgdtocue) && experimentmode != 1) {
+  if ((nextbgdsolenoid > (nextcue - mindelaybgdtocue)) && (experimentmode > 2)) {
     nextbgdsolenoid = 0;
   }
 
