@@ -713,8 +713,8 @@ end
 
 function pushStop(source,eventdata,filenamefield,disconnectbutton,testbuttons,manualbuttons) 
     global s running
-    running = false;            % Stop running MATLAB code for monitoring arduino
     fprintf(s,'1');             % Send stop signal to arduino; 49 in the Arduino is the ASCII code for 1
+%     running = false;            % Stop running MATLAB code for monitoring arduino
 
     set(source,'Enable','off');
     %set(resetbutton,'Enable','on');
