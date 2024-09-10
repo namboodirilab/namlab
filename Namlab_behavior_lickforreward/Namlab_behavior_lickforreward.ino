@@ -661,6 +661,33 @@ void loop() {
     cuePulseOff = ts + 200;
     cuePulseOn = 0;
   }
+
+  // Pulse LASER
+  if (ts >= nextlaser && nextlaser != 0) {
+    Serial.print(31);                        // code data as laser timestamp
+    Serial.print(" ");
+    Serial.print(ts);                        // send timestamp of laser
+    Serial.print(" ");
+    Serial.print(0);
+    Serial.print('\n');
+    digitalWrite(laser, HIGH);
+    laserPulseOff = ts + laserpulseperiod;
+    laserOff = ts + laserduration;
+    nextlaser = 0;
+  }
+
+  if (ts >= laserPulseOff && laserPulseOff != 0 && ts < laserOff) {
+    digitalWrite(laser, LOW);                   // turn off laser
+    laserPulseOn = ts + laserpulseoffperiod;
+    laserPulseOff = 0;
+  }
+
+  if (ts >= laserPulseOn && laserPulseOn != 0 && ts < laserOff) {
+    digitalWrite(laser, HIGH);                   // turn on laser
+    laserPulseOn = 0;
+    laserPulseOff = ts + laserpulseperiod;
+  }
+  
   if (ts >= cueOff && cueOff != 0) {              // Turn off cue
     noTone(lickspeaker[licktubethatmetlickreq]);
     cueOff = 0;
@@ -704,6 +731,9 @@ void loop() {
       digitalWrite(ttloutstoppin, HIGH);
       Serial.print(0);                                // indicates the reward is given
       Serial.print('\n');
+      if (Rewardlasercheck) {
+        delieverlasertorewards();              // check whether to and deliver laser if needed
+        }
     }
     else {
       Serial.print(1);                                // indicates no reward given
@@ -727,7 +757,11 @@ void loop() {
   }
 
   if (ts >= solenoidOff && solenoidOff != 0) {
-    digitalWrite(licksolenoid[licktubethatmetlickreq], LOW);
+    digitalWrite(solenoid1, LOW);
+    digitalWrite(solenoid2, LOW);
+    digitalWrite(solenoid3, LOW);
+    digitalWrite(solenoid4, LOW);
+    //digitalWrite(licksolenoid[licktubethatmetlickreq], LOW);
     digitalWrite(ttloutstoppin, LOW);
     solenoidOff = 0;
   }
@@ -1290,4 +1324,10 @@ void endSession() {
   int *Laserontrial = 0;
   software_Reboot();
 
+}
+
+void delieverlasertorewards() {
+  if (laserduration > 0 && lasertrialbytrialflag ==0 && randlaserflag == 0) {
+    nextlaser = ts + laserlatency;    
+    }
 }
