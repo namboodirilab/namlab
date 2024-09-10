@@ -1771,7 +1771,7 @@ void deliverlasertocues() {
 }
 
 void delieverlasertorewards() {
-  if (laserduration > 0 && lasertrialbytrialflag ==0 && randlaserflag == 0 {
+  if (laserduration > 0 && lasertrialbytrialflag ==0 && randlaserflag == 0) {
     nextlaser = ts + laserlatency;
   }
 }
