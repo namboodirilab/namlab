@@ -1,11 +1,6 @@
 function behavior_GUI
 
-global s running actvAx saveDir textfield fig
-
-mainPath = 'D:\OneDrive - UCSF\Behavioral_acquisition_and_analysis';
-addpath(mainPath)
-saveDir = [mainPath '\data\'];          % where to save data
-
+global fig
 
 % Make figure
 sz = get(0, 'ScreenSize'); % screen size
@@ -33,24 +28,23 @@ end
 %Connected to Field
 connectlbl = uilabel(fig, 'Text', 'Connected to:', 'Position', [300 850/2 80 22]);
 connectfield = uieditfield(fig,'text','Editable','off','Position', [390 850/2 150 22]);
-refreshbutton = uibutton(fig, 'Position',[width*0.52 height*0.6 width*0.15 height*0.1], 'Text','Refresh','FontSize',11, 'ButtonPushedFcn', {@pushRefresh,availablePorts});
-connectbutton = uibutton(fig, 'Position',[width*0.01 height*0.6 width*0.15 height*0.1], 'Text','Connect','FontSize',11, 'Enable','off','ButtonPushedFcn', {@pushConnect,connectfield,availablePorts});
-uploadbutton = uibutton(fig, 'Position',[width*0.18 height*0.6 width*0.15 height*0.1], 'Text','Upload','FontSize',11, 'ButtonPushedFcn', {@pushUpload,availablePorts,connectbutton});
-disconnectbutton = uibutton(fig, 'Position',[width*0.35 height*0.6 width*0.15 height*0.1], 'Text','Disconnect','FontSize',11, 'Enable','off','ButtonPushedFcn', {@pushDisconnect,connectbutton,connectfield,uploadbutton,refreshbutton,availablePorts});
+refreshbutton = uibutton(fig, 'Position',[width*0.69 height*0.6 width*0.15 height*0.1], 'Text','Refresh','FontSize',11, 'ButtonPushedFcn', {@pushRefresh,availablePorts});
+connectbutton = uibutton(fig, 'Position',[width*0.18 height*0.6 width*0.15 height*0.1], 'Text','Connect','FontSize',11, 'Enable','off','ButtonPushedFcn', {@pushConnect,connectfield,availablePorts});
+uploadbutton = uibutton(fig, 'Position',[width*0.01 height*0.6 width*0.15 height*0.1], 'Text','Upload','FontSize',11, 'ButtonPushedFcn', {@pushUpload,availablePorts,connectbutton});
 
 solenoid1panel = uipanel(fig, 'Title', 'Solenoid 1','Units','normalized', 'Position', [0.01 0.2 0.2 0.26]);
 opentimesolenoid1text = uilabel(solenoid1panel,'Text', 'open time', 'FontSize', 11, 'Position', [15 74 60 20]);
 opentimesolenoid1 = uieditfield('numeric','Parent',solenoid1panel,'Editable','on','Position', [70 74 40 20]);
 manualsolenoid1 = uibutton(solenoid1panel, 'Text','Manual', 'FontSize', 11, 'Enable','off','Position', [15 28 120 20],'ButtonPushedFcn', {@manualsolenoid1_fcn});
 primesolenoid1 = uibutton(solenoid1panel, 'state', 'Text','Prime', 'Value', false, 'FontSize',11, 'Enable','off','Position',[15 5 120 20], 'ValueChangedFcn', {@primesolenoid1_fcn});
-testsolenoid1 = uibutton(solenoid1panel, 'state', 'Text','Test', 'Value', false, 'FontSize',11, 'Enable','off','Position',[15 51 120 20], 'ValueChangedFcn', {@testsolenoid1_fcn});
+testsolenoid1 = uibutton(solenoid1panel, 'Text','Test', 'FontSize',11, 'Enable','off','Position',[15 51 120 20], 'ButtonPushedFcn', {@testsolenoid1_fcn});
 
 solenoid2panel = uipanel(fig, 'Title', 'Solenoid 2','Units','normalized','Position', [0.22 0.2 0.2 0.26]);
 opentimesolenoid1text = uilabel(solenoid2panel,'Text', 'open time', 'FontSize', 11, 'Position', [15 74 60 20]);
 opentimesolenoid2 = uieditfield('numeric','Parent',solenoid2panel,'Editable','on','Position', [70 74 40 20]);
 manualsolenoid2 = uibutton('Parent', solenoid2panel, 'Text','Manual', 'FontSize', 11, 'Enable','off','Position', [15 28 120 20],'ButtonPushedFcn', {@manualsolenoid2_fcn});
 primesolenoid2 = uibutton(solenoid2panel, 'state','Text','Prime', 'Value', false, 'FontSize',11, 'Enable','off','Position',[15 5 120 20], 'ValueChangedFcn', {@primesolenoid2_fcn});
-testsolenoid2 = uibutton(solenoid2panel, 'state', 'Text','Test', 'Value', false, 'FontSize',11, 'Enable','off','Position',[15 51 120 20], 'ValueChangedFcn', {@testsolenoid2_fcn});
+testsolenoid2 = uibutton(solenoid2panel, 'Text','Test', 'FontSize',11, 'Enable','off','Position',[15 51 120 20], 'ButtonPushedFcn', {@testsolenoid2_fcn});
 
 
 solenoid3panel = uipanel(fig, 'Title', 'Solenoid 3','Units','normalized','Position', [0.44 0.2 0.2 0.26]);
@@ -58,33 +52,39 @@ opentimesolenoid1text = uilabel(solenoid3panel,'Text', 'open time', 'FontSize', 
 opentimesolenoid3 = uieditfield('numeric','Parent',solenoid3panel,'Editable','on','Position', [70 74 40 20]);
 manualsolenoid3 = uibutton('Parent', solenoid3panel, 'Text','Manual', 'FontSize', 11, 'Enable','off','Position', [15 28 120 20],'ButtonPushedFcn', {@manualsolenoid3_fcn});
 primesolenoid3 = uibutton(solenoid3panel, 'state','Text','Prime', 'Value', false, 'FontSize',11, 'Enable','off','Position',[15 5 120 20], 'ValueChangedFcn', {@primesolenoid3_fcn});
-testsolenoid3 = uibutton(solenoid3panel, 'state', 'Text','Test', 'Value', false, 'FontSize',11, 'Enable','off','Position',[15 51 120 20], 'ValueChangedFcn', {@testsolenoid3_fcn});
+testsolenoid3 = uibutton(solenoid3panel, 'Text','Test', 'FontSize',11, 'Enable','off','Position',[15 51 120 20], 'ButtonPushedFcn', {@testsolenoid3_fcn});
 
 solenoid4panel = uipanel(fig, 'Title', 'Solenoid 4','Units','normalized','Position', [0.66 0.2 0.2 0.26]);
 opentimesolenoid1text = uilabel(solenoid4panel,'Text', 'open time', 'FontSize', 11, 'Position', [15 74 60 20]);
 opentimesolenoid4 = uieditfield('numeric','Parent',solenoid4panel,'Editable','on','Position', [70 74 40 20]);
 manualsolenoid4 = uibutton('Parent', solenoid4panel, 'Text','Manual', 'FontSize', 11, 'Enable','off','Position', [15 28 120 20],'ButtonPushedFcn', {@manualsolenoid4_fcn});
 primesolenoid4 = uibutton(solenoid4panel, 'state','Text','Prime', 'Value', false, 'FontSize',11, 'Enable','off','Position',[15 5 120 20], 'ValueChangedFcn', {@primesolenoid4_fcn});
-testsolenoid4 = uibutton(solenoid4panel, 'state', 'Text','Test', 'Value', false, 'FontSize',11, 'Enable','off','Position',[15 51 120 20], 'ValueChangedFcn', {@testsolenoid4_fcn});
+testsolenoid4 = uibutton(solenoid4panel, 'Text','Test', 'FontSize',11, 'Enable','off','Position',[15 51 120 20], 'ButtonPushedFcn', {@testsolenoid4_fcn});
 
-sendbutton = uibutton(fig,'Text','Send','FontSize', 12,'Position',[900 350 120 50],'Enable','off','ButtonPushedFcn', {@pushSend,...
-    disconnectbutton,refreshbutton,testbuttons, manualbutton});
+solenoidopentimes = [opentimesolenoid1, opentimesolenoid2, opentimesolenoid3, opentimesolenoid4];
+disconnectbutton = uibutton(fig, 'Position',[width*0.52 height*0.6 width*0.15 height*0.1], 'Text','Disconnect','FontSize',11, 'Enable','off','ButtonPushedFcn', {@pushDisconnect,connectbutton,connectfield,uploadbutton,refreshbutton,availablePorts,solenoidopentimes});
+
+
+testbuttons = [primesolenoid1,primesolenoid2,primesolenoid3,primesolenoid4,...
+    testsolenoid1,testsolenoid2,testsolenoid3,testsolenoid4];
+manualbuttons = [manualsolenoid1,manualsolenoid2,manualsolenoid3,manualsolenoid4];
+sendbutton = uibutton(fig,'Text','Send','FontSize', 12,'Position',[width*0.35 height*0.6 width*0.15 height*0.1],'Enable','off','ButtonPushedFcn', {@pushSend,...
+    disconnectbutton,refreshbutton,testbuttons, manualbuttons,solenoidopentimes});
 
 set(uploadbutton,'ButtonPushedFcn', {@pushUpload,availablePorts,uploadbutton,connectbutton});
-set(connectbutton,'ButtonPushedFcn', {@pushConnect,connectbutton,availablePorts,connectfield,disconnectbutton,refreshbutton,sendbutton,cstable,licktable,Optopanel,ITIpanel,bgdrpanel,experimentmode});
-set(disconnectbutton,'ButtonPushedFcn', {@pushDisconnect,connectbutton,connectfield,uploadbutton,refreshbutton,availablePorts,experimentmode,sendbutton,testbuttons,manualbuttons});
-set(sendbutton, 'ButtonPushedFcn', {@pushSend,disconnectbutton,refreshbutton, testbuttons,manualbuttons});
+set(connectbutton,'ButtonPushedFcn', {@pushConnect,connectbutton,availablePorts,connectfield,disconnectbutton,refreshbutton,sendbutton});
+set(disconnectbutton,'ButtonPushedFcn', {@pushDisconnect,connectbutton,connectfield,uploadbutton,refreshbutton,availablePorts,sendbutton,testbuttons,manualbuttons,solenoidopentimes});
+set(sendbutton, 'ButtonPushedFcn', {@pushSend,disconnectbutton,refreshbutton, testbuttons,manualbuttons,solenoidopentimes});
 set(fig, 'CloseRequestFcn', @closeFigureCallback);
 end
 
 function pushUpload(source, eventdata, availablePorts,uploadbutton,connectbutton)%,pushSolenoid3,primeSolenoid3on,primeSolenoid3off,testVacuum,testLaser,testSerialPort,testCue1,testCue2,testCue3,testCue4,testCue5)   
     port = get(availablePorts,'Value');        % find which is selected
-    basecmd = strcat('"C:\Users\namboodirilab\AppData\Local\Arduino15\packages\arduino\tools\avrdude\6.3.0-arduino17/bin/avrdude" "-CC:\Users\namboodirilab\AppData\Local\Arduino15\packages\arduino\tools\avrdude\6.3.0-arduino17/etc/avrdude.conf" -v -V -patmega2560 -cwiring -P',port,' -b115200 -D "-Uflash:w:');    
-    [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\uploads\Namlab_behavior_cues.ino.hex',':i'));
+    basecmd = strcat('"C:\Program Files (x86)\Arduino\hardware\tools\avr/bin/avrdude" -C"C:\Program Files (x86)\Arduino\hardware\tools\avr/etc/avrdude.conf" -v -patmega2560 -cwiring -P',port,' -b115200 -D -Uflash:w:');
+    [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\uploads\Namlab_calibration.ino.hex',':i'));
 
     if contains(cmdout, 'avrdude done.') && status==0
         set(uploadbutton, 'Text', 'Successfully uploaded');
-        set(experimentmode, 'Enable', 'off');
         set(uploadbutton, 'Enable','off');
         set(connectbutton, 'Enable','on');
     else
@@ -115,7 +115,7 @@ function pushConnect(source,eventdata,connectbutton,availablePorts,connectfield,
     set(sendbutton, 'Enable', 'on');
 end
 
-function pushDisconnect(source, eventdata, connectbutton,connectfield,uploadbutton,refreshbutton,availablePorts,sendbutton,testbuttons,manualbuttons)
+function pushDisconnect(source, eventdata, connectbutton,connectfield,uploadbutton,refreshbutton,availablePorts,sendbutton,testbuttons,manualbuttons,solenoidopentimes)
     global s
 %     fclose(s);
     delete(s);
@@ -132,6 +132,8 @@ function pushDisconnect(source, eventdata, connectbutton,connectfield,uploadbutt
 %     set(startbutton, 'Enable', 'off');
     set(testbuttons,'Enable','off');
     set(manualbuttons, 'Enable','off');
+    set(manualbuttons, 'Enable','off');
+    set(solenoidopentimes, 'Enable','on');
 end
 
 % --- Executes on button press in refreshButton.
@@ -151,12 +153,12 @@ end
 
 
 %Send button callback
-function pushSend(source,eventdata,disconnectbutton,refreshbutton, testbuttons, manualbuttons)
+function pushSend(source,eventdata,disconnectbutton,refreshbutton, testbuttons, manualbuttons,solenoidopentimes)
     global s
-    CSopentime = [get(opentimesolenoid1, 'Value'),...
-                    get(opentimesolenoid2, 'Value')',...
-                    get(opentimesolenoid3, 'Value'),...
-                    get(opentimesolenoid4, 'Value')];
+    CSopentime = [ get(solenoidopentimes(1), 'Value'),...
+                    get(solenoidopentimes(2), 'Value'),...
+                    get(solenoidopentimes(3), 'Value'),...
+                    get(solenoidopentimes(4), 'Value')];
     % Validate inputs
     params = sprintf('%G+',CSopentime);
     params = params(1:end-1);
@@ -177,6 +179,7 @@ function pushSend(source,eventdata,disconnectbutton,refreshbutton, testbuttons, 
     for btn = manualbuttons
         set(btn, 'Enable','on');
     end
+    set(solenoidopentimes,'Enable','off')
 end
 
 

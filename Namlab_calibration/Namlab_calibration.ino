@@ -92,7 +92,7 @@ void setup() {
     reading = Serial.read();
     if (reading == 65) {                 // MANUAL solenoid 1
       digitalWrite(solenoid1, HIGH);          // turn on solenoid 1
-      delay(CSopentime[1]);
+      delay(solenoidopentime[0]);
       digitalWrite(solenoid1, LOW);           // turn off solenoid 1
     }
 
@@ -106,7 +106,7 @@ void setup() {
 
     if (reading == 68) {                 // MANUAL solenoid 2
       digitalWrite(solenoid2, HIGH);          // turn on solenoid 2
-      delay(CSopentime[2]);
+      delay(solenoidopentime[1]);
       digitalWrite(solenoid2, LOW);           // turn off solenoid 2
     }
 
@@ -120,7 +120,7 @@ void setup() {
 
     if (reading == 71) {                 // MANUAL solenoid 3
       digitalWrite(solenoid3, HIGH);          // turn on solenoid 3
-      delay(CSopentime[3]);
+      delay(solenoidopentime[2]);
       digitalWrite(solenoid3, LOW);           // turn off solenoid 3
     }
 
@@ -134,7 +134,7 @@ void setup() {
 
     if (reading == 74) {                 // MANUAL solenoid 4
       digitalWrite(solenoid4, HIGH);          // turn on solenoid 4
-      delay(CSopentime[4]);
+      delay(solenoidopentime[3]);
       digitalWrite(solenoid4, LOW);           // turn off solenoid 4
     }
 
@@ -151,7 +151,7 @@ void setup() {
         digitalWrite(solenoid1, HIGH);          // turn on solenoid 1
         delay(solenoidopentime[0]);
         digitalWrite(solenoid1, LOW);           // turn off solenoid 1
-        delay(100)
+        delay(100);
       }
     }
 
@@ -160,7 +160,7 @@ void setup() {
         digitalWrite(solenoid2, HIGH);          // turn on solenoid 1
         delay(solenoidopentime[1]);
         digitalWrite(solenoid2, LOW);           // turn off solenoid 1
-        delay(100)
+        delay(100);
       }
     }
 
@@ -169,7 +169,7 @@ void setup() {
         digitalWrite(solenoid3, HIGH);          // turn on solenoid 1
         delay(solenoidopentime[2]);
         digitalWrite(solenoid3, LOW);           // turn off solenoid 1
-        delay(100)
+        delay(100);
       }
     }
     
@@ -178,7 +178,7 @@ void setup() {
         digitalWrite(solenoid4, HIGH);          // turn on solenoid 1
         delay(solenoidopentime[3]);
         digitalWrite(solenoid4, LOW);           // turn off solenoid 1
-        delay(100)
+        delay(100);
       }
     }
 
