@@ -742,7 +742,7 @@ void setup() {
   }
 
   if (randlaserflag == 1) {
-    temp = nextcue - mindelaybgdtocue;
+    temp = nextcue - mindelaybgdtocue - laserduration;
     nextlaser = random(0, temp);
   }
 
@@ -1340,7 +1340,7 @@ void loop() {
       }
 
       if (randlaserflag == 1) {
-        temp = nextcue - mindelaybgdtocue;
+        temp = nextcue - mindelaybgdtocue - laserduration;
         nextlaser = random(ts, temp);
       }
 
