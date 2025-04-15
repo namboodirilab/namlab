@@ -189,8 +189,8 @@ int solenoid4 = 45;   // pin for solenoid4
 int framein   = 32;   // pin receiving the TTL input for frame start
 int vacuum    = 38;   // pin for vacuum
 int laser     = 40;   // laser to pin 9
-int ttloutpin = 42;   // ttl out pin for starting imaging
-int ttloutstoppin = 44; // ttl out pin for stopping imaging
+int ttloutpin = 42;   // ttl out pin for start and end imaging
+int ttloutstoppin = 44; // ttl out pin for cue delivery
 
 // Global variables
 unsigned long reading;           // variable to temporarily store data being read
@@ -344,7 +344,8 @@ void setup() {
   wdt_disable();                   // Disable watchdog timer on bootup. This prevents constant resetting by the watchdog timer in the endSession() function
   // initialize arduino states
   Serial.begin(57600);
-  randomSeed(analogRead(0));       // Generate a random sequence of numbers every time
+  unsigned long seed = analogRead(A0) ^ (analogRead(A1) << 10) ^ (analogRead(A2) << 5);
+  randomSeed(seed);       // Generate a random sequence of numbers every time
   pinMode(lick1, INPUT);
   pinMode(lick2, INPUT);
   pinMode(lick3, INPUT);
