@@ -638,15 +638,47 @@ void setup() {
   for (int a = 0; a < totalnumtrials; a++) {
     if (a < numtrials[0]) {
       cueList[a] = 0;
+      if (lasertrialbytrialflag == 1) {
+        if (a < 0.8 * numtrials[0]) {
+          Laserontrial[a] = 1;
+        }
+        else {
+          Laserontrial[a] = 0;
+        }
+      }
     }
     else if (a < numtrials[0] + numtrials[1]) {
       cueList[a] = 1;
+      if (lasertrialbytrialflag == 1) {
+        if (a < numtrials[0] + 0.8 * numtrials[1]) {
+          Laserontrial[a] = 1;
+        }
+        else {
+          Laserontrial[a] = 0;
+        }
+      }
     }
     else if (a < numtrials[0] + numtrials[1] + numtrials[2]) {
       cueList[a] = 2;
+      if (lasertrialbytrialflag == 1) {
+        if (a < numtrials[0] + numtrials[1] + 0.8 * numtrials[2]) {
+          Laserontrial[a] = 1;
+        }
+        else {
+          Laserontrial[a] = 0;
+        }
+      }
     }
     else {
       cueList[a] = 3;
+      if (lasertrialbytrialflag == 1) {
+        if (a < numtrials[0] + numtrials[1] + 0.8 * numtrials[2] + 0.8 * numtrials[3]) {
+          Laserontrial[a] = 1;
+        }
+        else {
+          Laserontrial[a] = 0;
+        }
+      }
     }
   }
   //shuffle cueList
@@ -656,14 +688,13 @@ void setup() {
     int temp = cueList[a];
     cueList[a] = cueList[r];
     cueList[r] = temp;
-    if ((lasertrialbytrialflag == 1) && (a>=12) && (a<15)) {
-      Laserontrial[a] = 1;
-    }
-    else {
-      Laserontrial[a] = 0;
+    if (lasertrialbytrialflag == 1) {
+      int temp1 = Laserontrial[a];
+      Laserontrial[a] = Laserontrial[r];
+      Laserontrial[r] = temp1;
     }
   }
-
+  
   truncITI = min(3 * meanITI, maxITI); //truncation is set at 3 times the meanITI or that hardcoded in maxITI; used for exponential distribution
   if (meanITI == maxITI) {
     nextcue = meanITI;
@@ -711,31 +742,32 @@ void setup() {
     }
   }
 
-  if (randlaserflag == 1 && CSct>=12 && CSct<15) {
-    temp = nextcue - mindelaybgdtocue - laserduration;
-    nextlaser = random(0, temp);
-    nextbgdsolenoid = nextlaser;
-  }
+  nextlaser = 0;
+  //if (randlaserflag == 1) {
+  //  temp = nextcue - mindelaybgdtocue - laserduration;
+  //  nextlaser = random(0, temp);
+  //  nextbgdsolenoid = nextlaser;
+  //}
 
-//  nextbgdcue = 0;
-//  if (r_bgd>0) {
-//    u = random(0, 10000);
-//    temp = (float)u / 10000;
-//    temp = log(temp);
-//    nextbgdsolenoid = 0 - T_bgd * temp;
-//    while (nextbgdsolenoid > (nextcue - mindelaybgdtocue) && experimentmode != 1 && !isibgdsolenoidflag) {
-//      u = random(0, 10000);
-//      temp = (float)u / 10000;
-//      temp = log(temp);
-//      nextbgdsolenoid = 0 - T_bgd * temp;
-//    }
-//    if (bgdsolenoidcueflag) {
-//      nextbgdcue = nextbgdsolenoid-1000; // a cue is given 1000ms before a background reward
-//    }
-//  }
-//  else {
-//    nextbgdsolenoid = 0;
-//  }
+  nextbgdcue = 0;
+  //if (r_bgd>0) {
+  //  u = random(0, 10000);
+  //  temp = (float)u / 10000;
+  //  temp = log(temp);
+  //  nextbgdsolenoid = 0 - T_bgd * temp;
+  //  while (nextbgdsolenoid > (nextcue - mindelaybgdtocue) && experimentmode != 1 && !isibgdsolenoidflag) {
+   //   u = random(0, 10000);
+   //   temp = (float)u / 10000;
+   //   temp = log(temp);
+   //   nextbgdsolenoid = 0 - T_bgd * temp;
+  //  }
+   // if (bgdsolenoidcueflag) {
+   //   nextbgdcue = nextbgdsolenoid-1000; // a cue is given 1000ms before a background reward
+   // }
+  //}
+  //else {
+  //  nextbgdsolenoid = 0;
+  //}
 
   if (intervaldistribution == 3) {
     fxdrwtime = new unsigned long[totalnumtrials];
@@ -1311,9 +1343,10 @@ void loop() {
         }
       }
 
-      if (randlaserflag == 1) {
+      if (randlaserflag == 1 && CSct>=12 && CSct<15) {
         temp = nextcue - mindelaybgdtocue - laserduration;
-        nextlaser = random(ts, temp);
+        nextlaser = random(ts+mindelayfxdtobgd, temp);
+        nextbgdsolenoid = nextlaser;
       }
 
       CSct++;                            // count total number of CSs
