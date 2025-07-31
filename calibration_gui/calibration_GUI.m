@@ -81,6 +81,7 @@ end
 function pushUpload(source, eventdata, availablePorts,uploadbutton,connectbutton)%,pushSolenoid3,primeSolenoid3on,primeSolenoid3off,testVacuum,testLaser,testSerialPort,testCue1,testCue2,testCue3,testCue4,testCue5)   
     port = get(availablePorts,'Value');        % find which is selected
     basecmd = strcat('"C:\Program Files (x86)\Arduino\hardware\tools\avr/bin/avrdude" -C"C:\Program Files (x86)\Arduino\hardware\tools\avr/etc/avrdude.conf" -v -patmega2560 -cwiring -P',port,' -b115200 -D -Uflash:w:');
+
     [status,cmdout] = dos(strcat(basecmd,'C:\Users\namboodirilab\Desktop\uploads\Namlab_calibration.ino.hex',':i'));
 
     if contains(cmdout, 'avrdude done.') && status==0
@@ -127,7 +128,7 @@ function pushDisconnect(source, eventdata, connectbutton,connectfield,uploadbutt
     set(availablePorts,'Enable','on');
     set(uploadbutton, 'Enable', 'on');
     set(uploadbutton, 'Text',  'Upload');
-    set(experimentmode, 'Enable', 'on');
+    %set(experimentmode, 'Enable', 'on');
     set(sendbutton, 'Enable', 'off');
 %     set(startbutton, 'Enable', 'off');
     set(testbuttons,'Enable','off');
@@ -183,19 +184,19 @@ function pushSend(source,eventdata,disconnectbutton,refreshbutton, testbuttons, 
 end
 
 
-function testsolenoid1_fcn(source, eventdata)
+function testsolenoid1_fcn(source, eventdata, testbuttons, manualbuttons)
     global s
     fprintf(s, 'M'); %77
 end
-function testsolenoid2_fcn(source, eventdata)
+function testsolenoid2_fcn(source, eventdata, testbuttons, manualbuttons)
     global s
     fprintf(s, 'N'); %78
 end
-function testsolenoid3_fcn(source, eventdata)
+function testsolenoid3_fcn(source, eventdata, testbuttons, manualbuttons)
     global s
     fprintf(s, 'O'); %79
 end
-function testsolenoid4_fcn(source, eventdata)
+function testsolenoid4_fcn(source, eventdata, testbuttons, manualbuttons)
     global s
     fprintf(s, 'P'); %80
 end
