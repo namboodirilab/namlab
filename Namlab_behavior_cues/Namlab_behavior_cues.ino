@@ -1635,12 +1635,12 @@ void licking() {
       lickctforreq[0]++;
     }
 
-    digitalWrite(lickretractsolenoid1, LOW);
-    digitalWrite(lickretractsolenoid2, LOW);
-    if (golicktube[cueList[CSct]] == 0 && licktubesactive) {
-      nextfxdsolenoid = ts;
-    }
-    licktubesactive = false;
+//    digitalWrite(lickretractsolenoid1, LOW);
+//    digitalWrite(lickretractsolenoid2, LOW);
+//    if (golicktube[cueList[CSct]] == 0 && licktubesactive) {
+//      nextfxdsolenoid = ts;
+//    }
+//    licktubesactive = false;
   }
 
   if (lickwithdrawn) {                     // if lick withdrawn
@@ -1668,12 +1668,12 @@ void licking() {
       lickctforreq[1]++;
     }
 
-    digitalWrite(lickretractsolenoid1, LOW);
-    digitalWrite(lickretractsolenoid2, LOW);
-    if (golicktube[cueList[CSct]] == 1 && licktubesactive) {
-      nextfxdsolenoid = ts;
-    }
-    licktubesactive = false;
+//    digitalWrite(lickretractsolenoid1, LOW);
+//    digitalWrite(lickretractsolenoid2, LOW);
+//    if (golicktube[cueList[CSct]] == 1 && licktubesactive) {
+//      nextfxdsolenoid = ts;
+//    }
+//    licktubesactive = false;
   }
 
   if (lickwithdrawn) {                     // if lick withdrawn
